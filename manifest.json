@@ -1,0 +1,16 @@
+{
+  "domain": "porscheconnect",
+  "name": "Porsche Connect",
+  "config_flow": true,
+  "documentation": "https://github.com/CJNE/ha-porscheconnect",
+  "requirements": [
+    "pyporscheconnectapi==0.0.7"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@CJNE"
+  ]
+}
