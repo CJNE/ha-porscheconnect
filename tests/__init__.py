@@ -1,1 +1,1 @@
-"""Tests for the Porsche Connect integration."""
+"""Tests for the Porsche Connect custom component."""

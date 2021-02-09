@@ -1,5 +1,5 @@
 {
   "name": "Porsche Connect",
-  "content_in_root": true,
-  "domains": ["device_tracker", "sensor", "switch", "climate"]
+  "render_readme": true,
+  "iot_class": "Cloud Polling"
 }
