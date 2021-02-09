@@ -17,9 +17,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set PY env
-        run: echo "name=PY::$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
