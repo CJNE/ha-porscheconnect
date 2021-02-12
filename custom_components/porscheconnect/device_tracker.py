@@ -26,14 +26,12 @@ class PorscheTrackerEntity(PorscheDevice, TrackerEntity):
     @property
     def latitude(self) -> Optional[float]:
         """Return latitude value of the device."""
-        location = self.coordinator.getDataByVIN(self.vin, "carCoordinate")
-        return location.get("latitude") if location else None
+        return self.coordinator.getDataByVIN(self.vin, "carCoordinate.latitude")
 
     @property
     def longitude(self) -> Optional[float]:
         """Return longitude value of the device."""
-        location = self.coordinator.getDataByVIN(self.vin, "carCoordinate")
-        return location.get("longitude") if location else None
+        return self.coordinator.getDataByVIN(self.vin, "carCoordinate.longitude")
 
     @property
     def source_type(self):

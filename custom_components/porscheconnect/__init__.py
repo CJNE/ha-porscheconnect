@@ -1,7 +1,9 @@
 """The Porsche Connect integration."""
 import asyncio
 from datetime import timedelta
+from functools import reduce
 import logging
+import operator
 
 import async_timeout
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
@@ -31,10 +33,20 @@ from .config_flow import (
     configured_instances,
     validate_input,
 )
-from .const import DOMAIN, MIN_SCAN_INTERVAL
+from .const import (
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MIN_SCAN_INTERVAL,
+    PORSCHE_COMPONENTS,
+    SENSOR_KEYS,
+)
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["device_tracker"]
+PLATFORMS = ["device_tracker", "sensor"]
+
+def getFromDict(dataDict, keyString):
+    mapList = keyString.split('.')
+    return reduce(operator.getitem, mapList, dataDict)
 
 @callback
 def _async_save_tokens(hass, config_entry, access_tokens):
@@ -75,6 +87,8 @@ async def async_setup(hass: HomeAssistant, base_config: dict):
         _update_entry(
             email,
             data={
+                CONF_EMAIL: email,
+                CONF_PASSWORD: password,
                 CONF_ACCESS_TOKEN: info[CONF_ACCESS_TOKEN],
             },
             options={CONF_SCAN_INTERVAL: scan_interval},
@@ -118,10 +132,23 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         )
         controller = Client(connection)
         vehicles = await controller.getVehicles()
+
+
         for vehicle in vehicles:
-            overview = await controller.getSummary(vehicle["vin"])
-            vehicle["name"] = overview["nickName"] or overview["modelDescription"]
+            summary = await controller.getSummary(vehicle["vin"])
+            vehicle["name"] = summary["nickName"] or summary["modelDescription"]
+            # Find out what sensors are supported and store in vehicle
+            overview = await controller.getOverview(vehicle["vin"])
+
+            vehicle['sensors'] = []
+            for sensorKey in SENSOR_KEYS:
+                data = getFromDict(overview, sensorKey)
+                if data is not None: 
+                    data['key'] = sensorKey
+                    vehicle['sensors'].append(data)
+
             _LOGGER.debug(f"Found vehicle {vehicle['name']}")
+            _LOGGER.debug(f"Supported sensors {vehicle['sensors']}")
 
         access_tokens = await controller.getAllTokens()
 
@@ -191,7 +218,8 @@ class PorscheDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
     def getDataByVIN(self, vin, key):
-        return self.data[vin].get(key)
+        if(self.data is None): return None
+        return getFromDict(self.data.get(vin, {}), key)
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
@@ -207,6 +235,7 @@ class PorscheDataUpdateCoordinator(DataUpdateCoordinator):
                     vin = vehicle["vin"]
                     vdata = {}
                     vdata = {**vdata, **await self.controller.getPosition(vin)}
+                    vdata = {**vdata, **await self.controller.getOverview(vin)}
                     data[vin] = vdata
                 _LOGGER.debug(data)
         except PorscheException as err:
