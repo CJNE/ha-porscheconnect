@@ -1,0 +1,10 @@
+{
+  "_template": "https://github.com/oncleben31/cookiecutter-homeassistant-custom-component",
+  "class_name_prefix": "PorscheConnect",
+  "domain_name": "porscheconnect",
+  "friendly_name": "Porsche Connect",
+  "github_user": "CJNE",
+  "project_name": "ha-porscheconnect",
+  "test_suite": "yes",
+  "version": "0.0.5"
+}

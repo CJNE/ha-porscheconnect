@@ -1,16 +1,60 @@
-## Porsche Connect integrations
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]][license]
 
-This component adds integrations for Porsche Cars using Porsche Connect, assosciated with your Porsche ID
+[![hacs][hacsbadge]][hacs]
+[![Project Maintenance][maintenance-shield]][user_profile]
+[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
-### [Docs (installation, config, and issues)](https://cjne.github.io/ha-porscheconnect)
+[![Discord][discord-shield]][discord]
+[![Community Forum][forum-shield]][forum]
 
-{% if installed %}
+**This component will set up the following platforms.**
 
-This component is installed, head over to Configuration->Integrations and add it.
+| Platform        | Description                         |
+| --------------- | ----------------------------------- |
+| `binary_sensor` | Show something `True` or `False`.   |
+| `sensor`        | Show info from API.                 |
+| `switch`        | Switch something `True` or `False`. |
 
-{% else %}
-### Features
+![example][exampleimg]
 
-- Config flow, no YAML
-- Tracker (GPS)
+{% if not installed %}
+
+## Installation
+
+1. Click install.
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Porsche Connect".
+
 {% endif %}
+
+## Configuration is done in the UI
+
+<!---->
+
+## Credits
+
+This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
+
+Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [integration_blueprint][integration_blueprint] template
+
+---
+
+[integration_blueprint]: https://github.com/custom-components/integration_blueprint
+[buymecoffee]: https://www.buymeacoffee.com/ludeeus
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/CJNE/ha-porscheconnect.svg?style=for-the-badge
+[commits]: https://github.com/CJNE/ha-porscheconnect/commits/main
+[hacs]: https://hacs.xyz
+[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[discord]: https://discord.gg/Qa5fW2R
+[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
+[exampleimg]: example.png
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
+[forum]: https://community.home-assistant.io/
+[license]: https://github.com/CJNE/ha-porscheconnect/blob/main/LICENSE
+[license-shield]: https://img.shields.io/github/license/CJNE/ha-porscheconnect.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-%40CJNE-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/CJNE/ha-porscheconnect.svg?style=for-the-badge
+[releases]: https://github.com/CJNE/ha-porscheconnect/releases
+[user_profile]: https://github.com/CJNE
