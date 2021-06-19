@@ -14,15 +14,18 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.util.distance import convert
 
 from . import DOMAIN as PORSCHE_DOMAIN, PorscheDevice
-from .const import DEVICE_CLASSES, DEVICE_NAMES
+from .const import DEVICE_CLASSES, DEVICE_NAMES, HA_SENSOR, SensorAttr, SensorMeta
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Porsche sensors by config_entry."""
+    
     coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
     entities = []
     for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
-        for sensor in vehicle['sensors']:
+        if vehicle['components'].get(HA_SENSOR, None) is None:
+            continue
+        for sensor in vehicle['components'][HA_SENSOR]:
             entities.append(
                 PorscheSensor(
                     vehicle, hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"], sensor
@@ -33,10 +36,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class PorscheSensor(PorscheDevice, Entity):
     """Representation of Porsche sensors."""
-    def __init__(self, vehicle, coordinator, sensor_meta):
+    def __init__(self, vehicle, coordinator, sensor_meta: SensorMeta):
         """Initialize of the sensor."""
         super().__init__(vehicle, coordinator)
-        self.key = sensor_meta['key']
+        self.key = sensor_meta.key
         self.meta = sensor_meta
         device_name = DEVICE_NAMES.get(self.key, self.key)
         self._name = f"{self._name} {device_name}"
@@ -67,7 +70,7 @@ class PorscheSensor(PorscheDevice, Entity):
     @property
     def device_class(self) -> Optional[str]:
         """Return the device_class of the device."""
-        return DEVICE_CLASSES.get(self.key, None)
+        return self.meta.device_class
 
     @property
     def device_state_attributes(self):

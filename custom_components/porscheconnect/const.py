@@ -1,4 +1,6 @@
+from dataclasses import dataclass, field
 import logging
+from typing import Any
 
 from homeassistant.const import (
     DEVICE_CLASS_BATTERY,
@@ -21,10 +23,36 @@ DOMAIN = "porscheconnect"
 LOGGER = logging.getLogger(__package__)
 DEFAULT_SCAN_INTERVAL = 660
 MIN_SCAN_INTERVAL = 60
+HA_SENSOR = 'sensor'
+HA_DEVICE_TRACKER = 'device_tracker'
 PORSCHE_COMPONENTS = [
-    "sensor",
-    "device_tracker",
+    HA_SENSOR,
+    HA_DEVICE_TRACKER
 ]
+
+@dataclass
+class SensorMeta:
+    name: str
+    key: str
+    ha_type: str
+    icon: str = None
+    device_class: str = None
+    default_enabled: bool = True
+    attributes: list = field(default_factory=list)
+
+@dataclass
+class SensorAttr:
+    name: str
+    key: str
+
+DATA_MAP = [
+        SensorMeta('mileage sensor', 'mileage', HA_SENSOR, 'mdi:counter', attributes=[SensorAttr('oil level',
+            'oilLevel')]),
+        SensorMeta('battery sensor', 'batteryLevel', HA_SENSOR, 'mdi:battery', DEVICE_CLASS_BATTERY),
+        SensorMeta('fuel sensor', 'fuelLevel', HA_SENSOR, 'mdi:gauge'),
+        SensorMeta('range sensor', 'remainingRanges.electricalRange.distance', HA_SENSOR, 'mdi:gauge'),
+        SensorMeta('range sensor', 'remainingRanges.conventionalRange.distance', HA_SENSOR, 'mdi:gauge'),
+        ]
 
 SENSOR_KEYS = ['mileage', 'batteryLevel', 'fuelLevel', 'oilLevel',
         'remainingRanges.conventionalRange.distance',

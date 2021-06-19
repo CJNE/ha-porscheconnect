@@ -34,6 +34,7 @@ from .config_flow import (
     validate_input,
 )
 from .const import (
+    DATA_MAP,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     MIN_SCAN_INTERVAL,
@@ -138,17 +139,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
             summary = await controller.getSummary(vehicle["vin"])
             vehicle["name"] = summary["nickName"] or summary["modelDescription"]
             # Find out what sensors are supported and store in vehicle
-            overview = await controller.getOverview(vehicle["vin"])
+            overview = await controller.getStoredOverview(vehicle["vin"])
 
-            vehicle['sensors'] = []
-            for sensorKey in SENSOR_KEYS:
-                data = getFromDict(overview, sensorKey)
+            vehicle['components'] = {} 
+            for sensorMeta in DATA_MAP:
+                data = getFromDict(overview, sensorMeta.key)
                 if data is not None: 
-                    data['key'] = sensorKey
-                    vehicle['sensors'].append(data)
+                    if vehicle['components'].get(sensorMeta.ha_type, None) is None:
+                        vehicle['components'][sensorMeta.ha_type] = []
+                    vehicle['components'][sensorMeta.ha_type].append(sensorMeta)
 
             _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-            _LOGGER.debug(f"Supported sensors {vehicle['sensors']}")
+            _LOGGER.debug(f"Supported components {vehicle['components']}")
 
         access_tokens = await controller.getAllTokens()
 
@@ -235,7 +237,7 @@ class PorscheDataUpdateCoordinator(DataUpdateCoordinator):
                     vin = vehicle["vin"]
                     vdata = {}
                     vdata = {**vdata, **await self.controller.getPosition(vin)}
-                    vdata = {**vdata, **await self.controller.getOverview(vin)}
+                    vdata = {**vdata, **await self.controller.getStoredOverview(vin)}
                     data[vin] = vdata
                 _LOGGER.debug(data)
         except PorscheException as err:
