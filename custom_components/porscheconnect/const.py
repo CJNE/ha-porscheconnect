@@ -1,21 +1,20 @@
-from dataclasses import dataclass, field
 import logging
-from typing import Any
+from dataclasses import dataclass
+from dataclasses import field
 
-from homeassistant.const import (
-    DEVICE_CLASS_BATTERY,
-    DEVICE_CLASS_CURRENT,
-    DEVICE_CLASS_ENERGY,
-    DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_ILLUMINANCE,
-    DEVICE_CLASS_POWER,
-    DEVICE_CLASS_POWER_FACTOR,
-    DEVICE_CLASS_PRESSURE,
-    DEVICE_CLASS_SIGNAL_STRENGTH,
-    DEVICE_CLASS_TEMPERATURE,
-    DEVICE_CLASS_TIMESTAMP,
-    DEVICE_CLASS_VOLTAGE,
-)
+from homeassistant.const import DEVICE_CLASS_BATTERY
+
+# from homeassistant.const import DEVICE_CLASS_CURRENT
+# from homeassistant.const import DEVICE_CLASS_ENERGY
+# from homeassistant.const import DEVICE_CLASS_HUMIDITY
+# from homeassistant.const import DEVICE_CLASS_ILLUMINANCE
+# from homeassistant.const import DEVICE_CLASS_POWER
+# from homeassistant.const import DEVICE_CLASS_POWER_FACTOR
+# from homeassistant.const import DEVICE_CLASS_PRESSURE
+# from homeassistant.const import DEVICE_CLASS_SIGNAL_STRENGTH
+# from homeassistant.const import DEVICE_CLASS_TEMPERATURE
+# from homeassistant.const import DEVICE_CLASS_TIMESTAMP
+# from homeassistant.const import DEVICE_CLASS_VOLTAGE
 
 """Constants for the Porsche Connect integration."""
 
@@ -23,12 +22,10 @@ DOMAIN = "porscheconnect"
 LOGGER = logging.getLogger(__package__)
 DEFAULT_SCAN_INTERVAL = 660
 MIN_SCAN_INTERVAL = 60
-HA_SENSOR = 'sensor'
-HA_DEVICE_TRACKER = 'device_tracker'
-PORSCHE_COMPONENTS = [
-    HA_SENSOR,
-    HA_DEVICE_TRACKER
-]
+HA_SENSOR = "sensor"
+HA_DEVICE_TRACKER = "device_tracker"
+PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER]
+
 
 @dataclass
 class SensorMeta:
@@ -40,23 +37,47 @@ class SensorMeta:
     default_enabled: bool = True
     attributes: list = field(default_factory=list)
 
+
 @dataclass
 class SensorAttr:
     name: str
     key: str
 
-DATA_MAP = [
-        SensorMeta('mileage sensor', 'mileage', HA_SENSOR, 'mdi:counter', attributes=[SensorAttr('oil level',
-            'oilLevel')]),
-        SensorMeta('battery sensor', 'batteryLevel', HA_SENSOR, 'mdi:battery', DEVICE_CLASS_BATTERY),
-        SensorMeta('fuel sensor', 'fuelLevel', HA_SENSOR, 'mdi:gauge'),
-        SensorMeta('range sensor', 'remainingRanges.electricalRange.distance', HA_SENSOR, 'mdi:gauge'),
-        SensorMeta('range sensor', 'remainingRanges.conventionalRange.distance', HA_SENSOR, 'mdi:gauge'),
-        ]
 
-SENSOR_KEYS = ['mileage', 'batteryLevel', 'fuelLevel', 'oilLevel',
-        'remainingRanges.conventionalRange.distance',
-        'remainingRanges.electricalRange.distance']
+DATA_MAP = [
+    SensorMeta(
+        "mileage sensor",
+        "mileage",
+        HA_SENSOR,
+        "mdi:counter",
+        attributes=[SensorAttr("oil level", "oilLevel")],
+    ),
+    SensorMeta(
+        "battery sensor", "batteryLevel", HA_SENSOR, "mdi:battery", DEVICE_CLASS_BATTERY
+    ),
+    SensorMeta("fuel sensor", "fuelLevel", HA_SENSOR, "mdi:gauge"),
+    SensorMeta(
+        "range sensor",
+        "remainingRanges.electricalRange.distance",
+        HA_SENSOR,
+        "mdi:gauge",
+    ),
+    SensorMeta(
+        "range sensor",
+        "remainingRanges.conventionalRange.distance",
+        HA_SENSOR,
+        "mdi:gauge",
+    ),
+]
+
+SENSOR_KEYS = [
+    "mileage",
+    "batteryLevel",
+    "fuelLevel",
+    "oilLevel",
+    "remainingRanges.conventionalRange.distance",
+    "remainingRanges.electricalRange.distance",
+]
 
 DEVICE_CLASSES = {
     "batteryLevel": DEVICE_CLASS_BATTERY,

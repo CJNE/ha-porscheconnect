@@ -1,19 +1,21 @@
 """Config flow for Porsche Connect integration."""
 import logging
 
-from homeassistant import config_entries, core, exceptions
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_SCAN_INTERVAL,
-)
+import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant import core
+from homeassistant import exceptions
+from homeassistant.const import CONF_ACCESS_TOKEN
+from homeassistant.const import CONF_EMAIL
+from homeassistant.const import CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.helpers import aiohttp_client
 from pyporscheconnectapi.connection import Connection
-import voluptuous as vol
+from pyporscheconnectapi.exceptions import WrongCredentials
 
 from .const import DOMAIN  # pylint:disable=unused-import
+
+# from homeassistant.const import CONF_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,17 +37,19 @@ async def validate_input(hass: core.HomeAssistant, data):
     websession = aiohttp_client.async_get_clientsession(hass)
     conn = Connection(data[CONF_EMAIL], data[CONF_PASSWORD], websession=websession)
 
-    if not await conn._login():
+    try:
+        await conn._login()
+    except WrongCredentials:
         raise InvalidAuth
 
-    tokens = conn.getAllTokens()
+    tokens = await conn.getAllTokens()
 
     # If you cannot connect:
     # throw CannotConnect
     # If the authentication is wrong:
     # InvalidAuth
 
-    conn.close()
+    await conn.close()
 
     # Return info that you want to store in the config entry.
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: tokens}
@@ -71,7 +75,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except CannotConnect:
             errors["base"] = "cannot_connect"
         except InvalidAuth:
-            errors["base"] = "invalid_auth"
+            errors["base"] = "auth"
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"

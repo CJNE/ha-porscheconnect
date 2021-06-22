@@ -1,9 +1,6 @@
 """Constants for Porsche Connect tests."""
-from custom_components.porscheconnect.const import (
-    CONF_PASSWORD,
-)
-from custom_components.porscheconnect.const import (
-    CONF_USERNAME,
-)
+from homeassistant.const import CONF_EMAIL
+from homeassistant.const import CONF_PASSWORD
 
-MOCK_CONFIG = {CONF_USERNAME: "test_username", CONF_PASSWORD: "test_password"}
+
+MOCK_CONFIG = {CONF_EMAIL: "test_username", CONF_PASSWORD: "test_password"}
