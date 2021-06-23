@@ -1,53 +1,49 @@
 """The Porsche Connect integration."""
 import asyncio
-from datetime import timedelta
-from functools import reduce
 import logging
 import operator
+from datetime import timedelta
+from functools import reduce
 
 import async_timeout
-from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
-from homeassistant.const import (
-    ATTR_BATTERY_CHARGING,
-    ATTR_BATTERY_LEVEL,
-    CONF_ACCESS_TOKEN,
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_SCAN_INTERVAL,
-)
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import SOURCE_IMPORT
+from homeassistant.const import CONF_ACCESS_TOKEN
+from homeassistant.const import CONF_EMAIL
+from homeassistant.const import CONF_PASSWORD
+from homeassistant.const import CONF_SCAN_INTERVAL
+from homeassistant.core import callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
 from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 
-from .config_flow import (
-    CannotConnect,
-    InvalidAuth,
-    configured_instances,
-    validate_input,
-)
-from .const import (
-    DATA_MAP,
-    DEFAULT_SCAN_INTERVAL,
-    DOMAIN,
-    MIN_SCAN_INTERVAL,
-    PORSCHE_COMPONENTS,
-    SENSOR_KEYS,
-)
+from .config_flow import InvalidAuth
+from .config_flow import validate_input
+from .const import DATA_MAP
+from .const import DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN
+from .const import MIN_SCAN_INTERVAL
+
+# from homeassistant.const import ATTR_BATTERY_CHARGING
+# from homeassistant.const import ATTR_BATTERY_LEVEL
+
+# from .const import PORSCHE_COMPONENTS
+# from .const import SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["device_tracker", "sensor"]
 
+
 def getFromDict(dataDict, keyString):
-    mapList = keyString.split('.')
+    mapList = keyString.split(".")
     return reduce(operator.getitem, mapList, dataDict)
+
 
 @callback
 def _async_save_tokens(hass, config_entry, access_tokens):
@@ -58,6 +54,12 @@ def _async_save_tokens(hass, config_entry, access_tokens):
             CONF_ACCESS_TOKEN: access_tokens,
         },
     )
+
+
+@callback
+def configured_instances(hass):
+    """Return a set of configured Porsche instances."""
+    return {entry.title for entry in hass.config_entries.async_entries(DOMAIN)}
 
 
 async def async_setup(hass: HomeAssistant, base_config: dict):
@@ -83,7 +85,7 @@ async def async_setup(hass: HomeAssistant, base_config: dict):
     if email in configured_instances(hass):
         try:
             info = await validate_input(hass, config)
-        except (CannotConnect, InvalidAuth):
+        except (Exception, InvalidAuth):
             return False
         _update_entry(
             email,
@@ -134,20 +136,19 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         controller = Client(connection)
         vehicles = await controller.getVehicles()
 
-
         for vehicle in vehicles:
             summary = await controller.getSummary(vehicle["vin"])
             vehicle["name"] = summary["nickName"] or summary["modelDescription"]
             # Find out what sensors are supported and store in vehicle
             overview = await controller.getStoredOverview(vehicle["vin"])
 
-            vehicle['components'] = {} 
+            vehicle["components"] = {}
             for sensorMeta in DATA_MAP:
                 data = getFromDict(overview, sensorMeta.key)
-                if data is not None: 
-                    if vehicle['components'].get(sensorMeta.ha_type, None) is None:
-                        vehicle['components'][sensorMeta.ha_type] = []
-                    vehicle['components'][sensorMeta.ha_type].append(sensorMeta)
+                if data is not None:
+                    if vehicle["components"].get(sensorMeta.ha_type, None) is None:
+                        vehicle["components"][sensorMeta.ha_type] = []
+                    vehicle["components"][sensorMeta.ha_type].append(sensorMeta)
 
             _LOGGER.debug(f"Found vehicle {vehicle['name']}")
             _LOGGER.debug(f"Supported components {vehicle['components']}")
@@ -163,7 +164,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         hass, config_entry=config_entry, controller=controller, vehicles=vehicles
     )
 
-    entry_data = hass.data[DOMAIN][config_entry.entry_id] = {
+    hass.data[DOMAIN][config_entry.entry_id] = {
         "coordinator": coordinator,
         "vehicles": vehicles,
     }
@@ -174,14 +175,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         )
 
     return True
-
-
-@callback
-def _async_save_tokens(hass, config_entry, access_tokens):
-    hass.config_entries.async_update_entry(
-        config_entry,
-        data={**config_entry.data, CONF_ACCESS_TOKEN: access_tokens},
-    )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -220,7 +213,8 @@ class PorscheDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
     def getDataByVIN(self, vin, key):
-        if(self.data is None): return None
+        if self.data is None:
+            return None
         return getFromDict(self.data.get(vin, {}), key)
 
     async def _async_update_data(self):

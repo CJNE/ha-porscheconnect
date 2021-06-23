@@ -8,7 +8,6 @@ from homeassistant import exceptions
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
-from homeassistant.core import callback
 from homeassistant.helpers import aiohttp_client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import WrongCredentials
@@ -20,12 +19,6 @@ from .const import DOMAIN  # pylint:disable=unused-import
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema({CONF_EMAIL: str, CONF_PASSWORD: str})
-
-
-@callback
-def configured_instances(hass):
-    """Return a set of configured Porsche instances."""
-    return {entry.title for entry in hass.config_entries.async_entries(DOMAIN)}
 
 
 async def validate_input(hass: core.HomeAssistant, data):
@@ -43,12 +36,6 @@ async def validate_input(hass: core.HomeAssistant, data):
         raise InvalidAuth
 
     tokens = await conn.getAllTokens()
-
-    # If you cannot connect:
-    # throw CannotConnect
-    # If the authentication is wrong:
-    # InvalidAuth
-
     await conn.close()
 
     # Return info that you want to store in the config entry.
@@ -69,26 +56,18 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         errors = {}
-
         try:
             info = await validate_input(self.hass, user_input)
-        except CannotConnect:
-            errors["base"] = "cannot_connect"
         except InvalidAuth:
             errors["base"] = "auth"
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Unexpected exception")
-            errors["base"] = "unknown"
+        except Exception:
+            errors["base"] = "connect"
         else:
             return self.async_create_entry(title=info["title"], data=user_input)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
-
-
-class CannotConnect(exceptions.HomeAssistantError):
-    """Error to indicate we cannot connect."""
 
 
 class InvalidAuth(exceptions.HomeAssistantError):

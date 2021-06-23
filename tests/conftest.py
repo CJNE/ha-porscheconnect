@@ -47,6 +47,18 @@ def error_connection_connect_fixture():
     """Simulate error when retrieving data from API."""
     with patch(
         "pyporscheconnectapi.connection.Connection._login",
+        side_effect=Exception,
+    ), patch("pyporscheconnectapi.connection.Connection.getAllTokens"):
+        yield
+
+
+# In this fixture, we are forcing calls to async_get_data to raise an Exception. This is useful
+# for exception handling.
+@pytest.fixture(name="error_connection_login")
+def error_connection_login_fixture():
+    """Simulate error when retrieving data from API."""
+    with patch(
+        "pyporscheconnectapi.connection.Connection._login",
         side_effect=WrongCredentials,
     ), patch("pyporscheconnectapi.connection.Connection.getAllTokens"):
         yield

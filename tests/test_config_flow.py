@@ -10,6 +10,7 @@ from homeassistant import data_entry_flow
 
 from .const import MOCK_CONFIG
 
+
 # from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
@@ -61,7 +62,29 @@ async def test_successful_config_flow(hass, bypass_connection_connect):
 # We use the `error_on_get_data` mock instead of `bypass_get_data`
 # (note the function parameters) to raise an Exception during
 # validation of the input config.
-async def test_failed_config_flow(hass, error_connection_connect):
+async def test_failed_config_flow_connect(hass, error_connection_connect):
+    """Test a failed config flow due to credential validation failure."""
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["step_id"] == "user"
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], user_input=MOCK_CONFIG
+    )
+
+    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["errors"] == {"base": "connect"}
+
+
+# In this case, we want to simulate a failure during the config flow.
+# We use the `error_on_get_data` mock instead of `bypass_get_data`
+# (note the function parameters) to raise an Exception during
+# validation of the input config.
+async def test_failed_config_flow_login(hass, error_connection_login):
     """Test a failed config flow due to credential validation failure."""
 
     result = await hass.config_entries.flow.async_init(
