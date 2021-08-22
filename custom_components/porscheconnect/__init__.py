@@ -37,7 +37,7 @@ from .const import MIN_SCAN_INTERVAL
 # from .const import SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["device_tracker", "sensor"]
+PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
 
 
 def getFromDict(dataDict, keyString):
@@ -160,7 +160,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         return False
 
     _async_save_tokens(hass, config_entry, access_tokens)
-    coordinator = PorscheDataUpdateCoordinator(
+    coordinator = PorscheConnectDataUpdateCoordinator(
         hass, config_entry=config_entry, controller=controller, vehicles=vehicles
     )
 
@@ -193,7 +193,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return unload_ok
 
 
-class PorscheDataUpdateCoordinator(DataUpdateCoordinator):
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)
+
+
+class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
     def __init__(self, hass, *, config_entry, controller, vehicles):

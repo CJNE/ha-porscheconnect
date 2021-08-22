@@ -1,5 +1,6 @@
 """Global fixtures for Porsche Connect integration."""
 from typing import Any
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -8,6 +9,18 @@ from pyporscheconnectapi.exceptions import WrongCredentials
 # from unittest.mock import Mock
 
 pytest_plugins = "pytest_homeassistant_custom_component"
+
+
+@pytest.fixture(name="mock_client")
+def mock_client_fixture():
+    """Prevent setup."""
+    clientMock = Mock()
+    #    connectionMock = Mock()
+    with patch("pyporscheconnectapi.client.Client", return_value=clientMock,), patch(
+        "pyporscheconnectapi.client.Connection",
+        return_value=Mock,
+    ):
+        yield
 
 
 # This fixture is used to prevent HomeAssistant from attempting to create and dismiss persistent

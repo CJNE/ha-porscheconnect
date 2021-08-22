@@ -24,7 +24,8 @@ DEFAULT_SCAN_INTERVAL = 660
 MIN_SCAN_INTERVAL = 60
 HA_SENSOR = "sensor"
 HA_DEVICE_TRACKER = "device_tracker"
-PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER]
+HA_BINARY_SENSOR = "binary_sensor"
+PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER, HA_BINARY_SENSOR]
 
 
 @dataclass
@@ -68,6 +69,9 @@ DATA_MAP = [
         HA_SENSOR,
         "mdi:gauge",
     ),
+    SensorMeta("parking brake", "parkingBreak", HA_BINARY_SENSOR, "mdi:lock"),
+    SensorMeta("doors", "doors.overallLockStatus", HA_SENSOR, "mdi:lock"),
+    SensorMeta("lock", "overallOpenStatus", HA_SENSOR, "mdi:lock"),
 ]
 
 SENSOR_KEYS = [

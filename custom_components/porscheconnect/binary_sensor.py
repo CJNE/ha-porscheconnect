@@ -1,33 +1,48 @@
 """Binary sensor platform for Porsche Connect."""
+from typing import Optional
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
-from .const import BINARY_SENSOR
-from .const import BINARY_SENSOR_DEVICE_CLASS
-from .const import DEFAULT_NAME
-from .const import DOMAIN
-from .entity import PorscheConnectEntity
+from . import DOMAIN as PORSCHE_DOMAIN
+from . import PorscheDevice
+from .const import DEVICE_NAMES
+from .const import HA_BINARY_SENSOR
+from .const import SensorMeta
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass, config_entry, async_add_entities):
     """Setup binary_sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([PorscheConnectBinarySensor(coordinator, entry)])
+    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
+    entities = []
+    for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
+        if vehicle["components"].get(HA_BINARY_SENSOR, None) is None:
+            continue
+        for sensor in vehicle["components"][HA_BINARY_SENSOR]:
+            entities.append(PorscheBinarySensor(vehicle, coordinator, sensor))
+    async_add_entities(entities, True)
 
 
-class PorscheConnectBinarySensor(PorscheConnectEntity, BinarySensorEntity):
+class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
     """porscheconnect binary_sensor class."""
 
-    @property
-    def name(self):
-        """Return the name of the binary_sensor."""
-        return f"{DEFAULT_NAME}_{BINARY_SENSOR}"
+    def __init__(self, vehicle, coordinator, sensor_meta: SensorMeta):
+        """Initialize of the sensor."""
+        super().__init__(vehicle, coordinator)
+        self.key = sensor_meta.key
+        self.meta = sensor_meta
+        device_name = DEVICE_NAMES.get(self.key, self.key)
+        self._name = f"{self._name} {device_name}"
+        self._unique_id = f"{super().unique_id}_{self.key}"
 
     @property
-    def device_class(self):
-        """Return the class of this binary_sensor."""
-        return BINARY_SENSOR_DEVICE_CLASS
+    def device_class(self) -> Optional[str]:
+        """Return the device_class of the device."""
+        return self.meta.device_class
 
     @property
     def is_on(self):
         """Return true if the binary_sensor is on."""
-        return self.coordinator.data.get("title", "") == "foo"
+        data = self.coordinator.getDataByVIN(self.vin, self.key)
+        if data is None:
+            return None
+        return data == "ACTIVE"

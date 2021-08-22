@@ -1,4 +1,7 @@
 """Test Porsche Connect setup process."""
+# from unittest.mock import MagicMock
+# from unittest.mock import Mock
+# from unittest.mock import patch
 import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
@@ -19,7 +22,7 @@ from .const import MOCK_CONFIG
 # Home Assistant using the pytest_homeassistant_custom_component plugin.
 # Assertions allow you to verify that the return value of whatever is on the left
 # side of the assertion matches with the right side.
-async def test_setup_unload_and_reload_entry(hass, bypass_get_data):
+async def test_setup_unload_and_reload_entry(hass, mock_client):
     """Test entry setup and unload."""
     # Create a mock entry so we don't have to go through config flow
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
@@ -50,7 +53,7 @@ async def test_setup_unload_and_reload_entry(hass, bypass_get_data):
     assert "test_username" in instances
 
 
-async def test_setup_entry_exception(hass, error_on_get_data):
+async def test_setup_entry_exception(hass, mock_client):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
 

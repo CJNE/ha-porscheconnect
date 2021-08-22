@@ -30,13 +30,15 @@ async def validate_input(hass: core.HomeAssistant, data):
     websession = aiohttp_client.async_get_clientsession(hass)
     conn = Connection(data[CONF_EMAIL], data[CONF_PASSWORD], websession=websession)
 
+    _LOGGER.debug("Attempt login...")
     try:
         await conn._login()
     except WrongCredentials:
+        _LOGGER.info("Login failed, wrong credentials.")
         raise InvalidAuth
 
     tokens = await conn.getAllTokens()
-    await conn.close()
+    #    await conn.close()
 
     # Return info that you want to store in the config entry.
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: tokens}

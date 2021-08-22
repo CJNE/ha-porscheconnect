@@ -1,41 +1,40 @@
 """Support for the Porsche Connect sensors."""
+import logging
 from typing import Optional
 
-from homeassistant.components.sensor import DEVICE_CLASSES
-from homeassistant.const import (
-    LENGTH_KILOMETERS,
-    LENGTH_MILES,
-    PERCENTAGE,
-    TEMP_CELSIUS,
-    TEMP_FAHRENHEIT,
-    TIME_DAYS,
-)
+from homeassistant.const import LENGTH_KILOMETERS
+from homeassistant.const import LENGTH_MILES
+from homeassistant.const import PERCENTAGE
+from homeassistant.const import TIME_DAYS
 from homeassistant.helpers.entity import Entity
-from homeassistant.util.distance import convert
 
-from . import DOMAIN as PORSCHE_DOMAIN, PorscheDevice
-from .const import DEVICE_CLASSES, DEVICE_NAMES, HA_SENSOR, SensorAttr, SensorMeta
+from . import DOMAIN as PORSCHE_DOMAIN
+from . import PorscheDevice
+from .const import DEVICE_NAMES
+from .const import HA_SENSOR
+from .const import SensorMeta
+
+# from homeassistant.const import TEMP_CELSIUS
+# from homeassistant.const import TEMP_FAHRENHEIT
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Porsche sensors by config_entry."""
-    
     coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
     entities = []
     for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
-        if vehicle['components'].get(HA_SENSOR, None) is None:
+        if vehicle["components"].get(HA_SENSOR, None) is None:
             continue
-        for sensor in vehicle['components'][HA_SENSOR]:
-            entities.append(
-                PorscheSensor(
-                    vehicle, hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"], sensor
-                )
-            )
+        for sensor in vehicle["components"][HA_SENSOR]:
+            entities.append(PorscheSensor(vehicle, coordinator, sensor))
     async_add_entities(entities, True)
 
 
 class PorscheSensor(PorscheDevice, Entity):
     """Representation of Porsche sensors."""
+
     def __init__(self, vehicle, coordinator, sensor_meta: SensorMeta):
         """Initialize of the sensor."""
         super().__init__(vehicle, coordinator)
@@ -49,13 +48,22 @@ class PorscheSensor(PorscheDevice, Entity):
     def state(self) -> Optional[float]:
         """Return the state of the sensor."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if data is None: return None
-        return data.get('value', None)
+        if data is None:
+            return None
+        if isinstance(data, str):
+            return data
+        _LOGGER.debug(data)
+        return data.get("value", None)
 
     @property
     def unit_of_measurement(self) -> Optional[str]:
         """Return the unit_of_measurement of the device."""
-        units = self.meta['unit']
+        data = self.coordinator.getDataByVIN(self.vin, self.key)
+        if data is None:
+            return None
+        if isinstance(data, str):
+            return None
+        units = data.get("unit", None)
 
         if units == "PERCENT":
             return PERCENTAGE
