@@ -14,20 +14,28 @@
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
 
-**TO BE REMOVED: If you need help, as a developer, to use this custom component tempalte,
-please look at the [User Guide in the Cookiecutter documentation](https://cookiecutter-homeassistant-custom-component.readthedocs.io/en/stable/quickstart.html)**
+This custom component for [home assistant][https://home-assistant.io/] will let you connect your Porsche Connect enabled
+car to Home Assistant. It is currently in an early stage, more info will be added as the project develops. Feature
+requests and ideas are welcome, use the issue tracker for that, thanks!
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                         |
-| --------------- | ----------------------------------- |
-| `binary_sensor` | Show something `True` or `False`.   |
-| `sensor`        | Show info from Porsche Connect API. |
-| `switch`        | Switch something `True` or `False`. |
+| Platform         | Description                         |
+| ---------------- | ----------------------------------- |
+| `binary_sensor`  | Show something `True` or `False`.   |
+| `sensor`         | Show info from Porsche Connect API. |
+| `switch`         | Switch something `True` or `False`. |
+| `device_tracker` | Show your vehicles location         |
 
 ![example][exampleimg]
 
-## Installation
+## HACS Installation
+
+1. Add this repository to "Custom repositories"
+2. Add and search for porscheconnect in HACS
+3. Install
+
+## Manual Installation
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
@@ -76,7 +84,7 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
 [black]: https://github.com/psf/black
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
-[buymecoffee]: https://www.buymeacoffee.com/CJNE
+[buymecoffee]: https://www.buymeacoffee.com/cjne.coffee
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [commits-shield]: https://img.shields.io/github/commit-activity/y/CJNE/ha-porscheconnect.svg?style=for-the-badge
 [commits]: https://github.com/CJNE/ha-porscheconnect/commits/main
