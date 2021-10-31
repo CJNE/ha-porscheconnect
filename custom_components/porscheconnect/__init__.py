@@ -42,7 +42,12 @@ PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
 
 def getFromDict(dataDict, keyString):
     mapList = keyString.split(".")
-    return reduce(operator.getitem, mapList, dataDict)
+    safe_getitem = (
+        lambda latest_value, key: None
+        if latest_value is None
+        else operator.getitem(latest_value, key)
+    )
+    return reduce(safe_getitem, mapList, dataDict)
 
 
 @callback
