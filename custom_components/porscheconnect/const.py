@@ -72,6 +72,22 @@ DATA_MAP = [
     SensorMeta("parking brake", "parkingBreak", HA_BINARY_SENSOR, "mdi:lock"),
     SensorMeta("doors", "doors.overallLockStatus", HA_SENSOR, "mdi:lock"),
     SensorMeta("lock", "overallOpenStatus", HA_SENSOR, "mdi:lock"),
+    SensorMeta(
+        "charger sensor",
+        "batteryChargeStatus.plugState",
+        HA_SENSOR,
+        "mdi:ev-station",
+        attributes=[
+            SensorAttr("charging state", "batteryChargeStatus.chargingState"),
+            SensorAttr("lock state", "batteryChargeStatus.lockState"),
+            SensorAttr("charging mode", "batteryChargeStatus.chargingMode"),
+            SensorAttr("charging mode", "batteryChargeStatus.chargingMode"),
+            SensorAttr("error type", "batteryChargeStatus.errorType"),
+            SensorAttr("remaining charge time to 100%", "batteryChargeStatus.remainingChargeTimeUntil100PercentInMinutes"),
+            SensorAttr("charging power", "batteryChargeStatus.chargingPower"),
+            SensorAttr("charge rate", "batteryChargeStatus.chargeRate.value")
+        ]
+    )
 ]
 
 SENSOR_KEYS = [
@@ -81,6 +97,7 @@ SENSOR_KEYS = [
     "oilLevel",
     "remainingRanges.conventionalRange.distance",
     "remainingRanges.electricalRange.distance",
+    "batteryChargeStatus.plugState",
 ]
 
 DEVICE_CLASSES = {
@@ -93,6 +110,7 @@ DEVICE_NAMES = {
     "oilLevel": "oil sensor",
     "remainingRanges.conventionalRange.distance": "range sensor",
     "remainingRanges.electricalRange.distance": "range sensor",
+    "batteryChargeStatus.plugState": "charger sensor"
 }
 ICONS = {
     "battery sensor": "mdi:battery",

@@ -83,5 +83,8 @@ class PorscheSensor(PorscheDevice, Entity):
     @property
     def device_state_attributes(self):
         """Return the state attributes of the device."""
-        attr = self._attributes.copy()
-        return attr
+        attrdict = {}
+        for attr in self.meta.attributes:
+          if attr is not None:
+            attrdict[attr.name] = self.coordinator.getDataByVIN(self.vin, attr.key)
+        return attrdict
