@@ -1,0 +1,18 @@
+enable_direct_charging:
+  name: Enable direct charging
+  description: >
+    Enables direct charging to 100%, ignoring any timers and charging profiles configures
+  fields:
+    vin:
+      description: The vehicle identification number (VIN) of the vehicle, 17 characters
+      example: "000000000000"
+
+disable_direct_charging:
+  name: Disable direct charging
+  description: >
+    Disables direct charging, falling back to configured timers and charging profiles
+  fields:
+    vin:
+      description: The vehicle identification number (VIN) of the vehicle, 17 characters
+      example: "000000000000"
+
