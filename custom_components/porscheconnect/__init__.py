@@ -145,11 +145,13 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
             summary = await controller.getSummary(vehicle["vin"])
             vehicle["name"] = summary["nickName"] or summary["modelDescription"]
             # Find out what sensors are supported and store in vehicle
-            overview = await controller.getStoredOverview(vehicle["vin"])
+            vdata = {}
+            vdata = {**vdata, **await controller.getStoredOverview(vehicle["vin"])}
+            vdata = {**vdata, **await controller.getEmobility(vehicle["vin"])}
 
             vehicle["components"] = {}
             for sensorMeta in DATA_MAP:
-                data = getFromDict(overview, sensorMeta.key)
+                data = getFromDict(vdata, sensorMeta.key)
                 if data is not None:
                     if vehicle["components"].get(sensorMeta.ha_type, None) is None:
                         vehicle["components"][sensorMeta.ha_type] = []
@@ -161,7 +163,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         access_tokens = await controller.getAllTokens()
 
     except PorscheException as ex:
-        _LOGGER.error("Unable to communicate with Porsche Conmnect API: %s", ex.message)
+        _LOGGER.error("Unable to communicate with Porsche Connect API: %s", ex.message)
         return False
 
     _async_save_tokens(hass, config_entry, access_tokens)
@@ -243,6 +245,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vdata = {}
                     vdata = {**vdata, **await self.controller.getPosition(vin)}
                     vdata = {**vdata, **await self.controller.getStoredOverview(vin)}
+                    vdata = {**vdata, **await self.controller.getEmobility(vin)}
                     data[vin] = vdata
                 _LOGGER.debug(data)
         except PorscheException as err:
