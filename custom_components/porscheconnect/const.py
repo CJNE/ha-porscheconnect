@@ -74,18 +74,16 @@ DATA_MAP = [
     SensorMeta("lock", "overallOpenStatus", HA_SENSOR, "mdi:lock"),
     SensorMeta(
         "charger sensor",
-        "batteryChargeStatus.plugState",
+        "chargingStatus",
         HA_SENSOR,
         "mdi:ev-station",
         attributes=[
+            SensorAttr("plug state", "batteryChargeStatus.plugState"),
             SensorAttr("charging state", "batteryChargeStatus.chargingState"),
             SensorAttr("lock state", "batteryChargeStatus.lockState"),
             SensorAttr("charging mode", "batteryChargeStatus.chargingMode"),
-            SensorAttr("charging mode", "batteryChargeStatus.chargingMode"),
-            SensorAttr("error type", "batteryChargeStatus.errorType"),
             SensorAttr("remaining charge time to 100%", "batteryChargeStatus.remainingChargeTimeUntil100PercentInMinutes"),
-            SensorAttr("charging power", "batteryChargeStatus.chargingPower"),
-            SensorAttr("charge rate", "batteryChargeStatus.chargeRate.value")
+            SensorAttr("charging power", "batteryChargeStatus.chargingPower")
         ]
     )
 ]
