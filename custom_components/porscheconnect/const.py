@@ -101,6 +101,7 @@ SENSOR_KEYS = [
 DEVICE_CLASSES = {
     "batteryLevel": DEVICE_CLASS_BATTERY,
 }
+
 DEVICE_NAMES = {
     "mileage": "mileage sensor",
     "batteryLevel": "battery sensor",
@@ -108,8 +109,9 @@ DEVICE_NAMES = {
     "oilLevel": "oil sensor",
     "remainingRanges.conventionalRange.distance": "range sensor",
     "remainingRanges.electricalRange.distance": "range sensor",
-    "batteryChargeStatus.plugState": "charger sensor"
+    "chargingStatus": "charger sensor"
 }
+
 ICONS = {
     "battery sensor": "mdi:battery",
     "range sensor": "mdi:gauge",
