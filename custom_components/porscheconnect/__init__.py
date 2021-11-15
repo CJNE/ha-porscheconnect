@@ -44,7 +44,7 @@ def getFromDict(dataDict, keyString):
     mapList = keyString.split(".")
     safe_getitem = (
         lambda latest_value, key: None
-        if latest_value is None
+        if latest_value is None or key not in latest_value
         else operator.getitem(latest_value, key)
     )
     return reduce(safe_getitem, mapList, dataDict)
