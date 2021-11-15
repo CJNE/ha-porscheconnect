@@ -13,6 +13,7 @@ from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
+from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -67,50 +68,8 @@ def configured_instances(hass):
     return {entry.title for entry in hass.config_entries.async_entries(DOMAIN)}
 
 
-async def async_setup(hass: HomeAssistant, base_config: dict):
-    _LOGGER.debug("Porsche async setup")
-    """Set up the Porsche Connect component."""
-
-    def _update_entry(email, data=None, options=None):
-        _LOGGER.debug("Porsche async setup update entry")
-        data = data or {}
-        options = options or {CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL}
-        for entry in hass.config_entries.async_entries(DOMAIN):
-            if email != entry.title:
-                continue
-            hass.config_entries.async_update_entry(entry, data=data, options=options)
-
-    config = base_config.get(DOMAIN)
-    if not config:
-        return True
-    email = config[CONF_EMAIL]
-    password = config[CONF_PASSWORD]
-    scan_interval = config[CONF_SCAN_INTERVAL]
-
-    if email in configured_instances(hass):
-        try:
-            info = await validate_input(hass, config)
-        except (Exception, InvalidAuth):
-            return False
-        _update_entry(
-            email,
-            data={
-                CONF_EMAIL: email,
-                CONF_PASSWORD: password,
-                CONF_ACCESS_TOKEN: info[CONF_ACCESS_TOKEN],
-            },
-            options={CONF_SCAN_INTERVAL: scan_interval},
-        )
-    else:
-        hass.async_create_task(
-            hass.config_entries.flow.async_init(
-                DOMAIN,
-                context={"source": SOURCE_IMPORT},
-                data={CONF_EMAIL: email, CONF_PASSWORD: password},
-            )
-        )
-        hass.data.setdefault(DOMAIN, {})
-        hass.data[DOMAIN][email] = {CONF_SCAN_INTERVAL: scan_interval}
+async def async_setup(hass: HomeAssistant, config: Config):
+    """Set up this integration using YAML is not supported."""
     return True
 
 

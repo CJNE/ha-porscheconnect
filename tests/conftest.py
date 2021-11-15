@@ -1,27 +1,24 @@
 """Global fixtures for Porsche Connect integration."""
 from typing import Any
 from unittest.mock import Mock
+from unittest.mock import AsyncMock
 from unittest.mock import patch
 
+import asyncio
 import pytest
 from pyporscheconnectapi.exceptions import WrongCredentials
+from pyporscheconnectapi.exceptions import PorscheException
 
 # from unittest.mock import Mock
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 
 
-@pytest.fixture(name="mock_client")
-def mock_client_fixture():
-    """Prevent setup."""
-    clientMock = Mock()
-    #    connectionMock = Mock()
-    with patch("pyporscheconnectapi.client.Client", return_value=clientMock,), patch(
-        "pyporscheconnectapi.client.Connection",
-        return_value=Mock,
-    ):
-        yield
 
+def async_return(result):
+    f = asyncio.Future()
+    f.set_result(result)
+    return f
 
 # This fixture is used to prevent HomeAssistant from attempting to create and dismiss persistent
 # notifications. These calls would fail without this fixture since the persistent_notification
@@ -41,6 +38,25 @@ def auto_enable_custom_integrations(
 ) -> None:
     """Enable custom integrations defined in the test dir."""
 
+
+@pytest.fixture(name="mock_client")
+def mock_client_fixture():
+    """Prevent setup."""
+    with patch("custom_components.porscheconnect.Client") as mock:
+        instance = mock.return_value
+        instance.getVehicles.return_value = async_return([])
+        instance.getAllTokens.return_value = async_return([])
+        yield
+
+@pytest.fixture(name="mock_client_error")
+def mock_client_error_fixture():
+    """Prevent setup."""
+    with patch("custom_components.porscheconnect.Client") as mock:
+        instance = mock.return_value
+        instance.getVehicles.return_value = async_return([])
+        instance.getVehicles.side_effect = PorscheException('Test')
+        instance.getAllTokens.return_value = async_return([])
+        yield
 
 # This fixture, when used, will result in calls to async_get_data to return None. To have the call
 # return a value, we would add the `return_value=<VALUE_TO_RETURN>` parameter to the patch call.
