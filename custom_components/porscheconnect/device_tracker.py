@@ -10,11 +10,12 @@ from .const import DOMAIN as PORSCHE_DOMAIN
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Porsche device tracket by config_entry."""
+    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
     entities = []
-    for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
+    for vehicle in coordinator.vehicles:
         entities.append(
             PorscheTrackerEntity(
-                vehicle, hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
+                vehicle, coordinator
             )
         )
     async_add_entities(entities, True)

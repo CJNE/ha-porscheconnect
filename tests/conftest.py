@@ -46,6 +46,7 @@ def mock_client_fixture():
         instance = mock.return_value
         instance.getVehicles.return_value = async_return([])
         instance.getAllTokens.return_value = async_return([])
+        instance.isTokenRefreshed.return_value = False
         yield
 
 @pytest.fixture(name="mock_client_error")

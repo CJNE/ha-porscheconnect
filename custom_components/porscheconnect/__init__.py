@@ -23,16 +23,18 @@ from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import DATA_MAP
 from .const import DOMAIN
-from .const import MIN_SCAN_INTERVAL
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING
 # from homeassistant.const import ATTR_BATTERY_LEVEL
 
 # from .const import PORSCHE_COMPONENTS
 # from .const import SENSOR_KEYS
+from .const import STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
+
+SCAN_INTERVAL = timedelta(seconds=60)
 
 
 def getFromDict(dataDict, keyString):
@@ -47,6 +49,7 @@ def getFromDict(dataDict, keyString):
 
 @callback
 def _async_save_tokens(hass, config_entry, access_tokens):
+    _LOGGER.debug("Saving tokens")
     hass.config_entries.async_update_entry(
         config_entry,
         data={
@@ -56,100 +59,66 @@ def _async_save_tokens(hass, config_entry, access_tokens):
     )
 
 
-@callback
-def configured_instances(hass):
-    """Return a set of configured Porsche instances."""
-    return {entry.title for entry in hass.config_entries.async_entries(DOMAIN)}
-
-
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    """Set up Porsche Connect from a config entry."""
-    hass.data.setdefault(DOMAIN, {})
-    config = config_entry.data
-    websession = aiohttp_client.async_get_clientsession(hass)
-    email = config_entry.title
-    if email in hass.data[DOMAIN] and CONF_SCAN_INTERVAL in hass.data[DOMAIN][email]:
-        _LOGGER.debug("Porsche async setup entry update scan interval")
-        scan_interval = hass.data[DOMAIN][email][CONF_SCAN_INTERVAL]
-        hass.config_entries.async_update_entry(
-            config_entry, options={CONF_SCAN_INTERVAL: scan_interval}
-        )
-        hass.data[DOMAIN].pop(email)
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Set up this integration using UI."""
+    if hass.data.get(DOMAIN) is None:
+        hass.data.setdefault(DOMAIN, {})
+        _LOGGER.info(STARTUP_MESSAGE)
 
-    tokens = None
-    if CONF_ACCESS_TOKEN in config:
-        tokens = config[CONF_ACCESS_TOKEN]
+    websession = aiohttp_client.async_get_clientsession(hass)
+
     connection = Connection(
-        config["email"],
-        config["password"],
-        tokens=tokens,
+        entry.data.get("email"),
+        entry.data.get("password"),
+        tokens=entry.data.get(CONF_ACCESS_TOKEN, None),
         websession=websession,
     )
     controller = Client(connection)
 
     access_tokens = await controller.getAllTokens()
-    _async_save_tokens(hass, config_entry, access_tokens)
+    _async_save_tokens(hass, entry, access_tokens)
 
     coordinator = PorscheConnectDataUpdateCoordinator(
-        hass, config_entry=config_entry, controller=controller
+        hass, config_entry=entry, controller=controller
     )
-
     await coordinator.async_config_entry_first_refresh()
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    hass.data[DOMAIN][config_entry.entry_id] = coordinator
-
-    for component in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(config_entry, component)
+    for platform in PLATFORMS:
+        hass.async_add_job(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
     return True
 
-
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Unload a config entry."""
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in PLATFORMS
-            ]
-        )
-    )
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unload_ok
-
-
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
-
-
 class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
-    def __init__(self, hass, *, config_entry, controller):
+    def __init__(self, hass, config_entry, controller):
         """Initialize global Porsche data updater."""
+        _LOGGER.debug("Init new data update coordinator")
         self.controller = controller
         self.vehicles = None
         self.config_entry = config_entry
 
         self.data = {}
-        update_interval = timedelta(seconds=MIN_SCAN_INTERVAL)
+
+        scan_interval = timedelta(
+            seconds=config_entry.options.get(
+                CONF_SCAN_INTERVAL,
+                config_entry.data.get(
+                    CONF_SCAN_INTERVAL, SCAN_INTERVAL.total_seconds()
+                ),
+            )
+        )
 
         super().__init__(
-            hass,
-            _LOGGER,
-            name=DOMAIN,
-            update_interval=update_interval,
+            hass, _LOGGER, name=DOMAIN, update_interval=scan_interval
         )
 
     def getDataByVIN(self, vin, key):
@@ -160,9 +129,9 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
         if self.controller.isTokenRefreshed():
+            _LOGGER.debug("Saving new tokens in config_entry")
             access_tokens = await self.controller.getAllTokens()
             _async_save_tokens(self.hass, self.config_entry, access_tokens)
-            _LOGGER.debug("Saving new tokens in config_entry")
 
         if self.vehicles is None:
             self.vehicles = await self.controller.getVehicles()
@@ -179,12 +148,12 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 vdata = {**vdata, **await self.controller.getEmobility(vehicle["vin"])}
 
                 vehicle["components"] = {}
-                for sensorMeta in DATA_MAP:
-                    data = getFromDict(vdata, sensorMeta.key)
+                for sensor_meta in DATA_MAP:
+                    data = getFromDict(vdata, sensor_meta.key)
                     if data is not None:
-                        if vehicle["components"].get(sensorMeta.ha_type, None) is None:
-                            vehicle["components"][sensorMeta.ha_type] = []
-                        vehicle["components"][sensorMeta.ha_type].append(sensorMeta)
+                        if vehicle["components"].get(sensor_meta.ha_type, None) is None:
+                            vehicle["components"][sensor_meta.ha_type] = []
+                        vehicle["components"][sensor_meta.ha_type].append(sensor_meta)
 
                 _LOGGER.debug(f"Found vehicle {vehicle['name']}")
                 _LOGGER.debug(f"Supported components {vehicle['components']}")
@@ -199,10 +168,33 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vdata = {**vdata, **await self.controller.getStoredOverview(vin)}
                     vdata = {**vdata, **await self.controller.getEmobility(vin)}
                     data[vin] = vdata
-                _LOGGER.debug(data)
+                #_LOGGER.debug(data)
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         return data
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Handle removal of an entry."""
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+    unloaded = all(
+        await asyncio.gather(
+            *[
+                hass.config_entries.async_forward_entry_unload(entry, platform)
+                for platform in PLATFORMS
+            ]
+        )
+    )
+    if unloaded:
+        hass.data[DOMAIN].pop(entry.entry_id)
+
+    return unloaded
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)
 
 
 class PorscheDevice(CoordinatorEntity):
