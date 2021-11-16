@@ -52,7 +52,7 @@ class PorscheSensor(PorscheDevice, Entity):
             return None
         if isinstance(data, str):
             return data
-        #_LOGGER.debug(data)
+        # _LOGGER.debug(data)
         return data.get("value", None)
 
     @property
@@ -85,6 +85,6 @@ class PorscheSensor(PorscheDevice, Entity):
         """Return the state attributes of the device."""
         attrdict = {}
         for attr in self.meta.attributes:
-          if attr is not None:
-            attrdict[attr.name] = self.coordinator.getDataByVIN(self.vin, attr.key)
+            if attr is not None:
+                attrdict[attr.name] = self.coordinator.getDataByVIN(self.vin, attr.key)
         return attrdict

@@ -4,6 +4,9 @@ import logging
 import operator
 from datetime import timedelta
 from functools import reduce
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import PorscheException
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
@@ -17,19 +20,15 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import DATA_MAP
 from .const import DOMAIN
+from .const import STARTUP_MESSAGE
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING
 # from homeassistant.const import ATTR_BATTERY_LEVEL
-
 # from .const import PORSCHE_COMPONENTS
 # from .const import SENSOR_KEYS
-from .const import STARTUP_MESSAGE
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
@@ -96,6 +95,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     return True
 
+
 class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
@@ -117,9 +117,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             )
         )
 
-        super().__init__(
-            hass, _LOGGER, name=DOMAIN, update_interval=scan_interval
-        )
+        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
     def getDataByVIN(self, vin, key):
         if self.data is None:
@@ -168,7 +166,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vdata = {**vdata, **await self.controller.getStoredOverview(vin)}
                     vdata = {**vdata, **await self.controller.getEmobility(vin)}
                     data[vin] = vdata
-                #_LOGGER.debug(data)
+                # _LOGGER.debug(data)
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         return data
@@ -176,7 +174,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
     unloaded = all(
         await asyncio.gather(
             *[
