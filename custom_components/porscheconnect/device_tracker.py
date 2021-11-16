@@ -13,11 +13,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
     entities = []
     for vehicle in coordinator.vehicles:
-        entities.append(
-            PorscheTrackerEntity(
-                vehicle, coordinator
-            )
-        )
+        entities.append(PorscheTrackerEntity(vehicle, coordinator))
     async_add_entities(entities, True)
 
 

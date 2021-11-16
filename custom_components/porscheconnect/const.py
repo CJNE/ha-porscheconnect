@@ -41,6 +41,7 @@ If you have any issues with this you need to open an issue here:
 -------------------------------------------------------------------
 """
 
+
 @dataclass
 class SensorMeta:
     name: str
@@ -95,10 +96,13 @@ DATA_MAP = [
             SensorAttr("charging state", "batteryChargeStatus.chargingState"),
             SensorAttr("lock state", "batteryChargeStatus.lockState"),
             SensorAttr("charging mode", "batteryChargeStatus.chargingMode"),
-            SensorAttr("remaining charge time to 100%", "batteryChargeStatus.remainingChargeTimeUntil100PercentInMinutes"),
-            SensorAttr("charging power", "batteryChargeStatus.chargingPower")
-        ]
-    )
+            SensorAttr(
+                "remaining charge time to 100%",
+                "batteryChargeStatus.remainingChargeTimeUntil100PercentInMinutes",
+            ),
+            SensorAttr("charging power", "batteryChargeStatus.chargingPower"),
+        ],
+    ),
 ]
 
 SENSOR_KEYS = [
@@ -122,7 +126,7 @@ DEVICE_NAMES = {
     "oilLevel": "oil sensor",
     "remainingRanges.conventionalRange.distance": "range sensor",
     "remainingRanges.electricalRange.distance": "range sensor",
-    "chargingStatus": "charger sensor"
+    "chargingStatus": "charger sensor",
 }
 
 ICONS = {
