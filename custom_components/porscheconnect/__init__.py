@@ -120,8 +120,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
     def getDataByVIN(self, vin, key):
-        if self.data is None:
-            return None
+        # if self.data is None:
+        #     return None
         return getFromDict(self.data.get(vin, {}), key)
 
     async def _async_update_data(self):
@@ -139,11 +139,13 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 vehicle["name"] = summary["nickName"] or summary["modelDescription"]
                 # Find out what sensors are supported and store in vehicle
                 vdata = {}
+                vin = vehicle["vin"]
                 vdata = {
                     **vdata,
-                    **await self.controller.getStoredOverview(vehicle["vin"]),
+                    **await self.controller.getPosition(vin),
+                    **await self.controller.getStoredOverview(vin),
+                    **await self.controller.getEmobility(vin),
                 }
-                vdata = {**vdata, **await self.controller.getEmobility(vehicle["vin"])}
 
                 vehicle["components"] = {}
                 for sensor_meta in DATA_MAP:

@@ -37,6 +37,33 @@ def auto_enable_custom_integrations(
     """Enable custom integrations defined in the test dir."""
 
 
+@pytest.fixture
+def mock_connection():
+    """Prevent setup."""
+
+    from .fixtures.taycan import GET
+
+    async def mock_get(self, url, params=None):
+        print(f"GET {url}")
+        print(params)
+        return GET.get(url, {})
+
+    async def mock_post(self, url, data=None, json=None):
+        print(f"POST {url}")
+        print(data)
+        print(json)
+        return {}
+
+    async def mock_tokens(self, application, wasExpired=False):
+        print(f"Request token {application}")
+        return {}
+
+    with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
+        "pyporscheconnectapi.client.Connection.post", mock_post
+    ), patch("pyporscheconnectapi.client.Connection._requestToken", mock_tokens):
+        yield
+
+
 @pytest.fixture(name="mock_client")
 def mock_client_fixture():
     """Prevent setup."""
