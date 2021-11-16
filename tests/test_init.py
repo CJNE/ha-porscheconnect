@@ -33,19 +33,15 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     assert await async_setup_entry(hass, config_entry)
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
-        type(hass.data[DOMAIN][config_entry.entry_id]['coordinator'])
+        type(hass.data[DOMAIN][config_entry.entry_id])
         == PorscheConnectDataUpdateCoordinator
-    )
-    assert (
-        type(hass.data[DOMAIN][config_entry.entry_id]['vehicles'])
-        == type([])
     )
 
     # Reload the entry and assert that the data from above is still there
     assert await async_reload_entry(hass, config_entry) is None
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
-        type(hass.data[DOMAIN][config_entry.entry_id]['coordinator'])
+        type(hass.data[DOMAIN][config_entry.entry_id])
         == PorscheConnectDataUpdateCoordinator
     )
 
@@ -54,7 +50,7 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     assert config_entry.entry_id not in hass.data[DOMAIN]
     instances = configured_instances(hass)
     print(instances)
-    #assert "test_username" in instances
+    # assert "test_username" in instances
 
 
 async def test_setup_entry_exception(hass, mock_client_error):

@@ -7,10 +7,7 @@ from functools import reduce
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.const import CONF_ACCESS_TOKEN
-from homeassistant.const import CONF_EMAIL
-from homeassistant.const import CONF_PASSWORD
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
 from homeassistant.core import Config
@@ -24,10 +21,7 @@ from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 
-from .config_flow import InvalidAuth
-from .config_flow import validate_input
 from .const import DATA_MAP
-from .const import DEFAULT_SCAN_INTERVAL
 from .const import DOMAIN
 from .const import MIN_SCAN_INTERVAL
 
@@ -87,53 +81,27 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         )
         hass.data[DOMAIN].pop(email)
 
-    try:
-        tokens = None
-        if CONF_ACCESS_TOKEN in config:
-            tokens = config[CONF_ACCESS_TOKEN]
-        connection = Connection(
-            config["email"],
-            config["password"],
-            tokens=tokens,
-            websession=websession,
-        )
-        controller = Client(connection)
-        vehicles = await controller.getVehicles()
+    tokens = None
+    if CONF_ACCESS_TOKEN in config:
+        tokens = config[CONF_ACCESS_TOKEN]
+    connection = Connection(
+        config["email"],
+        config["password"],
+        tokens=tokens,
+        websession=websession,
+    )
+    controller = Client(connection)
 
-        for vehicle in vehicles:
-            summary = await controller.getSummary(vehicle["vin"])
-            vehicle["name"] = summary["nickName"] or summary["modelDescription"]
-            # Find out what sensors are supported and store in vehicle
-            vdata = {}
-            vdata = {**vdata, **await controller.getStoredOverview(vehicle["vin"])}
-            vdata = {**vdata, **await controller.getEmobility(vehicle["vin"])}
-
-            vehicle["components"] = {}
-            for sensorMeta in DATA_MAP:
-                data = getFromDict(vdata, sensorMeta.key)
-                if data is not None:
-                    if vehicle["components"].get(sensorMeta.ha_type, None) is None:
-                        vehicle["components"][sensorMeta.ha_type] = []
-                    vehicle["components"][sensorMeta.ha_type].append(sensorMeta)
-
-            _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-            _LOGGER.debug(f"Supported components {vehicle['components']}")
-
-        access_tokens = await controller.getAllTokens()
-
-    except PorscheException as ex:
-        _LOGGER.error("Unable to communicate with Porsche Connect API: %s", ex.message)
-        return False
-
+    access_tokens = await controller.getAllTokens()
     _async_save_tokens(hass, config_entry, access_tokens)
+
     coordinator = PorscheConnectDataUpdateCoordinator(
-        hass, config_entry=config_entry, controller=controller, vehicles=vehicles
+        hass, config_entry=config_entry, controller=controller
     )
 
-    hass.data[DOMAIN][config_entry.entry_id] = {
-        "coordinator": coordinator,
-        "vehicles": vehicles,
-    }
+    await coordinator.async_config_entry_first_refresh()
+
+    hass.data[DOMAIN][config_entry.entry_id] = coordinator
 
     for component in PLATFORMS:
         hass.async_create_task(
@@ -168,10 +136,10 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
-    def __init__(self, hass, *, config_entry, controller, vehicles):
+    def __init__(self, hass, *, config_entry, controller):
         """Initialize global Porsche data updater."""
         self.controller = controller
-        self.vehicles = vehicles
+        self.vehicles = None
         self.config_entry = config_entry
 
         self.data = {}
@@ -195,6 +163,31 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             access_tokens = await self.controller.getAllTokens()
             _async_save_tokens(self.hass, self.config_entry, access_tokens)
             _LOGGER.debug("Saving new tokens in config_entry")
+
+        if self.vehicles is None:
+            self.vehicles = await self.controller.getVehicles()
+
+            for vehicle in self.vehicles:
+                summary = await self.controller.getSummary(vehicle["vin"])
+                vehicle["name"] = summary["nickName"] or summary["modelDescription"]
+                # Find out what sensors are supported and store in vehicle
+                vdata = {}
+                vdata = {
+                    **vdata,
+                    **await self.controller.getStoredOverview(vehicle["vin"]),
+                }
+                vdata = {**vdata, **await self.controller.getEmobility(vehicle["vin"])}
+
+                vehicle["components"] = {}
+                for sensorMeta in DATA_MAP:
+                    data = getFromDict(vdata, sensorMeta.key)
+                    if data is not None:
+                        if vehicle["components"].get(sensorMeta.ha_type, None) is None:
+                            vehicle["components"][sensorMeta.ha_type] = []
+                        vehicle["components"][sensorMeta.ha_type].append(sensorMeta)
+
+                _LOGGER.debug(f"Found vehicle {vehicle['name']}")
+                _LOGGER.debug(f"Supported components {vehicle['components']}")
 
         data = {}
         try:
