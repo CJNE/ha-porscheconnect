@@ -22,9 +22,9 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Porsche sensors by config_entry."""
-    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
+    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
     entities = []
-    for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
+    for vehicle in coordinator.vehicles:
         if vehicle["components"].get(HA_SENSOR, None) is None:
             continue
         for sensor in vehicle["components"][HA_SENSOR]:
@@ -52,7 +52,7 @@ class PorscheSensor(PorscheDevice, Entity):
             return None
         if isinstance(data, str):
             return data
-        _LOGGER.debug(data)
+        #_LOGGER.debug(data)
         return data.get("value", None)
 
     @property

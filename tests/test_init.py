@@ -6,7 +6,6 @@ import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
 from custom_components.porscheconnect import async_unload_entry
-from custom_components.porscheconnect import configured_instances
 from custom_components.porscheconnect import PorscheConnectDataUpdateCoordinator
 from custom_components.porscheconnect.const import (
     DOMAIN,
@@ -48,9 +47,6 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     # Unload the entry and verify that the data has been removed
     assert await async_unload_entry(hass, config_entry)
     assert config_entry.entry_id not in hass.data[DOMAIN]
-    instances = configured_instances(hass)
-    print(instances)
-    # assert "test_username" in instances
 
 
 async def test_setup_entry_exception(hass, mock_client_error):

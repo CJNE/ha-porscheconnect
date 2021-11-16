@@ -12,9 +12,9 @@ from .const import SensorMeta
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Setup binary_sensor platform."""
-    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["coordinator"]
+    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
     entities = []
-    for vehicle in hass.data[PORSCHE_DOMAIN][config_entry.entry_id]["vehicles"]:
+    for vehicle in coordinator.vehicles:
         if vehicle["components"].get(HA_BINARY_SENSOR, None) is None:
             continue
         for sensor in vehicle["components"][HA_BINARY_SENSOR]:
