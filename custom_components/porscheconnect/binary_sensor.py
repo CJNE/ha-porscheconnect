@@ -15,8 +15,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
     entities = []
     for vehicle in coordinator.vehicles:
-        if vehicle["components"].get(HA_BINARY_SENSOR, None) is None:
-            continue
         for sensor in vehicle["components"][HA_BINARY_SENSOR]:
             entities.append(PorscheBinarySensor(vehicle, coordinator, sensor))
     async_add_entities(entities, True)
@@ -43,6 +41,4 @@ class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
     def is_on(self):
         """Return true if the binary_sensor is on."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if data is None:
-            return None
         return data == "ACTIVE"
