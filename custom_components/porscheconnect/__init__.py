@@ -4,9 +4,6 @@ import logging
 import operator
 from datetime import timedelta
 from functools import reduce
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheException
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
@@ -20,6 +17,9 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import DATA_MAP
 from .const import DOMAIN
@@ -217,12 +217,6 @@ class PorscheDevice(CoordinatorEntity):
     def unique_id(self) -> str:
         """Return a unique ID."""
         return self._unique_id
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes of the device."""
-        attr = self._attributes
-        return attr
 
     @property
     def device_info(self):
