@@ -1,4 +1,4 @@
-"""Test myenergi sensor."""
+"""Test porscheconnect sensor."""
 from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
