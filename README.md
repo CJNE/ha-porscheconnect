@@ -27,8 +27,6 @@ requests and ideas are welcome, use the issue tracker for that, thanks!
 | `switch`         | Switch something `True` or `False`. |
 | `device_tracker` | Show your vehicles location         |
 
-![example][exampleimg]
-
 ## HACS Installation
 
 1. Add this repository to "Custom repositories"
@@ -92,7 +90,6 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/CJNE/ha-porscheconnect.svg?style=for-the-badge
