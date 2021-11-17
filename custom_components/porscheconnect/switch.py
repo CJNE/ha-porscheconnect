@@ -1,43 +1,60 @@
 """Switch platform for Porsche Connect."""
 from homeassistant.components.switch import SwitchEntity
 
-from .const import DEFAULT_NAME
-from .const import DOMAIN
-from .const import ICON
-from .const import SWITCH
-from .entity import PorscheConnectEntity
+from . import DOMAIN as PORSCHE_DOMAIN
+from . import PorscheDevice
+from .const import DEVICE_NAMES
+from .const import HA_SWITCH
+from .const import SwitchMeta
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([PorscheConnectBinarySwitch(coordinator, entry)])
+    """Setup switch platform."""
+    coordinator = hass.data[PORSCHE_DOMAIN][entry.entry_id]
+    entities = []
+    for vehicle in coordinator.vehicles:
+        for switch in vehicle["components"][HA_SWITCH]:
+            entities.append(PorscheConnectSwitch(vehicle, coordinator, switch))
+    async_add_devices(entities)
 
 
-class PorscheConnectBinarySwitch(PorscheConnectEntity, SwitchEntity):
+class PorscheConnectSwitch(PorscheDevice, SwitchEntity):
     """porscheconnect switch class."""
+
+    def __init__(self, vehicle, coordinator, switch_meta: SwitchMeta):
+        """Initialize of the sensor."""
+        super().__init__(vehicle, coordinator)
+        self.key = switch_meta.key
+        self.meta = switch_meta
+        device_name = DEVICE_NAMES.get(self.key, self.key)
+        self._name = f"{self._name} {device_name}"
+        self._unique_id = f"{super().unique_id}_{self.key}"
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
-        await self.coordinator.api.async_set_title("bar")
+        if self.meta.on_action == "climate-on":
+            await self.coordinator.controller.climateOn(self.vin, True)
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the switch."""
-        await self.coordinator.api.async_set_title("foo")
+        if self.meta.off_action == "climate-off":
+            await self.coordinator.controller.climateOff(self.vin, True)
         await self.coordinator.async_request_refresh()
 
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"{DEFAULT_NAME}_{SWITCH}"
+        return self._name
 
     @property
     def icon(self):
         """Return the icon of this switch."""
-        return ICON
+        return self.meta.icon
 
     @property
     def is_on(self):
         """Return true if the switch is on."""
-        return self.coordinator.data.get("title", "") == "foo"
+        data = self.coordinator.getDataByVIN(self.vin, self.key)
+        print(data)
+        return data == "ON"

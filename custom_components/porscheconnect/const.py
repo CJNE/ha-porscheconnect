@@ -22,9 +22,10 @@ DOMAIN = "porscheconnect"
 LOGGER = logging.getLogger(__package__)
 DEFAULT_SCAN_INTERVAL = 660
 HA_SENSOR = "sensor"
+HA_SWITCH = "switch"
 HA_DEVICE_TRACKER = "device_tracker"
 HA_BINARY_SENSOR = "binary_sensor"
-PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER, HA_BINARY_SENSOR]
+PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER, HA_BINARY_SENSOR, HA_SWITCH]
 
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
@@ -46,7 +47,28 @@ If you have any issues with this you need to open an issue here:
 class SensorMeta:
     name: str
     key: str
-    ha_type: str
+    icon: str = None
+    device_class: str = None
+    default_enabled: bool = True
+    attributes: list = field(default_factory=list)
+
+
+@dataclass
+class BinarySensorMeta:
+    name: str
+    key: str
+    icon: str = None
+    device_class: str = None
+    default_enabled: bool = True
+    attributes: list = field(default_factory=list)
+
+
+@dataclass
+class SwitchMeta:
+    name: str
+    key: str
+    on_action: str
+    off_action: str
     icon: str = None
     device_class: str = None
     default_enabled: bool = True
@@ -63,33 +85,41 @@ DATA_MAP = [
     SensorMeta(
         "mileage sensor",
         "mileage",
-        HA_SENSOR,
         "mdi:counter",
         attributes=[SensorAttr("oil level", "oilLevel")],
     ),
-    SensorMeta(
-        "battery sensor", "batteryLevel", HA_SENSOR, "mdi:battery", DEVICE_CLASS_BATTERY
-    ),
-    SensorMeta("fuel sensor", "fuelLevel", HA_SENSOR, "mdi:gauge"),
+    SensorMeta("battery sensor", "batteryLevel", "mdi:battery", DEVICE_CLASS_BATTERY),
+    SensorMeta("fuel sensor", "fuelLevel", "mdi:gauge"),
     SensorMeta(
         "range sensor",
         "remainingRanges.electricalRange.distance",
-        HA_SENSOR,
         "mdi:gauge",
     ),
     SensorMeta(
         "range sensor",
         "remainingRanges.conventionalRange.distance",
-        HA_SENSOR,
         "mdi:gauge",
     ),
-    SensorMeta("parking brake", "parkingBreak", HA_BINARY_SENSOR, "mdi:lock"),
-    SensorMeta("doors", "doors.overallLockStatus", HA_SENSOR, "mdi:lock"),
-    SensorMeta("lock", "overallOpenStatus", HA_SENSOR, "mdi:lock"),
+    SwitchMeta(
+        "climate",
+        "directClimatisation.climatisationState",
+        "climate-on",
+        "climate-off",
+        "mdi:thermometer",
+    ),
+    SwitchMeta(
+        "direct charge",
+        "directCharge.isActive",
+        "directcharge-on",
+        "directcharge-off",
+        "mdi:ev-station",
+    ),
+    BinarySensorMeta("parking brake", "parkingBreak", "mdi:lock"),
+    SensorMeta("doors", "doors.overallLockStatus", "mdi:lock"),
+    SensorMeta("lock", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
         "charger sensor",
         "chargingStatus",
-        HA_SENSOR,
         "mdi:ev-station",
         attributes=[
             SensorAttr("plug state", "batteryChargeStatus.plugState"),
@@ -105,15 +135,6 @@ DATA_MAP = [
     ),
 ]
 
-SENSOR_KEYS = [
-    "mileage",
-    "batteryLevel",
-    "fuelLevel",
-    "oilLevel",
-    "remainingRanges.conventionalRange.distance",
-    "remainingRanges.electricalRange.distance",
-    "batteryChargeStatus.plugState",
-]
 
 DEVICE_CLASSES = {
     "batteryLevel": DEVICE_CLASS_BATTERY,

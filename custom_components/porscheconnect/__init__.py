@@ -21,19 +21,21 @@ from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 
+from .const import BinarySensorMeta
 from .const import DATA_MAP
 from .const import DOMAIN
 from .const import STARTUP_MESSAGE
+from .const import SwitchMeta
+
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING
 # from homeassistant.const import ATTR_BATTERY_LEVEL
 # from .const import PORSCHE_COMPONENTS
-# from .const import SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
-
 SCAN_INTERVAL = timedelta(seconds=60)
+
+PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch"]
 
 
 def getFromDict(dataDict, keyString):
@@ -130,6 +132,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getStoredOverview(vin),
             **await self.controller.getEmobility(vin),
         }
+        print(vdata)
         return vdata
 
     async def _async_update_data(self):
@@ -150,18 +153,20 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vdata = {}
                     vin = vehicle["vin"]
                     vdata = await self._update_data_for_vin(vin)
-                    vehicle["components"] = {}
+                    vehicle["components"] = {
+                        "sensor": [],
+                        "switch": [],
+                        "binary_sensor": [],
+                    }
                     for sensor_meta in DATA_MAP:
                         data = getFromDict(vdata, sensor_meta.key)
                         if data is not None:
-                            if (
-                                vehicle["components"].get(sensor_meta.ha_type, None)
-                                is None
-                            ):
-                                vehicle["components"][sensor_meta.ha_type] = []
-                            vehicle["components"][sensor_meta.ha_type].append(
-                                sensor_meta
-                            )
+                            ha_type = "sensor"
+                            if isinstance(sensor_meta, SwitchMeta):
+                                ha_type = "switch"
+                            elif isinstance(sensor_meta, BinarySensorMeta):
+                                ha_type = "binary_sensor"
+                            vehicle["components"][ha_type].append(sensor_meta)
 
                     _LOGGER.debug(f"Found vehicle {vehicle['name']}")
                     _LOGGER.debug(f"Supported components {vehicle['components']}")
