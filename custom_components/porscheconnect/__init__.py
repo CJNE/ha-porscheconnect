@@ -139,29 +139,34 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             access_tokens = await self.controller.getAllTokens()
             _async_save_tokens(self.hass, self.config_entry, access_tokens)
 
-        if self.vehicles is None:
-            self.vehicles = await self.controller.getVehicles()
-
-            for vehicle in self.vehicles:
-                summary = await self.controller.getSummary(vehicle["vin"])
-                vehicle["name"] = summary["nickName"] or summary["modelDescription"]
-                # Find out what sensors are supported and store in vehicle
-                vdata = {}
-                vin = vehicle["vin"]
-                vdata = await self._update_data_for_vin(vin)
-                vehicle["components"] = {}
-                for sensor_meta in DATA_MAP:
-                    data = getFromDict(vdata, sensor_meta.key)
-                    if data is not None:
-                        if vehicle["components"].get(sensor_meta.ha_type, None) is None:
-                            vehicle["components"][sensor_meta.ha_type] = []
-                        vehicle["components"][sensor_meta.ha_type].append(sensor_meta)
-
-                _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-                _LOGGER.debug(f"Supported components {vehicle['components']}")
-
-        data = {}
         try:
+            if self.vehicles is None:
+                self.vehicles = await self.controller.getVehicles()
+
+                for vehicle in self.vehicles:
+                    summary = await self.controller.getSummary(vehicle["vin"])
+                    vehicle["name"] = summary["nickName"] or summary["modelDescription"]
+                    # Find out what sensors are supported and store in vehicle
+                    vdata = {}
+                    vin = vehicle["vin"]
+                    vdata = await self._update_data_for_vin(vin)
+                    vehicle["components"] = {}
+                    for sensor_meta in DATA_MAP:
+                        data = getFromDict(vdata, sensor_meta.key)
+                        if data is not None:
+                            if (
+                                vehicle["components"].get(sensor_meta.ha_type, None)
+                                is None
+                            ):
+                                vehicle["components"][sensor_meta.ha_type] = []
+                            vehicle["components"][sensor_meta.ha_type].append(
+                                sensor_meta
+                            )
+
+                    _LOGGER.debug(f"Found vehicle {vehicle['name']}")
+                    _LOGGER.debug(f"Supported components {vehicle['components']}")
+
+            data = {}
             async with async_timeout.timeout(30):
                 for vehicle in self.vehicles:
                     vin = vehicle["vin"]

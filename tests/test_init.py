@@ -11,6 +11,10 @@ from custom_components.porscheconnect.const import (
     DOMAIN,
 )
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers.update_coordinator import UpdateFailed
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .const import MOCK_CONFIG
@@ -77,3 +81,23 @@ async def test_setup_entry_initial_load(hass, mock_connection):
     # ConfigEntryNotReady using the `error_on_get_data` fixture which simulates
     # an error.
     assert await async_setup_entry(hass, config_entry)
+
+
+async def test_update_error(hass, mock_connection, mock_client_update_error):
+    """Test ConfigEntryNotReady when API raises an exception during entry setup."""
+    config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
+
+    websession = aiohttp_client.async_get_clientsession(hass)
+    connection = Connection(
+        config_entry.data.get("email"),
+        config_entry.data.get("password"),
+        tokens=None,
+        websession=websession,
+    )
+    controller = Client(connection)
+
+    coordinator = PorscheConnectDataUpdateCoordinator(
+        hass, config_entry=config_entry, controller=controller
+    )
+    with pytest.raises(UpdateFailed):
+        assert await coordinator._async_update_data()
