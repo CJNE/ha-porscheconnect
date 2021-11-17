@@ -124,6 +124,14 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         #     return None
         return getFromDict(self.data.get(vin, {}), key)
 
+    async def _update_data_for_vin(self, vin):
+        vdata = {
+            **await self.controller.getPosition(vin),
+            **await self.controller.getStoredOverview(vin),
+            **await self.controller.getEmobility(vin),
+        }
+        return vdata
+
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
         if self.controller.isTokenRefreshed():
@@ -140,13 +148,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 # Find out what sensors are supported and store in vehicle
                 vdata = {}
                 vin = vehicle["vin"]
-                vdata = {
-                    **vdata,
-                    **await self.controller.getPosition(vin),
-                    **await self.controller.getStoredOverview(vin),
-                    **await self.controller.getEmobility(vin),
-                }
-
+                vdata = await self._update_data_for_vin(vin)
                 vehicle["components"] = {}
                 for sensor_meta in DATA_MAP:
                     data = getFromDict(vdata, sensor_meta.key)
@@ -163,10 +165,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             async with async_timeout.timeout(30):
                 for vehicle in self.vehicles:
                     vin = vehicle["vin"]
-                    vdata = {}
-                    vdata = {**vdata, **await self.controller.getPosition(vin)}
-                    vdata = {**vdata, **await self.controller.getStoredOverview(vin)}
-                    vdata = {**vdata, **await self.controller.getEmobility(vin)}
+                    vdata = await self._update_data_for_vin(vin)
                     data[vin] = vdata
                 # _LOGGER.debug(data)
         except PorscheException as err:
