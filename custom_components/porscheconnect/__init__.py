@@ -132,7 +132,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getStoredOverview(vin),
             **await self.controller.getEmobility(vin),
         }
-        print(vdata)
         return vdata
 
     async def _async_update_data(self):
