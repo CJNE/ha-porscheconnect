@@ -64,6 +64,34 @@ def mock_connection():
         yield
 
 
+@pytest.fixture
+def mock_set_climate_on():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.climateOn") as climate_on:
+        yield climate_on
+
+
+@pytest.fixture
+def mock_set_climate_off():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.climateOff") as climate_off:
+        yield climate_off
+
+
+@pytest.fixture
+def mock_set_charge_on():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.directChargeOn") as charge_on:
+        yield charge_on
+
+
+@pytest.fixture
+def mock_set_charge_off():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.directChargeOff") as charge_off:
+        yield charge_off
+
+
 @pytest.fixture(name="mock_client")
 def mock_client_fixture():
     """Prevent setup."""

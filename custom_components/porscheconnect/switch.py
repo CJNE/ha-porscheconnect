@@ -34,13 +34,17 @@ class PorscheConnectSwitch(PorscheDevice, SwitchEntity):
         """Turn on the switch."""
         if self.meta.on_action == "climate-on":
             await self.coordinator.controller.climateOn(self.vin, True)
-        await self.coordinator.async_request_refresh()
+        elif self.meta.on_action == "directcharge-on":
+            await self.coordinator.controller.directChargeOn(self.vin, None, True)
+        # await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the switch."""
         if self.meta.off_action == "climate-off":
             await self.coordinator.controller.climateOff(self.vin, True)
-        await self.coordinator.async_request_refresh()
+        elif self.meta.off_action == "directcharge-off":
+            await self.coordinator.controller.directChargeOff(self.vin, None, True)
+        # await self.coordinator.async_request_refresh()
 
     @property
     def name(self):
