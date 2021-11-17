@@ -41,11 +41,7 @@ class PorscheTrackerEntity(PorscheDevice, TrackerEntity):
         return "mdi:crosshairs-gps"
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of the device."""
-        attr = super().device_state_attributes.copy()
-        location = self.coordinator.getDataByVIN(self.vin, "carCoordinate")
         heading = self.coordinator.getDataByVIN(self.vin, "heading")
-        if location:
-            attr.update({"trackr_id": self.unique_id, "heading": heading})
-        return attr
+        return {"heading": heading}
