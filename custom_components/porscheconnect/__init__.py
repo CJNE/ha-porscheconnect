@@ -227,14 +227,3 @@ class PorscheDevice(CoordinatorEntity):
             "manufacturer": "Porsche",
             "model": self.vehicle["modelDescription"],
         }
-
-    async def async_added_to_hass(self):
-        """Register state update callback."""
-        self.async_on_remove(self.coordinator.async_add_listener(self.refresh))
-
-    @callback
-    def refresh(self) -> None:
-        """Refresh the state of the device.
-        This assumes the coordinator has updated the controller.
-        """
-        self.async_write_ha_state()
