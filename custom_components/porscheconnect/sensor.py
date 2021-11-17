@@ -55,6 +55,11 @@ class PorscheSensor(PorscheDevice, Entity):
         return data.get("value", None)
 
     @property
+    def icon(self):
+        """Return the icon of this switch."""
+        return self.meta.icon
+
+    @property
     def unit_of_measurement(self) -> Optional[str]:
         """Return the unit_of_measurement of the device."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
