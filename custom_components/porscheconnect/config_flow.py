@@ -1,7 +1,5 @@
 """Config flow for Porsche Connect integration."""
 import logging
-from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import WrongCredentials
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -11,6 +9,8 @@ from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
 from homeassistant.helpers import aiohttp_client
+from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import WrongCredentials
 
 from .const import DOMAIN  # pylint:disable=unused-import
 
