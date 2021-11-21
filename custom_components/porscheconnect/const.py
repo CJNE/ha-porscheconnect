@@ -27,9 +27,9 @@ HA_LOCK = "lock"
 HA_DEVICE_TRACKER = "device_tracker"
 HA_BINARY_SENSOR = "binary_sensor"
 PORSCHE_COMPONENTS = [
-    HA_SENSOR, 
-    HA_DEVICE_TRACKER, 
-    HA_BINARY_SENSOR, 
+    HA_SENSOR,
+    HA_DEVICE_TRACKER,
+    HA_BINARY_SENSOR,
     HA_SWITCH,
     HA_LOCK,
 ]
@@ -80,6 +80,7 @@ class SwitchMeta:
     device_class: str = None
     default_enabled: bool = True
     attributes: list = field(default_factory=list)
+
 
 @dataclass
 class LockMeta:
@@ -148,11 +149,7 @@ DATA_MAP = [
             SensorAttr("charging power", "batteryChargeStatus.chargingPower"),
         ],
     ),
-    LockMeta(
-        "doorlock",
-        "doors.overallLockStatus",
-        "mdi:lock"
-    )
+    LockMeta("doorlock", "doors.overallLockStatus", "mdi:lock"),
 ]
 
 
@@ -170,7 +167,7 @@ DEVICE_NAMES = {
     "chargingStatus": "charger sensor",
     "directClimatisation.climatisationState": "climatisation",
     "directCharge.isActive": "direct charge",
-    "doors.overallLockStatus": "door lock"
+    "doors.overallLockStatus": "door lock",
 }
 
 ICONS = {

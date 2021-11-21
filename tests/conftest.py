@@ -1,11 +1,11 @@
 """Global fixtures for Porsche Connect integration."""
 import asyncio
+from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import WrongCredentials
 from typing import Any
 from unittest.mock import patch
 
 import pytest
-from pyporscheconnectapi.exceptions import PorscheException
-from pyporscheconnectapi.exceptions import WrongCredentials
 
 # from unittest.mock import Mock
 
