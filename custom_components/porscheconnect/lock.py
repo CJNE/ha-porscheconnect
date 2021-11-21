@@ -33,18 +33,18 @@ class PorscheConnectLock(PorscheDevice, LockEntity):
         device_name = DEVICE_NAMES.get(self.key, self.key)
         self._name = f"{self._name} {device_name}"
         self._unique_id = f"{super().unique_id}_{self.key}"
+        self._attr_code_format = "[0-9]+"
 
     async def async_lock(self, **kwargs):  # pylint: disable=unused-argument
         """Lock the vechicle."""
         _LOGGER.debug("Locking %s", self._name)
-        await self.coordinator.controller.lock(self.vin, True)
+        await self.coordinator.controller.lock(self.vin, kwargs["code"], True)
         await self.coordinator.async_request_refresh()
 
     async def async_unlock(self, **kwargs):  # pylint: disable=unused-argument
         """Unlock the vechicle."""
         _LOGGER.debug("Unlocking %s", self._name)
-        PIN = kwargs["code"] or None
-        await self.coordinator.controller.unlock(self.vin, PIN, True)
+        await self.coordinator.controller.unlock(self.vin, kwargs["code"], True)
         await self.coordinator.async_request_refresh()
 
     @property
