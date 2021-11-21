@@ -60,4 +60,4 @@ class PorscheConnectSwitch(PorscheDevice, SwitchEntity):
     def is_on(self):
         """Return true if the switch is on."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        return (data == "ON" or data == True)
+        return data == "ON" or data == True
