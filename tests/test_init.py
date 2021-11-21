@@ -1,7 +1,4 @@
 """Test Porsche Connect setup process."""
-# from unittest.mock import MagicMock
-# from unittest.mock import Mock
-# from unittest.mock import patch
 from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 
