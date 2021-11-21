@@ -26,6 +26,7 @@ from .const import DATA_MAP
 from .const import DOMAIN
 from .const import STARTUP_MESSAGE
 from .const import SwitchMeta
+from .const import LockMeta
 
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING
@@ -35,7 +36,7 @@ from .const import SwitchMeta
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=60)
 
-PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch"]
+PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock"]
 
 
 def getFromDict(dataDict, keyString):
@@ -155,6 +156,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vehicle["components"] = {
                         "sensor": [],
                         "switch": [],
+                        "lock": [],
                         "binary_sensor": [],
                     }
                     for sensor_meta in DATA_MAP:
@@ -163,6 +165,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                             ha_type = "sensor"
                             if isinstance(sensor_meta, SwitchMeta):
                                 ha_type = "switch"
+                            if isinstance(sensor_meta, LockMeta):
+                                ha_type = "lock"
                             elif isinstance(sensor_meta, BinarySensorMeta):
                                 ha_type = "binary_sensor"
                             vehicle["components"][ha_type].append(sensor_meta)
