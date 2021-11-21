@@ -12,10 +12,8 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_CLIMATE_SWITCH_ENTITY_ID = (
-    "switch.taycan_turbo_s_directclimatisation_climatisationstate"
-)
-TEST_CHARGE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_directcharge_isactive"
+TEST_CLIMATE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_climatisation"
+TEST_CHARGE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_direct_charge"
 
 
 async def test_climate(
