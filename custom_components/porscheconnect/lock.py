@@ -38,7 +38,8 @@ class PorscheConnectLock(PorscheDevice, LockEntity):
 
     async def async_lock(self, **kwargs):  # pylint: disable=unused-argument
         """Lock the vechicle."""
-        _LOGGER.debug("Locking %s", self._name)
+        _LOGGER.debug("Locking %s", self._name)        
+        await self.coordinator.controller.lock(self.vin, True)
         await self.coordinator.async_request_refresh()
 
     async def async_unlock(self, **kwargs):  # pylint: disable=unused-argument
