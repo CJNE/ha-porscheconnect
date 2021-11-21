@@ -149,7 +149,7 @@ DEVICE_NAMES = {
     "remainingRanges.electricalRange.distance": "range sensor",
     "chargingStatus": "charger sensor",
     "directClimatisation.climatisationState": "climatisation",
-    "directCharge.isActive": "direct charge"
+    "directCharge.isActive": "direct charge",
 }
 
 ICONS = {
