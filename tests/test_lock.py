@@ -1,4 +1,6 @@
 """Test myenergi sensor."""
+import pytest
+from custom_components.porscheconnect import PinError
 from homeassistant.components.lock import DOMAIN as LOCK_DOMAIN
 from homeassistant.const import ATTR_CODE
 from homeassistant.const import (
@@ -48,3 +50,22 @@ async def test_door_lock(hass: HomeAssistant, mock_lock_lock, mock_lock_unlock) 
     await hass.async_block_till_done()
     mock_lock_lock.assert_called_with("WPTAYCAN", True)
     assert mock_lock_lock.call_count == 1
+
+
+async def test_door_unlock_without_pin(hass: HomeAssistant, mock_lock_unlock) -> None:
+    """Verify device information includes expected details."""
+
+    with pytest.raises(PinError):
+        await setup_mock_porscheconnect_config_entry(hass)
+        entity_state = hass.states.get(TEST_DOOR_LOCK_ENTITY_ID)
+        assert entity_state
+        assert entity_state.state == STATE_LOCKED
+        await hass.services.async_call(
+            LOCK_DOMAIN,
+            SERVICE_UNLOCK,
+            {
+                ATTR_ENTITY_ID: TEST_DOOR_LOCK_ENTITY_ID,
+            },
+            blocking=True,
+        )
+        await hass.async_block_till_done()

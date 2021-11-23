@@ -4,6 +4,9 @@ import logging
 import operator
 from datetime import timedelta
 from functools import reduce
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import PorscheException
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
@@ -17,9 +20,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import BinarySensorMeta
 from .const import DATA_MAP
@@ -37,6 +37,10 @@ _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=300)
 
 PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock"]
+
+
+class PinError(PorscheException):
+    pass
 
 
 def getFromDict(dataDict, keyString):
