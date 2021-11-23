@@ -34,7 +34,7 @@ from .const import SwitchMeta
 # from .const import PORSCHE_COMPONENTS
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=60)
+SCAN_INTERVAL = timedelta(seconds=300)
 
 PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock"]
 
