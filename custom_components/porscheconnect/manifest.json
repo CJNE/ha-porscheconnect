@@ -5,7 +5,7 @@
   "issue_tracker": "https://github.com/CJNE/ha-porscheconnect/issues",
   "config_flow": true,
   "documentation": "https://github.com/CJNE/ha-porscheconnect",
-  "requirements": ["pyporscheconnectapi==0.0.13"],
+  "requirements": ["pyporscheconnectapi==0.0.14"],
   "dependencies": [],
   "iot_class": "cloud_polling",
   "codeowners": ["@cjne"]
