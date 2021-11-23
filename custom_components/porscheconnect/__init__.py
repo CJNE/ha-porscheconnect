@@ -4,9 +4,6 @@ import logging
 import operator
 from datetime import timedelta
 from functools import reduce
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheException
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
@@ -20,6 +17,9 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import slugify
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import BinarySensorMeta
 from .const import DATA_MAP
