@@ -38,7 +38,7 @@ class PorscheConnectLock(PorscheDevice, LockEntity):
     async def async_lock(self, **kwargs):  # pylint: disable=unused-argument
         """Lock the vechicle."""
         _LOGGER.debug("Locking %s", self._name)
-        await self.coordinator.controller.lock(self.vin, kwargs.get("code", None), True)
+        await self.coordinator.controller.lock(self.vin, True)
         await self.coordinator.async_request_refresh()
 
     async def async_unlock(self, **kwargs):  # pylint: disable=unused-argument
@@ -51,12 +51,12 @@ class PorscheConnectLock(PorscheDevice, LockEntity):
 
     @property
     def name(self):
-        """Return the name of the switch."""
+        """Return the name of the lock."""
         return self._name
 
     @property
     def icon(self):
-        """Return the icon of this switch."""
+        """Return the icon of this lock."""
         return self.meta.icon
 
     @property
