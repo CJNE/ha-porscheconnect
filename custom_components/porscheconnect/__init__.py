@@ -126,13 +126,15 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         #     return None
         return getFromDict(self.data.get(vin, {}), key)
 
-    async def _update_data_for_vin(self, vin):
+    async def _update_data_for_vehicle(self, vehicle):
+        vin = vehicle["vin"]
+        model = vehicle["capabilities"]["carModel"]
         vdata = {
-            **await self.controller.getPosition(vin),
             **await self.controller.getStoredOverview(vin),
-            **await self.controller.getEmobility(vin),
+            **await self.controller.getEmobility(vin, model),
         }
-        print(vdata)
+        if vehicle["services"]["CF"] == "ENABLED":
+            vdata.update(await self.controller.getPosition(vin))
         return vdata
 
     async def _async_update_data(self):
@@ -149,10 +151,16 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 for vehicle in self.vehicles:
                     summary = await self.controller.getSummary(vehicle["vin"])
                     vehicle["name"] = summary["nickName"] or summary["modelDescription"]
+                    vehicle["capabilities"] = await self.controller.getCurrentOverview(
+                        vehicle["vin"]
+                    )
+                    vehicle["services"] = await self.controller.getServices(
+                        vehicle["vin"]
+                    )
                     # Find out what sensors are supported and store in vehicle
                     vdata = {}
                     vin = vehicle["vin"]
-                    vdata = await self._update_data_for_vin(vin)
+                    vdata = await self._update_data_for_vehicle(vehicle)
                     vehicle["components"] = {
                         "sensor": [],
                         "switch": [],
@@ -169,13 +177,13 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                             vehicle["components"][ha_type].append(sensor_meta)
 
                     _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-                    _LOGGER.debug(f"Supported components {vehicle['components']}")
+                    _LOGGER.debug(vehicle)
 
             data = {}
             async with async_timeout.timeout(30):
                 for vehicle in self.vehicles:
                     vin = vehicle["vin"]
-                    vdata = await self._update_data_for_vin(vin)
+                    vdata = await self._update_data_for_vehicle(vehicle)
                     data[vin] = vdata
                 # _LOGGER.debug(data)
         except PorscheException as err:
