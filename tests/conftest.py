@@ -41,18 +41,22 @@ def auto_enable_custom_integrations(
 def mock_connection():
     """Prevent setup."""
 
-    from .fixtures.taycan import GET
+    from .fixtures.taycan import GET, POST
 
     async def mock_get(self, url, params=None):
         print(f"GET {url}")
         print(params)
-        return GET.get(url, {})
+        ret = GET.get(url, {})
+        print(ret)
+        return ret
 
     async def mock_post(self, url, data=None, json=None):
         print(f"POST {url}")
         print(data)
         print(json)
-        return {}
+        ret = POST.get(url)
+        print(ret)
+        return ret
 
     async def mock_tokens(self, application, wasExpired=False):
         print(f"Request token {application}")

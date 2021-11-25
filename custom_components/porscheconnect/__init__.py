@@ -138,7 +138,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getStoredOverview(vin),
             **await self.controller.getEmobility(vin, model),
         }
-        if vehicle["services"]["CF"] == "ENABLED":
+        if vehicle["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
             vdata.update(await self.controller.getPosition(vin))
         return vdata
 
@@ -155,8 +155,11 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
 
                 for vehicle in self.vehicles:
                     summary = await self.controller.getSummary(vehicle["vin"])
+                    _LOGGER.debug(
+                        "Fetching initial data for vehicle %s", vehicle["vin"]
+                    )
                     vehicle["name"] = summary["nickName"] or summary["modelDescription"]
-                    vehicle["capabilities"] = await self.controller.getCurrentOverview(
+                    vehicle["capabilities"] = await self.controller.getCapabilities(
                         vehicle["vin"]
                     )
                     vehicle["services"] = await self.controller.getServices(
