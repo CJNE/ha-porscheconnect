@@ -172,6 +172,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vehicle["components"] = {
                         "sensor": [],
                         "switch": [],
+                        "lock": [],
                         "binary_sensor": [],
                     }
                     for sensor_meta in DATA_MAP:
