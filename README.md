@@ -14,8 +14,19 @@
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
 
-This custom component for [home assistant][https://home-assistant.io/] will let you connect your Porsche Connect enabled
-car to Home Assistant. It is currently in an early stage, more info will be added as the project develops. Feature
+This custom component for [home assistant](https://home-assistant.io/) will let you connect your Porsche Connect enabled
+car to Home Assistant. 
+It does not work with Porsche Car Connect.
+Porsche Connect is available for the following Porsche models:
+
+* Taycan
+* 911 (from 992)
+* Cayenne (from 2017, E3)
+* Panamera (from 2021, G2 PA)
+
+A Porsche Connect subscription alse needs to be active.
+
+It is currently in an early stage, more info will be added as the project develops. Feature
 requests and ideas are welcome, use the issue tracker for that, thanks!
 
 **This component will set up the following platforms.**
