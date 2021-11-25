@@ -20,9 +20,12 @@ It does not work with Porsche Car Connect.
 Porsche Connect is available for the following Porsche models:
 
 - Taycan
-- 911 (from 992)
+- 911 (from 992 model year 2022)
 - Cayenne (from 2017, E3)
 - Panamera (from 2021, G2 PA)
+
+You can also take a look here, select your model and see if your model has support for Porsche Connect:
+https://connect-store.porsche.com/
 
 A Porsche Connect subscription also needs to be active.
 
