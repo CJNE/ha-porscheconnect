@@ -4,6 +4,10 @@ POST = {
     },
 }
 GET = {
+    "https://api.porsche.com/core/api/v2/se/sv_SE/vehicles/WPTAYCAN/permissions": {
+        "userIsActive": True,
+        "userRoleStatus": "ENABLED",
+    },
     "https://api.porsche.com/service-vehicle/service-access/WPTAYCAN/details": {
         "vehicleServiceEnabledMap": {
             "RAH": "HIDDEN",

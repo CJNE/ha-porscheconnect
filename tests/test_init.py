@@ -1,4 +1,7 @@
 """Test Porsche Connect setup process."""
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
+
 import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
@@ -10,8 +13,6 @@ from custom_components.porscheconnect.const import (
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .const import MOCK_CONFIG
@@ -78,6 +79,15 @@ async def test_setup_entry_initial_load(hass, mock_connection):
     # ConfigEntryNotReady using the `error_on_get_data` fixture which simulates
     # an error.
     assert await async_setup_entry(hass, config_entry)
+    assert len(hass.data[DOMAIN][config_entry.entry_id].vehicles) == 1
+
+
+async def test_setup_entry_initial_load_no_perms(hass, mock_connection, mock_noaccess):
+    """Test ConfigEntryNotReady when API raises an exception during entry setup."""
+    config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
+
+    assert await async_setup_entry(hass, config_entry)
+    assert len(hass.data[DOMAIN][config_entry.entry_id].vehicles) == 0
 
 
 async def test_update_error(hass, mock_connection, mock_client_update_error):

@@ -1,11 +1,11 @@
 """Global fixtures for Porsche Connect integration."""
 import asyncio
+from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import WrongCredentials
 from typing import Any
 from unittest.mock import patch
 
 import pytest
-from pyporscheconnectapi.exceptions import PorscheException
-from pyporscheconnectapi.exceptions import WrongCredentials
 
 # from unittest.mock import Mock
 
@@ -65,6 +65,17 @@ def mock_connection():
     with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
         "pyporscheconnectapi.client.Connection.post", mock_post
     ), patch("pyporscheconnectapi.client.Connection._requestToken", mock_tokens):
+        yield
+
+
+@pytest.fixture
+def mock_noaccess():
+    """Return a mocked client object."""
+
+    async def mock_access(self, vin):
+        return False
+
+    with patch("custom_components.porscheconnect.Client.isAllowed", mock_access):
         yield
 
 
