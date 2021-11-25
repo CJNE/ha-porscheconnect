@@ -65,6 +65,20 @@ def mock_connection():
 
 
 @pytest.fixture
+def mock_lock_lock():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.lock") as mock_lock:
+        yield mock_lock
+
+
+@pytest.fixture
+def mock_lock_unlock():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.unlock") as mock_unlock:
+        yield mock_unlock
+
+
+@pytest.fixture
 def mock_set_climate_on():
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.climateOn") as climate_on:

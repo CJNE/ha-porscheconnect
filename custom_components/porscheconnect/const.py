@@ -23,13 +23,20 @@ LOGGER = logging.getLogger(__package__)
 DEFAULT_SCAN_INTERVAL = 660
 HA_SENSOR = "sensor"
 HA_SWITCH = "switch"
+HA_LOCK = "lock"
 HA_DEVICE_TRACKER = "device_tracker"
 HA_BINARY_SENSOR = "binary_sensor"
-PORSCHE_COMPONENTS = [HA_SENSOR, HA_DEVICE_TRACKER, HA_BINARY_SENSOR, HA_SWITCH]
+PORSCHE_COMPONENTS = [
+    HA_SENSOR,
+    HA_DEVICE_TRACKER,
+    HA_BINARY_SENSOR,
+    HA_SWITCH,
+    HA_LOCK,
+]
 
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.0"
+VERSION = "0.0.3"
 ISSUE_URL = "https://github.com/cjne/ha-porscheconnect/issues"
 
 STARTUP_MESSAGE = f"""
@@ -76,6 +83,16 @@ class SwitchMeta:
 
 
 @dataclass
+class LockMeta:
+    name: str
+    key: str
+    icon: str = None
+    device_class: str = None
+    default_enabled: bool = True
+    attributes: list = field(default_factory=list)
+
+
+@dataclass
 class SensorAttr:
     name: str
     key: str
@@ -115,8 +132,7 @@ DATA_MAP = [
         "mdi:ev-station",
     ),
     BinarySensorMeta("parking brake", "parkingBreak", "mdi:lock"),
-    SensorMeta("doors", "doors.overallLockStatus", "mdi:lock"),
-    SensorMeta("lock", "overallOpenStatus", "mdi:lock"),
+    SensorMeta("doors", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
         "charger sensor",
         "chargingStatus",
@@ -133,6 +149,7 @@ DATA_MAP = [
             SensorAttr("charging power", "batteryChargeStatus.chargingPower"),
         ],
     ),
+    LockMeta("doorlock", "doors.overallLockStatus", "mdi:lock"),
 ]
 
 
@@ -148,6 +165,9 @@ DEVICE_NAMES = {
     "remainingRanges.conventionalRange.distance": "range sensor",
     "remainingRanges.electricalRange.distance": "range sensor",
     "chargingStatus": "charger sensor",
+    "directClimatisation.climatisationState": "climatisation",
+    "directCharge.isActive": "direct charge",
+    "doors.overallLockStatus": "door lock",
 }
 
 ICONS = {

@@ -14,8 +14,22 @@
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
 
-This custom component for [home assistant][https://home-assistant.io/] will let you connect your Porsche Connect enabled
-car to Home Assistant. It is currently in an early stage, more info will be added as the project develops. Feature
+This custom component for [home assistant](https://home-assistant.io/) will let you connect your Porsche Connect enabled
+car to Home Assistant.
+It does not work with Porsche Car Connect.
+Porsche Connect is available for the following Porsche models:
+
+- Taycan
+- 911 (from 992 model year 2022)
+- Cayenne (from 2017, E3)
+- Panamera (from 2021, G2 PA)
+
+You can also take a look here, select your model and see if your model has support for Porsche Connect:
+https://connect-store.porsche.com/
+
+A Porsche Connect subscription also needs to be active.
+
+It is currently in an early stage, more info will be added as the project develops. Feature
 requests and ideas are welcome, use the issue tracker for that, thanks!
 
 **This component will set up the following platforms.**
@@ -26,8 +40,6 @@ requests and ideas are welcome, use the issue tracker for that, thanks!
 | `sensor`         | Show info from Porsche Connect API. |
 | `switch`         | Switch something `True` or `False`. |
 | `device_tracker` | Show your vehicles location         |
-
-![example][exampleimg]
 
 ## HACS Installation
 
@@ -92,7 +104,6 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/CJNE/ha-porscheconnect.svg?style=for-the-badge

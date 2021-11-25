@@ -24,6 +24,7 @@ from pyporscheconnectapi.exceptions import PorscheException
 from .const import BinarySensorMeta
 from .const import DATA_MAP
 from .const import DOMAIN
+from .const import LockMeta
 from .const import STARTUP_MESSAGE
 from .const import SwitchMeta
 
@@ -33,9 +34,13 @@ from .const import SwitchMeta
 # from .const import PORSCHE_COMPONENTS
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=60)
+SCAN_INTERVAL = timedelta(seconds=300)
 
-PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch"]
+PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock"]
+
+
+class PinError(PorscheException):
+    pass
 
 
 def getFromDict(dataDict, keyString):
@@ -172,6 +177,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                             ha_type = "sensor"
                             if isinstance(sensor_meta, SwitchMeta):
                                 ha_type = "switch"
+                            if isinstance(sensor_meta, LockMeta):
+                                ha_type = "lock"
                             elif isinstance(sensor_meta, BinarySensorMeta):
                                 ha_type = "binary_sensor"
                             vehicle["components"][ha_type].append(sensor_meta)

@@ -1,7 +1,4 @@
 """Test Porsche Connect setup process."""
-# from unittest.mock import MagicMock
-# from unittest.mock import Mock
-# from unittest.mock import patch
 import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
