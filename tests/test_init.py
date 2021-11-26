@@ -1,7 +1,4 @@
 """Test Porsche Connect setup process."""
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
-
 import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
@@ -13,6 +10,8 @@ from custom_components.porscheconnect.const import (
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from pyporscheconnectapi.client import Client
+from pyporscheconnectapi.connection import Connection
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .const import MOCK_CONFIG
