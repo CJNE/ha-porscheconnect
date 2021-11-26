@@ -131,12 +131,15 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         #     return None
         return getFromDict(self.data.get(vin, {}), key)
 
-    async def _update_data_for_vin(self, vin):
+    async def _update_data_for_vehicle(self, vehicle):
+        vin = vehicle["vin"]
+        model = vehicle["capabilities"]["carModel"]
         vdata = {
-            **await self.controller.getPosition(vin),
             **await self.controller.getStoredOverview(vin),
-            **await self.controller.getEmobility(vin),
+            **await self.controller.getEmobility(vin, model),
         }
+        if vehicle["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
+            vdata.update(await self.controller.getPosition(vin))
         return vdata
 
     async def _async_update_data(self):
@@ -146,17 +149,27 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             access_tokens = await self.controller.getAllTokens()
             _async_save_tokens(self.hass, self.config_entry, access_tokens)
 
+        data = {}
         try:
             if self.vehicles is None:
-                self.vehicles = await self.controller.getVehicles()
+                self.vehicles = []
+                all_vehicles = await self.controller.getVehicles()
 
-                for vehicle in self.vehicles:
-                    summary = await self.controller.getSummary(vehicle["vin"])
+                for vehicle in all_vehicles:
+                    vin = vehicle["vin"]
+                    if not await self.controller.isAllowed(vin):
+                        _LOGGER.warning(
+                            "User is not granted access to vehicle VIN %s", vin
+                        )
+                        continue
+                    summary = await self.controller.getSummary(vin)
+                    _LOGGER.debug("Fetching initial data for vehicle %s", vin)
                     vehicle["name"] = summary["nickName"] or summary["modelDescription"]
+                    vehicle["capabilities"] = await self.controller.getCapabilities(vin)
+                    vehicle["services"] = await self.controller.getServices(vin)
                     # Find out what sensors are supported and store in vehicle
                     vdata = {}
-                    vin = vehicle["vin"]
-                    vdata = await self._update_data_for_vin(vin)
+                    vdata = await self._update_data_for_vehicle(vehicle)
                     vehicle["components"] = {
                         "sensor": [],
                         "switch": [],
@@ -164,8 +177,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                         "binary_sensor": [],
                     }
                     for sensor_meta in DATA_MAP:
-                        data = getFromDict(vdata, sensor_meta.key)
-                        if data is not None:
+                        sensor_data = getFromDict(vdata, sensor_meta.key)
+                        if sensor_data is not None:
                             ha_type = "sensor"
                             if isinstance(sensor_meta, SwitchMeta):
                                 ha_type = "switch"
@@ -176,15 +189,16 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                             vehicle["components"][ha_type].append(sensor_meta)
 
                     _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-                    _LOGGER.debug(f"Supported components {vehicle['components']}")
-
-            data = {}
-            async with async_timeout.timeout(30):
-                for vehicle in self.vehicles:
-                    vin = vehicle["vin"]
-                    vdata = await self._update_data_for_vin(vin)
+                    _LOGGER.debug(vehicle)
+                    self.vehicles.append(vehicle)
                     data[vin] = vdata
-                # _LOGGER.debug(data)
+            else:
+                async with async_timeout.timeout(30):
+                    for vehicle in self.vehicles:
+                        vin = vehicle["vin"]
+                        vdata = await self._update_data_for_vehicle(vehicle)
+                        data[vin] = vdata
+                    # _LOGGER.debug(data)
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         return data

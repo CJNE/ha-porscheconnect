@@ -41,18 +41,22 @@ def auto_enable_custom_integrations(
 def mock_connection():
     """Prevent setup."""
 
-    from .fixtures.taycan import GET
+    from .fixtures.taycan import GET, POST
 
     async def mock_get(self, url, params=None):
         print(f"GET {url}")
         print(params)
-        return GET.get(url, {})
+        ret = GET.get(url, {})
+        print(ret)
+        return ret
 
     async def mock_post(self, url, data=None, json=None):
         print(f"POST {url}")
         print(data)
         print(json)
-        return {}
+        ret = POST.get(url)
+        print(ret)
+        return ret
 
     async def mock_tokens(self, application, wasExpired=False):
         print(f"Request token {application}")
@@ -61,6 +65,17 @@ def mock_connection():
     with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
         "pyporscheconnectapi.client.Connection.post", mock_post
     ), patch("pyporscheconnectapi.client.Connection._requestToken", mock_tokens):
+        yield
+
+
+@pytest.fixture
+def mock_noaccess():
+    """Return a mocked client object."""
+
+    async def mock_access(self, vin):
+        return False
+
+    with patch("custom_components.porscheconnect.Client.isAllowed", mock_access):
         yield
 
 
