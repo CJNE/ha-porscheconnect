@@ -24,6 +24,7 @@ DEFAULT_SCAN_INTERVAL = 660
 HA_SENSOR = "sensor"
 HA_SWITCH = "switch"
 HA_LOCK = "lock"
+HA_NUMBER = "number"
 HA_DEVICE_TRACKER = "device_tracker"
 HA_BINARY_SENSOR = "binary_sensor"
 PORSCHE_COMPONENTS = [
@@ -93,6 +94,16 @@ class LockMeta:
 
 
 @dataclass
+class NumberMeta:
+    name: str
+    key: str
+    icon: str = None
+    device_class: str = None
+    default_enabled: bool = True
+    attributes: list = field(default_factory=list)
+
+
+@dataclass
 class SensorAttr:
     name: str
     key: str
@@ -116,6 +127,12 @@ DATA_MAP = [
         "range sensor",
         "remainingRanges.conventionalRange.distance",
         "mdi:gauge",
+    ),
+    SensorMeta(
+        "charging profile sensor",
+        "chargingProfiles.currentProfileId",
+        "mdi:battery-charging",
+        attributes=[SensorAttr("profiles", "chargingProfilesDict")]
     ),
     SwitchMeta(
         "climate",
@@ -150,6 +167,7 @@ DATA_MAP = [
         ],
     ),
     LockMeta("doorlock", "doors.overallLockStatus", "mdi:lock"),
+    NumberMeta("charging level", "chargingProfilesDict", "mdi:battery-charging"),
 ]
 
 
@@ -165,9 +183,11 @@ DEVICE_NAMES = {
     "remainingRanges.conventionalRange.distance": "range sensor",
     "remainingRanges.electricalRange.distance": "range sensor",
     "chargingStatus": "charger sensor",
+    "chargingProfiles.currentProfileId": "charging profile",
     "directClimatisation.climatisationState": "climatisation",
     "directCharge.isActive": "direct charge",
     "doors.overallLockStatus": "door lock",
+    "chargingProfilesDict": "charging level",
 }
 
 ICONS = {
