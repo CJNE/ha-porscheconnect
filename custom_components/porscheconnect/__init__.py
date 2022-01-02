@@ -27,6 +27,7 @@ from .const import DOMAIN
 from .const import LockMeta
 from .const import STARTUP_MESSAGE
 from .const import SwitchMeta
+from .const import NumberMeta
 
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING
@@ -36,7 +37,7 @@ from .const import SwitchMeta
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=300)
 
-PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock"]
+PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock", "number"]
 
 
 class PinError(PorscheException):
@@ -138,6 +139,15 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getStoredOverview(vin),
             **await self.controller.getEmobility(vin, model),
         }
+
+        if vdata["chargingProfiles"] is not None:
+            vdata["chargingProfilesDict"] = {}
+            vdata["chargingProfilesDict"].update(
+                {
+                    item["profileId"]: item
+                    for item in vdata["chargingProfiles"]["profiles"]
+                }
+            )
         if vehicle["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
             vdata.update(await self.controller.getPosition(vin))
         return vdata
@@ -175,6 +185,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                         "switch": [],
                         "lock": [],
                         "binary_sensor": [],
+                        "number": [],
                     }
                     for sensor_meta in DATA_MAP:
                         sensor_data = getFromDict(vdata, sensor_meta.key)
@@ -184,6 +195,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                                 ha_type = "switch"
                             if isinstance(sensor_meta, LockMeta):
                                 ha_type = "lock"
+                            if isinstance(sensor_meta, NumberMeta):
+                                ha_type = "number"
                             elif isinstance(sensor_meta, BinarySensorMeta):
                                 ha_type = "binary_sensor"
                             vehicle["components"][ha_type].append(sensor_meta)
