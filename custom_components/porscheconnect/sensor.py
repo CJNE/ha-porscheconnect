@@ -49,10 +49,10 @@ class PorscheSensor(PorscheDevice, Entity):
     def state(self) -> Optional[float]:
         """Return the state of the sensor."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if isinstance(data, str):
+        if isinstance(data, dict):
+            return data.get("value", None)
+        else:
             return data
-        # _LOGGER.debug(data)
-        return data.get("value", None)
 
     @property
     def icon(self):
@@ -63,9 +63,10 @@ class PorscheSensor(PorscheDevice, Entity):
     def unit_of_measurement(self) -> Optional[str]:
         """Return the unit_of_measurement of the device."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if isinstance(data, str):
+        if isinstance(data, dict):
+            units = data.get("unit", None)
+        else:
             return None
-        units = data.get("unit", None)
 
         if units == "PERCENT":
             return PERCENTAGE
