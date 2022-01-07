@@ -1,5 +1,5 @@
 POST = {
-    "https://api.porsche.com/service-vehicle/se/sv_SE/vehicle-data/WPTAYCAN/current/request": {
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request": {
         "requestId": "abc",
     },
 }
@@ -161,10 +161,10 @@ GET = {
             },
         ],
     },
-    "https://api.porsche.com/service-vehicle/se/sv_SE/vehicle-data/WPTAYCAN/current/request/abc/status": {
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request/abc/status": {
         "actionState": "OK",
     },
-    "https://api.porsche.com/service-vehicle/se/sv_SE/vehicle-data/WPTAYCAN/current/request/abc": {
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request/abc": {
         "vin": "WPTAYCAN",
         "oilLevel": None,
         "fuelLevel": None,
@@ -329,7 +329,7 @@ GET = {
         "parkingTime": "16.11.2021 14:17:03",
         "overallOpenStatus": "CLOSED",
     },
-    "https://api.porsche.com/core/api/v3/se/sv_SE/vehicles": [
+    "https://api.porsche.com/core/api/v3/de/de_DE/vehicles": [
         {
             "vin": "WPTAYCAN",
             "isPcc": True,
@@ -450,7 +450,7 @@ GET = {
         },
         "errorInfo": [],
     },
-    "https://api.porsche.com/service-vehicle/se/sv_SE/vehicle-data/WPTAYCAN/stored": {
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/stored": {
         "vin": "WPTAYCAN",
         "oilLevel": None,
         "fuelLevel": None,

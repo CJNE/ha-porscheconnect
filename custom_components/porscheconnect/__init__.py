@@ -84,7 +84,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         tokens=entry.data.get(CONF_ACCESS_TOKEN, None),
         websession=websession,
     )
-    controller = Client(connection)
+    lang = "de"
+    country = "de"
+    controller = Client(connection, country, lang)
 
     access_tokens = await controller.getAllTokens()
     _async_save_tokens(hass, entry, access_tokens)
