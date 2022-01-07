@@ -132,7 +132,7 @@ DATA_MAP = [
         "charging profile sensor",
         "chargingProfiles.currentProfileId",
         "mdi:battery-charging",
-        attributes=[SensorAttr("profiles", "chargingProfilesDict")]
+        attributes=[SensorAttr("profiles", "chargingProfilesDict")],
     ),
     SwitchMeta(
         "climate",

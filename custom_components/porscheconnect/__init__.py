@@ -25,9 +25,9 @@ from .const import BinarySensorMeta
 from .const import DATA_MAP
 from .const import DOMAIN
 from .const import LockMeta
+from .const import NumberMeta
 from .const import STARTUP_MESSAGE
 from .const import SwitchMeta
-from .const import NumberMeta
 
 
 # from homeassistant.const import ATTR_BATTERY_CHARGING

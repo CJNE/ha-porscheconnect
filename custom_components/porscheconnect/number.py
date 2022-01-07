@@ -1,8 +1,6 @@
 """Support for the Porsche Connect number entities."""
 import logging
-from typing import Optional
 
-from homeassistant.const import PERCENTAGE
 from homeassistant.components.number import NumberEntity
 
 from . import DOMAIN as PORSCHE_DOMAIN
