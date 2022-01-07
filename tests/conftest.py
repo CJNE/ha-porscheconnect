@@ -94,6 +94,15 @@ def mock_lock_unlock():
 
 
 @pytest.fixture
+def mock_set_charging_level():
+    """Return a mocked client object."""
+    with patch(
+        "custom_components.porscheconnect.Client.updateChargingProfile"
+    ) as set_level:
+        yield set_level
+
+
+@pytest.fixture
 def mock_set_climate_on():
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.climateOn") as climate_on:

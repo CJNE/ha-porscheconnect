@@ -19,6 +19,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     for vehicle in coordinator.vehicles:
         for number in vehicle["components"][HA_NUMBER]:
             profiles = coordinator.getDataByVIN(vehicle["vin"], number.key)
+            print(profiles)
             for profile in profiles.keys():
                 entities.append(
                     PorscheChargingLevel(
