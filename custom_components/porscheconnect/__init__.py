@@ -21,6 +21,8 @@ from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 
+from .services import setup_services, unload_services
+
 from .const import BinarySensorMeta
 from .const import DATA_MAP
 from .const import DOMAIN
@@ -102,6 +104,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_add_job(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
+
+    setup_services(hass)
 
     return True
 
@@ -231,6 +235,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
     if unloaded:
         hass.data[DOMAIN].pop(entry.entry_id)
+        if not hass.data[DOMAIN]:
+            unload_services(hass)
 
     return unloaded
 

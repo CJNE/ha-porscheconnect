@@ -1,0 +1,24 @@
+honk_and_flash:
+  name: Honk and flash
+  description: >
+    Briefly flashes the indicators and sounds the horn
+  fields:
+    vehicle:
+      name: Vehicle
+      description: The vehicle to send the command to.
+      required: true
+      selector:
+        device:
+          integration: porscheconnect
+flash:
+  name: Flash
+  description: >
+    Briefly flashes the indicators
+  fields:
+    vehicle:
+      name: Vehicle
+      description: The vehicle to send the command to.
+      required: true
+      selector:
+        device:
+          integration: porscheconnect
