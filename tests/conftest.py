@@ -103,6 +103,20 @@ def mock_set_charging_level():
 
 
 @pytest.fixture
+def mock_honk_and_flash():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.honkAndFlash") as honkflash:
+        yield honkflash
+
+
+@pytest.fixture
+def mock_flash():
+    """Return a mocked client object."""
+    with patch("custom_components.porscheconnect.Client.flash") as flash:
+        yield flash
+
+
+@pytest.fixture
 def mock_set_climate_on():
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.climateOn") as climate_on:

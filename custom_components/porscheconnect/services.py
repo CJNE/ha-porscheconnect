@@ -42,8 +42,6 @@ def setup_services(hass: HomeAssistant) -> None:
         if "entry_id" in vehicledata:
             coordinator = hass.data[PORSCHE_DOMAIN][vehicledata["entry_id"]]
             await coordinator.controller.honkAndFlash(vehicledata["vin"], True)
-        else:
-            LOGGER.debug("Vehicle not found")
 
     async def flash(service_call: ServiceCall) -> None:
         """Request indicator flashes from vehicle."""
@@ -55,8 +53,6 @@ def setup_services(hass: HomeAssistant) -> None:
             coordinator = hass.data[PORSCHE_DOMAIN][vehicledata["entry_id"]]
             res = await coordinator.controller.flash(vehicledata["vin"], True)
             LOGGER.debug("Indicator flash result: %s", res)
-        else:
-            LOGGER.debug("Vehicle not found")
 
     def getvehicledata(service_call: ServiceCall):
         vehicledata = {}
