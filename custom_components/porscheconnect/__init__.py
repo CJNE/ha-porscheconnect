@@ -146,7 +146,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getEmobility(vin, model),
         }
 
-        if vdata["chargingProfiles"] is not None:
+        if vdata.get("chargingProfiles", None) is not None:
             vdata["chargingProfilesDict"] = {}
             vdata["chargingProfilesDict"].update(
                 {
