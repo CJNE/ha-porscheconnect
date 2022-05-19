@@ -4,6 +4,85 @@ POST = {
     },
 }
 GET = {
+    "https://api.porsche.com/core/api/v3/de/de_DE/services?WPTAYCAN": {
+        "settingsUrl": "",
+        "services": [],
+    },
+    "https://api.porsche.com/profiles/mydata?country=de": {
+        "ciamId": "xxghxxxcbdwxyxuv",
+        "porscheId": "testuser@testemail.com",
+        "acceptedDataPrivacyDate": "2022-01-05T07:37:58Z",
+        "acceptedDataPrivacyVersion": "PorscheConnectDPG/SE/sv_SE/v3.8",
+        "acceptedDealerConsentDate": "2021-01-11T11:47:31Z",
+        "acceptedDealerConsentVersion": "PorscheConnectDPG_DC/SE/sv_SE/v2.0",
+        "acceptedTermsAndConditionsDate": "2021-01-11T11:47:31Z",
+        "acceptedTermsAndConditionsVersion": "PorscheConnectTAC/SE/sv_SE/v1.3",
+        "preferredDealerId": "x8x42820-a9ff-11e8-917b-bb5x3xb96x6x",
+        "dateOfBirth": "19771108",
+        "dealers": ["88642820-a9ff-11e8-917b-bbx7xxl96c64"],
+        "firstName": "Test",
+        "identityVerificationState": "UNVERIFIED",
+        "lastName": "User",
+        "language": "sv-se",
+        "localizedFirstName": "Test",
+        "localizedLastName": "User",
+        "mbbUid": "xxJrvdmuxxkbEwG61xW65zphiix",
+        "mbbNames": ["MBB-DE"],
+        "salutation": "0001",
+        "salutationValue": "Herr",
+        "status": "CONFIRMED",
+        "preferredCountry": "SE",
+        "addresses": [
+            {
+                "addressId": "axxexnudxxdxmxbx",
+                "ciamId": "xxghexxcbdwxyxuv",
+                "usage": "home",
+                "street1": "Street",
+                "houseNumber": "3",
+                "city": "city",
+                "postalCode": "000000",
+                "postalCodeRegion": "003",
+                "postalCodeRegionValue": "Region",
+                "country": "SE",
+                "isStandard": True,
+                "isExpressBuyAddress": False,
+                "isBillingAddress": False,
+                "isDeliveryAddress": False,
+            }
+        ],
+        "emails": [
+            {
+                "emailId": "vwsinxmbopjzxxhkx",
+                "email": "testuser@testemail.com",
+                "isVerified": True,
+                "isPending": False,
+                "isStandard": True,
+                "usage": "home",
+            }
+        ],
+        "mobiles": [
+            {
+                "mobileId": "dlmtdyxrdddkbexv",
+                "number": "+4623453543",
+                "isVerified": True,
+                "isPending": False,
+                "isStandard": True,
+                "usage": "home",
+            }
+        ],
+        "phones": [],
+        "vehicles": [
+            {
+                "vin": "WPTAYCAN",
+                "state": "N",
+                "ownershipType": "owner",
+                "invitedBy": "xx642820-a9ff-11e8-917b-bxxxxxexxcxx",
+                "pcc": True,
+                "confirmed": True,
+                "validFrom": "2021-01-19T13:28:19Z",
+            }
+        ],
+    },
     "https://api.porsche.com/core/api/v2/se/sv_SE/vehicles/WPTAYCAN/permissions": {
         "userIsActive": True,
         "userRoleStatus": "ENABLED",
