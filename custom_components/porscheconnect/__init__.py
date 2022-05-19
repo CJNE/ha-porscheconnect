@@ -173,11 +173,16 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
 
                 for vehicle in all_vehicles:
                     vin = vehicle["vin"]
-                    if not await self.controller.isAllowed(vin):
+                    permission_for_vin = await self.controller.isAllowed(vin)
+                    if not permission_for_vin["allowed"]:
                         _LOGGER.warning(
-                            "User is not granted access to vehicle VIN %s", vin
+                            "User is not granted access to vehicle VIN %s, reason %s",
+                            vin,
+                            permission_for_vin.reason,
                         )
                         continue
+                    else:
+                        _LOGGER.info(f"User is authorized for vehicle vin {vin}")
                     summary = await self.controller.getSummary(vin)
                     _LOGGER.debug("Fetching initial data for vehicle %s", vin)
                     vehicle["name"] = summary["nickName"] or summary["modelDescription"]
