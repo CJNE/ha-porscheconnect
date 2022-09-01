@@ -32,9 +32,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class PorscheChargingLevel(PorscheDevice, NumberEntity):
     """Representation of Porsche charging level entity."""
 
-    _attr_min_value = 25
-    _attr_max_value = 100
-
     def __init__(self, vehicle, coordinator, number_meta: NumberMeta, profile):
         """Initialize the charge level entity."""
         super().__init__(vehicle, coordinator)
