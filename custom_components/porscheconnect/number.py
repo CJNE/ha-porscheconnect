@@ -36,7 +36,6 @@ class PorscheChargingLevel(PorscheDevice, NumberEntity):
     _attr_max_value = 100
 
     def __init__(self, vehicle, coordinator, number_meta: NumberMeta, profile):
-
         """Initialize the charge level entity."""
         super().__init__(vehicle, coordinator)
         self.key = number_meta.key
@@ -49,12 +48,24 @@ class PorscheChargingLevel(PorscheDevice, NumberEntity):
         self._name = f"{self._name} {device_name} {self.profile_id_str}"
         self._unique_id = f"{super().unique_id}_{self.key}_{self.profile_id_str}"
 
-    async def async_set_value(self, value: int) -> None:
+    async def async_set_native_value(self, value: int) -> None:
         """Set a new value."""
         await self.coordinator.controller.updateChargingProfile(
             self.vin, None, self.profile_id, minimumChargeLevel=value
         )
         await self.coordinator.async_request_refresh()
+
+    @property
+    def native_min_value(self):
+        return 25
+
+    @property
+    def native_max_value(self):
+        return 100
+
+    @property
+    def native_step(self):
+        return 1
 
     @property
     def extra_state_attributes(self):
@@ -65,7 +76,7 @@ class PorscheChargingLevel(PorscheDevice, NumberEntity):
         return attrdict
 
     @property
-    def value(self) -> float:
+    def native_value(self):
         """Return the current value."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
         return data[self.profile_id]["chargingOptions"]["minimumChargeLevel"]
