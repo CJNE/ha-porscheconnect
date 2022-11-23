@@ -58,7 +58,7 @@ async def setup_mock_porscheconnect_config_entry(
         return {}
 
     async def mock_tokens(self, application, wasExpired=False):
-        print(f"Request token {application}")
+        print(f"Request mock token {application}")
         return {}
 
     with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(

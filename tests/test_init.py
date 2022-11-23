@@ -22,6 +22,7 @@ from .const import MOCK_CONFIG
 # Home Assistant using the pytest_homeassistant_custom_component plugin.
 # Assertions allow you to verify that the return value of whatever is on the left
 # side of the assertion matches with the right side.
+@pytest.mark.only
 async def test_setup_unload_and_reload_entry(hass, mock_client):
     """Test entry setup and unload."""
     # Create a mock entry so we don't have to go through config flow

@@ -7,7 +7,7 @@ TEST_MILEAGE_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_mileage_sensor"
 TEST_CHARGER_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charger_sensor"
 
 
-async def test_mileage_sensor(hass: HomeAssistant) -> None:
+async def test_mileage_sensor(hass: HomeAssistant, mock_connection) -> None:
     """Verify device information includes expected details."""
 
     await setup_mock_porscheconnect_config_entry(hass)
@@ -17,7 +17,7 @@ async def test_mileage_sensor(hass: HomeAssistant) -> None:
     assert entity_state.state == "13247"
 
 
-async def test_charger_sensor(hass: HomeAssistant) -> None:
+async def test_charger_sensor(hass: HomeAssistant, mock_connection) -> None:
     """Verify device information includes expected details."""
 
     await setup_mock_porscheconnect_config_entry(hass)

@@ -7,7 +7,7 @@ from . import setup_mock_porscheconnect_config_entry
 TEST_PARKING_BREAK_ENTITY_ID = "binary_sensor.taycan_turbo_s_parkingbreak"
 
 
-async def test_pargking_break_sensor(hass: HomeAssistant) -> None:
+async def test_pargking_break_sensor(hass: HomeAssistant, mock_connection) -> None:
     """Verify device information includes expected details."""
 
     await setup_mock_porscheconnect_config_entry(hass)

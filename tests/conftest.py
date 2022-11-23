@@ -44,14 +44,14 @@ def mock_connection():
     from .fixtures.taycan import GET, POST
 
     async def mock_get(self, url, params=None):
-        print(f"GET {url}")
+        print(f"Mock GET {url}")
         print(params)
         ret = GET.get(url, {})
         print(ret)
         return ret
 
     async def mock_post(self, url, data=None, json=None):
-        print(f"POST {url}")
+        print(f"Mock POST {url}")
         print(data)
         print(json)
         ret = POST.get(url)
@@ -59,17 +59,25 @@ def mock_connection():
         return ret
 
     async def mock_tokens(self, application, wasExpired=False):
-        print(f"Request token {application}")
+        print(f"Request mock token for {application}")
         return {}
 
+    async def mock_getAllTokens(self):
+        return {}
+
+    print("Using mock connedion")
     with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
         "pyporscheconnectapi.client.Connection.post", mock_post
-    ), patch("pyporscheconnectapi.client.Connection._requestToken", mock_tokens):
+    ), patch(
+        "pyporscheconnectapi.client.Connection.getAllTokens", mock_getAllTokens
+    ), patch(
+        "pyporscheconnectapi.client.Connection._requestToken", mock_tokens
+    ):
         yield
 
 
 @pytest.fixture
-def mock_noaccess():
+def mock_noaccess(mock_connection):
     """Return a mocked client object."""
 
     async def mock_access(self, vin):
@@ -80,21 +88,21 @@ def mock_noaccess():
 
 
 @pytest.fixture
-def mock_lock_lock():
+def mock_lock_lock(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.lock") as mock_lock:
         yield mock_lock
 
 
 @pytest.fixture
-def mock_lock_unlock():
+def mock_lock_unlock(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.unlock") as mock_unlock:
         yield mock_unlock
 
 
 @pytest.fixture
-def mock_set_charging_level():
+def mock_set_charging_level(mock_connection):
     """Return a mocked client object."""
     with patch(
         "custom_components.porscheconnect.Client.updateChargingProfile"
@@ -103,42 +111,42 @@ def mock_set_charging_level():
 
 
 @pytest.fixture
-def mock_honk_and_flash():
+def mock_honk_and_flash(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.honkAndFlash") as honkflash:
         yield honkflash
 
 
 @pytest.fixture
-def mock_flash():
+def mock_flash(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.flash") as flash:
         yield flash
 
 
 @pytest.fixture
-def mock_set_climate_on():
+def mock_set_climate_on(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.climateOn") as climate_on:
         yield climate_on
 
 
 @pytest.fixture
-def mock_set_climate_off():
+def mock_set_climate_off(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.climateOff") as climate_off:
         yield climate_off
 
 
 @pytest.fixture
-def mock_set_charge_on():
+def mock_set_charge_on(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.directChargeOn") as charge_on:
         yield charge_on
 
 
 @pytest.fixture
-def mock_set_charge_off():
+def mock_set_charge_off(mock_connection):
     """Return a mocked client object."""
     with patch("custom_components.porscheconnect.Client.directChargeOff") as charge_off:
         yield charge_off
@@ -167,7 +175,7 @@ def mock_client_error_fixture():
 
 
 @pytest.fixture
-def mock_client_update_error():
+def mock_client_update_error(mock_connection):
     """Prevent setup."""
     with patch(
         "custom_components.porscheconnect.Client.getPosition",
@@ -180,6 +188,7 @@ def mock_client_update_error():
 # return a value, we would add the `return_value=<VALUE_TO_RETURN>` parameter to the patch call.
 @pytest.fixture(name="bypass_connection_connect")
 def bypass_connection_connect_fixture():
+    print("Using bypass connection connect")
     """Skip calls to get data from API."""
     with patch("pyporscheconnectapi.connection.Connection._login"), patch(
         "pyporscheconnectapi.connection.Connection.getAllTokens"
