@@ -2,19 +2,9 @@ import logging
 from dataclasses import dataclass
 from dataclasses import field
 
-from homeassistant.const import DEVICE_CLASS_BATTERY
-
-# from homeassistant.const import DEVICE_CLASS_CURRENT
-# from homeassistant.const import DEVICE_CLASS_ENERGY
-# from homeassistant.const import DEVICE_CLASS_HUMIDITY
-# from homeassistant.const import DEVICE_CLASS_ILLUMINANCE
-# from homeassistant.const import DEVICE_CLASS_POWER
-# from homeassistant.const import DEVICE_CLASS_POWER_FACTOR
-# from homeassistant.const import DEVICE_CLASS_PRESSURE
-# from homeassistant.const import DEVICE_CLASS_SIGNAL_STRENGTH
-# from homeassistant.const import DEVICE_CLASS_TEMPERATURE
-# from homeassistant.const import DEVICE_CLASS_TIMESTAMP
-# from homeassistant.const import DEVICE_CLASS_VOLTAGE
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+)
 
 """Constants for the Porsche Connect integration."""
 
@@ -116,7 +106,9 @@ DATA_MAP = [
         "mdi:counter",
         attributes=[SensorAttr("oil level", "oilLevel")],
     ),
-    SensorMeta("battery sensor", "batteryLevel", "mdi:battery", DEVICE_CLASS_BATTERY),
+    SensorMeta(
+        "battery sensor", "batteryLevel", "mdi:battery", SensorDeviceClass.BATTERY
+    ),
     SensorMeta("fuel sensor", "fuelLevel", "mdi:gauge"),
     SensorMeta(
         "range sensor",
@@ -172,7 +164,7 @@ DATA_MAP = [
 
 
 DEVICE_CLASSES = {
-    "batteryLevel": DEVICE_CLASS_BATTERY,
+    "batteryLevel": SensorDeviceClass.BATTERY,
 }
 
 DEVICE_NAMES = {
