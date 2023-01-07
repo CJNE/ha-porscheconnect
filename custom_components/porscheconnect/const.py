@@ -140,7 +140,7 @@ DATA_MAP = [
         "directcharge-off",
         "mdi:ev-station",
     ),
-    BinarySensorMeta("parking brake", "parkingBreak", "mdi:lock"),
+    BinarySensorMeta("parking brake", "parkingBrake", "mdi:lock"),
     SensorMeta("doors", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
         "charger",
