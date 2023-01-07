@@ -146,6 +146,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             **await self.controller.getEmobility(vin, model),
         }
 
+        vdata["services"] = await self.controller.getServices(vin)
         if vdata.get("chargingProfiles", None) is not None:
             vdata["chargingProfilesDict"] = {}
             vdata["chargingProfilesDict"].update(
@@ -197,8 +198,15 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                         "binary_sensor": [],
                         "number": [],
                     }
+                    _LOGGER.debug(vdata)
                     for sensor_meta in DATA_MAP:
                         sensor_data = getFromDict(vdata, sensor_meta.key)
+                        _LOGGER.debug(
+                            "Appending entity for sensor if data is not none: %s %s %s",
+                            sensor_meta.key,
+                            sensor_meta,
+                            sensor_data,
+                        )
                         if sensor_data is not None:
                             ha_type = "sensor"
                             if isinstance(sensor_meta, SwitchMeta):

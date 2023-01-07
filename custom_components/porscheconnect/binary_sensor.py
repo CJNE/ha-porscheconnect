@@ -1,4 +1,5 @@
 """Binary sensor platform for Porsche Connect."""
+import logging
 from typing import Optional
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -8,6 +9,8 @@ from . import PorscheDevice
 from .const import DEVICE_NAMES
 from .const import HA_BINARY_SENSOR
 from .const import SensorMeta
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -33,6 +36,11 @@ class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
         self._unique_id = f"{super().unique_id}_{self.key}"
 
     @property
+    def icon(self):
+        """Return the icon of this entity."""
+        return self.meta.icon
+
+    @property
     def device_class(self) -> Optional[str]:
         """Return the device_class of the device."""
         return self.meta.device_class
@@ -41,4 +49,7 @@ class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
     def is_on(self):
         """Return true if the binary_sensor is on."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
+        _LOGGER.debug(
+            "Binary sensor is on? %s %s %s", self.key, data, self.meta.isOnState
+        )
         return data == self.meta.isOnState

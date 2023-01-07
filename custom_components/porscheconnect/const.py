@@ -55,8 +55,8 @@ class SensorMeta:
 class BinarySensorMeta:
     name: str
     key: str
-    isOnState: str = "ACTIVE"
     icon: str = None
+    isOnState: any = "ACTIVE"
     device_class: str = None
     default_enabled: bool = True
     attributes: list = field(default_factory=list)
@@ -139,8 +139,8 @@ DATA_MAP = [
         "directcharge-off",
         "mdi:ev-station",
     ),
-    BinarySensorMeta("parking brake", "parkingBrake", "mdi:lock"),
-    BinarySensorMeta("privacy mode", "services.rlu_v1", "mdi:security", "PRIVACY_MODE"),
+    BinarySensorMeta("parking brake", "parkingBreak", "mdi:lock"),
+    BinarySensorMeta("privacy mode", "services.privacyMode", "mdi:security", True),
     SensorMeta("doors", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
         "charger",
@@ -179,20 +179,24 @@ DEVICE_NAMES = {
     "directClimatisation.climatisationState": "climatisation",
     "directCharge.isActive": "direct charge",
     "doors.overallLockStatus": "door lock",
+    "overallOpenStatus": "doors",
     "chargingProfilesDict": "charging level",
+    "services.privacyMode": "privacy mode",
+    "parkingBreak": "parking break",
 }
 
-ICONS = {
-    "battery": "mdi:battery",
-    "range": "mdi:gauge",
-    "mileage": "mdi:counter",
-    "parking brake": "mdi:car-brake-parking",
-    "charger": "mdi:ev-station",
-    "charger switch": "mdi:battery-charging",
-    "update switch": "mdi:update",
-    "maxrange switch": "mdi:gauge-full",
-    "temperature": "mdi:thermometer",
-    "location tracker": "mdi:crosshairs-gps",
-    "charging rate": "mdi:speedometer",
-    "sentry mode switch": "mdi:shield-car",
-}
+# ICONS = {
+#     "battery": "mdi:battery",
+#     "range": "mdi:gauge",
+#     "mileage": "mdi:counter",
+#     "parking brake": "mdi:car-brake-parking",
+#     "privacy mode": "mdi:security",
+#     "charger": "mdi:ev-station",
+#     "charger switch": "mdi:battery-charging",
+#     "update switch": "mdi:update",
+#     "maxrange switch": "mdi:gauge-full",
+#     "temperature": "mdi:thermometer",
+#     "location tracker": "mdi:crosshairs-gps",
+#     "charging rate": "mdi:speedometer",
+#     "sentry mode switch": "mdi:shield-car",
+# }
