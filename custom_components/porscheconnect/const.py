@@ -101,27 +101,27 @@ class SensorAttr:
 
 DATA_MAP = [
     SensorMeta(
-        "mileage sensor",
+        "mileage",
         "mileage",
         "mdi:counter",
         attributes=[SensorAttr("oil level", "oilLevel")],
     ),
     SensorMeta(
-        "battery sensor", "batteryLevel", "mdi:battery", SensorDeviceClass.BATTERY
+        "battery", "batteryLevel", "mdi:battery", SensorDeviceClass.BATTERY
     ),
-    SensorMeta("fuel sensor", "fuelLevel", "mdi:gauge"),
+    SensorMeta("fuel", "fuelLevel", "mdi:gauge"),
     SensorMeta(
-        "range sensor",
+        "range",
         "remainingRanges.electricalRange.distance",
         "mdi:gauge",
     ),
     SensorMeta(
-        "range sensor",
+        "range",
         "remainingRanges.conventionalRange.distance",
         "mdi:gauge",
     ),
     SensorMeta(
-        "charging profile sensor",
+        "charging profile",
         "chargingProfiles.currentProfileId",
         "mdi:battery-charging",
         attributes=[SensorAttr("profiles", "chargingProfilesDict")],
@@ -143,7 +143,7 @@ DATA_MAP = [
     BinarySensorMeta("parking brake", "parkingBreak", "mdi:lock"),
     SensorMeta("doors", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
-        "charger sensor",
+        "charger",
         "chargingStatus",
         "mdi:ev-station",
         attributes=[
@@ -168,13 +168,13 @@ DEVICE_CLASSES = {
 }
 
 DEVICE_NAMES = {
-    "mileage": "mileage sensor",
-    "batteryLevel": "battery sensor",
-    "fuelLevel": "fuel sensor",
-    "oilLevel": "oil sensor",
-    "remainingRanges.conventionalRange.distance": "range sensor",
-    "remainingRanges.electricalRange.distance": "range sensor",
-    "chargingStatus": "charger sensor",
+    "mileage": "mileage",
+    "batteryLevel": "battery",
+    "fuelLevel": "fuel",
+    "oilLevel": "oil",
+    "remainingRanges.conventionalRange.distance": "range",
+    "remainingRanges.electricalRange.distance": "range",
+    "chargingStatus": "charger",
     "chargingProfiles.currentProfileId": "charging profile",
     "directClimatisation.climatisationState": "climatisation",
     "directCharge.isActive": "direct charge",
@@ -183,16 +183,16 @@ DEVICE_NAMES = {
 }
 
 ICONS = {
-    "battery sensor": "mdi:battery",
-    "range sensor": "mdi:gauge",
-    "mileage sensor": "mdi:counter",
-    "parking brake sensor": "mdi:car-brake-parking",
-    "charger sensor": "mdi:ev-station",
+    "battery": "mdi:battery",
+    "range": "mdi:gauge",
+    "mileage": "mdi:counter",
+    "parking brake": "mdi:car-brake-parking",
+    "charger": "mdi:ev-station",
     "charger switch": "mdi:battery-charging",
     "update switch": "mdi:update",
     "maxrange switch": "mdi:gauge-full",
-    "temperature sensor": "mdi:thermometer",
+    "temperature": "mdi:thermometer",
     "location tracker": "mdi:crosshairs-gps",
-    "charging rate sensor": "mdi:speedometer",
+    "charging rate": "mdi:speedometer",
     "sentry mode switch": "mdi:shield-car",
 }
