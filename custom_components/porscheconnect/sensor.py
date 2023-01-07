@@ -74,7 +74,7 @@ class PorscheSensor(PorscheDevice, Entity):
         #    return TIME_DAYS
         # if units == "MILES":
         #    return LENGTH_MILES
-        if units == "KILOMETER":
+        if units == "KILOMETERS":
             return LENGTH_KILOMETERS
 
     @property
