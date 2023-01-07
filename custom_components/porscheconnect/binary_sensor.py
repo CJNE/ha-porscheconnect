@@ -41,4 +41,4 @@ class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
     def is_on(self):
         """Return true if the binary_sensor is on."""
         data = self.coordinator.getDataByVIN(self.vin, self.key)
-        return data == "ACTIVE"
+        return data == self.meta.isOnState

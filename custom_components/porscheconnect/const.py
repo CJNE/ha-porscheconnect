@@ -55,6 +55,7 @@ class SensorMeta:
 class BinarySensorMeta:
     name: str
     key: str
+    isOnState: str = "ACTIVE"
     icon: str = None
     device_class: str = None
     default_enabled: bool = True
@@ -106,9 +107,7 @@ DATA_MAP = [
         "mdi:counter",
         attributes=[SensorAttr("oil level", "oilLevel")],
     ),
-    SensorMeta(
-        "battery", "batteryLevel", "mdi:battery", SensorDeviceClass.BATTERY
-    ),
+    SensorMeta("battery", "batteryLevel", "mdi:battery", SensorDeviceClass.BATTERY),
     SensorMeta("fuel", "fuelLevel", "mdi:gauge"),
     SensorMeta(
         "range",
@@ -141,6 +140,7 @@ DATA_MAP = [
         "mdi:ev-station",
     ),
     BinarySensorMeta("parking brake", "parkingBrake", "mdi:lock"),
+    BinarySensorMeta("privacy mode", "services.rlu_v1", "mdi:security", "PRIVACY_MODE"),
     SensorMeta("doors", "overallOpenStatus", "mdi:lock"),
     SensorMeta(
         "charger",
