@@ -16,6 +16,7 @@ from . import setup_mock_porscheconnect_config_entry
 TEST_DOOR_LOCK_ENTITY_ID = "lock.taycan_turbo_s_door_lock"
 
 
+@pytest.mark.asyncio
 async def test_door_lock(hass: HomeAssistant, mock_lock_lock, mock_lock_unlock) -> None:
     """Verify device information includes expected details."""
 
@@ -52,6 +53,7 @@ async def test_door_lock(hass: HomeAssistant, mock_lock_lock, mock_lock_unlock) 
     assert mock_lock_lock.call_count == 1
 
 
+@pytest.mark.asyncio
 async def test_door_unlock_without_pin(hass: HomeAssistant, mock_lock_unlock) -> None:
     """Verify device information includes expected details."""
 

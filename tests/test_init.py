@@ -22,7 +22,7 @@ from .const import MOCK_CONFIG
 # Home Assistant using the pytest_homeassistant_custom_component plugin.
 # Assertions allow you to verify that the return value of whatever is on the left
 # side of the assertion matches with the right side.
-@pytest.mark.only
+@pytest.mark.asyncio
 async def test_setup_unload_and_reload_entry(hass, mock_client):
     """Test entry setup and unload."""
     # Create a mock entry so we don't have to go through config flow
@@ -51,6 +51,7 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     assert config_entry.entry_id not in hass.data[DOMAIN]
 
 
+@pytest.mark.asyncio
 async def test_setup_entry_exception(hass, mock_client_error):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
@@ -71,6 +72,7 @@ async def test_setup_entry_exception(hass, mock_client_error):
 #     await hass.config_entries.flow.async_init(
 #         DOMAIN, context={"source": config_entries.SOURCE_USER}
 #     )
+@pytest.mark.asyncio
 async def test_setup_entry_initial_load(hass, mock_connection):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
@@ -82,6 +84,7 @@ async def test_setup_entry_initial_load(hass, mock_connection):
     assert len(hass.data[DOMAIN][config_entry.entry_id].vehicles) == 1
 
 
+@pytest.mark.asyncio
 async def test_setup_entry_initial_load_no_perms(hass, mock_connection, mock_noaccess):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
@@ -90,6 +93,7 @@ async def test_setup_entry_initial_load_no_perms(hass, mock_connection, mock_noa
     assert len(hass.data[DOMAIN][config_entry.entry_id].vehicles) == 0
 
 
+@pytest.mark.asyncio
 async def test_update_error(hass, mock_connection, mock_client_update_error):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")

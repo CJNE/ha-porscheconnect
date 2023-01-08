@@ -1,4 +1,5 @@
 """Test porscheconnect sensor."""
+import pytest
 from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
@@ -7,6 +8,7 @@ TEST_MILEAGE_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_mileage_sensor"
 TEST_CHARGER_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charger_sensor"
 
 
+@pytest.mark.asyncio
 async def test_mileage_sensor(hass: HomeAssistant, mock_connection) -> None:
     """Verify device information includes expected details."""
 
@@ -17,6 +19,7 @@ async def test_mileage_sensor(hass: HomeAssistant, mock_connection) -> None:
     assert entity_state.state == "13247"
 
 
+@pytest.mark.asyncio
 async def test_charger_sensor(hass: HomeAssistant, mock_connection) -> None:
     """Verify device information includes expected details."""
 

@@ -33,6 +33,7 @@ def bypass_setup_fixture():
 # Here we simiulate a successful config flow from the backend.
 # Note that we use the `bypass_get_data` fixture here because
 # we want the config flow validation to succeed during the test.
+@pytest.mark.asyncio
 async def test_successful_config_flow(hass, bypass_connection_connect):
     """Test a successful config flow."""
     # Initialize a config flow
@@ -62,6 +63,7 @@ async def test_successful_config_flow(hass, bypass_connection_connect):
 # We use the `error_on_get_data` mock instead of `bypass_get_data`
 # (note the function parameters) to raise an Exception during
 # validation of the input config.
+@pytest.mark.asyncio
 async def test_failed_config_flow_connect(hass, error_connection_connect):
     """Test a failed config flow due to credential validation failure."""
 
@@ -84,6 +86,7 @@ async def test_failed_config_flow_connect(hass, error_connection_connect):
 # We use the `error_on_get_data` mock instead of `bypass_get_data`
 # (note the function parameters) to raise an Exception during
 # validation of the input config.
+@pytest.mark.asyncio
 async def test_failed_config_flow_login(hass, error_connection_login):
     """Test a failed config flow due to credential validation failure."""
 

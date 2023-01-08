@@ -1,6 +1,7 @@
 """Test porscheconnect number."""
 from unittest.mock import MagicMock
 
+import pytest
 from homeassistant.components.number import DOMAIN as NUMBER_DOMAIN
 from homeassistant.components.number import SERVICE_SET_VALUE
 from homeassistant.const import (
@@ -13,6 +14,7 @@ from . import setup_mock_porscheconnect_config_entry
 TEST_CHARGING_LEVEL_NUMBER_ENTITY_ID = "number.taycan_turbo_s_charging_level_4"
 
 
+@pytest.mark.asyncio
 async def test_number(hass: HomeAssistant, mock_set_charging_level: MagicMock) -> None:
     """Verify device information includes expected details."""
 

@@ -1,6 +1,7 @@
 """Test myenergi sensor."""
 from unittest.mock import MagicMock
 
+import pytest
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -16,6 +17,7 @@ TEST_CLIMATE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_climatisation"
 TEST_CHARGE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_direct_charge"
 
 
+@pytest.mark.asyncio
 async def test_climate(
     hass: HomeAssistant, mock_set_climate_on: MagicMock, mock_set_climate_off: MagicMock
 ) -> None:
@@ -50,6 +52,7 @@ async def test_climate(
     assert mock_set_climate_off.call_count == 1
 
 
+@pytest.mark.asyncio
 async def test_directcharge(
     hass: HomeAssistant, mock_set_charge_on: MagicMock, mock_set_charge_off: MagicMock
 ) -> None:

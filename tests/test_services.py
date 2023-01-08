@@ -1,6 +1,7 @@
 """Test porscheconnect number."""
 from unittest.mock import MagicMock
 
+import pytest
 from custom_components.porscheconnect.const import DOMAIN as PORSCHE_DOMAIN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
@@ -20,6 +21,7 @@ def get_device_id(hass: HomeAssistant) -> str:
     return device.id
 
 
+@pytest.mark.asyncio
 async def test_honk_and_flash(
     hass: HomeAssistant, mock_honk_and_flash: MagicMock
 ) -> None:
@@ -42,6 +44,7 @@ async def test_honk_and_flash(
     mock_honk_and_flash.assert_called_with("WPTAYCAN", True)
 
 
+@pytest.mark.asyncio
 async def test_flash(hass: HomeAssistant, mock_flash: MagicMock) -> None:
     """Verify device information includes expected details."""
 
