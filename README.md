@@ -7,7 +7,7 @@
 [![pre-commit][pre-commit-shield]][pre-commit]
 [![Black][black-shield]][black]
 
-[![hacs][hacsbadge]][hacs]
+[![hacs][hacs_badge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
@@ -100,8 +100,7 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [commits-shield]: https://img.shields.io/github/commit-activity/y/CJNE/ha-porscheconnect.svg?style=for-the-badge
 [commits]: https://github.com/CJNE/ha-porscheconnect/commits/main
 [hacs]: https://hacs.xyz
-
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
+[hacs_badge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
