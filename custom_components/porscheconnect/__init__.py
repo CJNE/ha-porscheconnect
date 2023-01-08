@@ -118,6 +118,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Init new data update coordinator")
         self.controller = controller
         self.vehicles = None
+        self.hass = hass
         self.config_entry = config_entry
 
         self.data = {}
@@ -141,12 +142,27 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     async def _update_data_for_vehicle(self, vehicle):
         vin = vehicle["vin"]
         model = vehicle["capabilities"]["carModel"]
-        vdata = {
-            **await self.controller.getStoredOverview(vin),
-            **await self.controller.getEmobility(vin, model),
-        }
+        services = await self.controller.getServices(vin)
+        was_privacy_mode = vehicle["privacyMode"]
+        is_privacy_mode = services["privacyMode"]
+        vehicle["privacyMode"] = is_privacy_mode
+        vdata = {}
+        vdata["privacyMode"] = vehicle["privacyMode"]
+        vdata["services"] = services
+        if was_privacy_mode != is_privacy_mode:
+            # Reload config entry to enable all entities that are now working
+            _LOGGER.debug(
+                "Vehicle %s privacy mode changed, will reload config entry", vin
+            )
+            await async_reload_entry(self.hass, self.config_entry)
 
-        vdata["services"] = await self.controller.getServices(vin)
+        if vehicle["privacyMode"]:
+            _LOGGER.debug("Vehicle %s is in privacy mode, will not fetch data", vin)
+            return vdata
+
+        vdata.update(await self.controller.getStoredOverview(vin))
+        vdata.update(await self.controller.getEmobility(vin, model))
+
         if vdata.get("chargingProfiles", None) is not None:
             vdata["chargingProfilesDict"] = {}
             vdata["chargingProfilesDict"].update(
@@ -155,7 +171,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     for item in vdata["chargingProfiles"]["profiles"]
                 }
             )
-        if vehicle["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
+        if vdata["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
             vdata.update(await self.controller.getPosition(vin))
         return vdata
 
@@ -188,6 +204,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     vehicle["name"] = summary["nickName"] or summary["modelDescription"]
                     vehicle["capabilities"] = await self.controller.getCapabilities(vin)
                     vehicle["services"] = await self.controller.getServices(vin)
+                    vehicle["privacyMode"] = vehicle["services"]["privacyMode"]
                     # Find out what sensors are supported and store in vehicle
                     vdata = {}
                     vdata = await self._update_data_for_vehicle(vehicle)
