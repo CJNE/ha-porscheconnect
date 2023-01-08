@@ -261,9 +261,9 @@ GET = {
             "electricalRange": {
                 "distance": {
                     "value": 348,
-                    "unit": "KILOMETER",
+                    "unit": "KILOMETERS",
                     "originalValue": 348,
-                    "originalUnit": "KILOMETER",
+                    "originalUnit": "KILOMETERS",
                     "valueInKilometers": 348,
                     "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
                 },
@@ -273,9 +273,9 @@ GET = {
         },
         "mileage": {
             "value": 13247,
-            "unit": "KILOMETER",
+            "unit": "KILOMETERS",
             "originalValue": 13247,
-            "originalUnit": "KILOMETER",
+            "originalUnit": "KILOMETERS",
             "valueInKilometers": 13247,
             "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
         },
@@ -297,9 +297,9 @@ GET = {
             "inspection": {
                 "distance": {
                     "value": -16800,
-                    "unit": "KILOMETER",
+                    "unit": "KILOMETERS",
                     "originalValue": -16800,
-                    "originalUnit": "KILOMETER",
+                    "originalUnit": "KILOMETERS",
                     "valueInKilometers": -16800,
                     "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
                 },
@@ -466,9 +466,9 @@ GET = {
             "remainingChargeTimeUntil100PercentInMinutes": None,
             "remainingERange": {
                 "value": 348,
-                "unit": "KILOMETER",
+                "unit": "KILOMETERS",
                 "originalValue": 348,
-                "originalUnit": "KILOMETER",
+                "originalUnit": "KILOMETERS",
                 "valueInKilometers": 348,
                 "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
             },
@@ -547,9 +547,9 @@ GET = {
             "electricalRange": {
                 "distance": {
                     "value": 348,
-                    "unit": "KILOMETER",
+                    "unit": "KILOMETERS",
                     "originalValue": 348,
-                    "originalUnit": "KILOMETER",
+                    "originalUnit": "KILOMETERS",
                     "valueInKilometers": 348,
                     "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
                 },
@@ -559,9 +559,9 @@ GET = {
         },
         "mileage": {
             "value": 13247,
-            "unit": "KILOMETER",
+            "unit": "KILOMETERS",
             "originalValue": 13247,
-            "originalUnit": "KILOMETER",
+            "originalUnit": "KILOMETERS",
             "valueInKilometers": 13247,
             "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
         },
@@ -583,9 +583,9 @@ GET = {
             "inspection": {
                 "distance": {
                     "value": -16800,
-                    "unit": "KILOMETER",
+                    "unit": "KILOMETERS",
                     "originalValue": -16800,
-                    "originalUnit": "KILOMETER",
+                    "originalUnit": "KILOMETERS",
                     "valueInKilometers": -16800,
                     "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER",
                 },

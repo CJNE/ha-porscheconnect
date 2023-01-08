@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_PARKING_BREAK_ENTITY_ID = "binary_sensor.taycan_turbo_s_parkingbreak"
+TEST_PARKING_BREAK_ENTITY_ID = "binary_sensor.taycan_turbo_s_parking_break"
 
 
 @pytest.mark.asyncio

@@ -4,8 +4,8 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_MILEAGE_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_mileage_sensor"
-TEST_CHARGER_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charger_sensor"
+TEST_MILEAGE_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_mileage"
+TEST_CHARGER_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charger"
 
 
 @pytest.mark.asyncio
