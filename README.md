@@ -43,9 +43,8 @@ requests and ideas are welcome, use the issue tracker for that, thanks!
 
 ## HACS Installation
 
-1. Add this repository to "Custom repositories"
-2. Add and search for porscheconnect in HACS
-3. Install
+1. Search for porscheconnect in HACS
+2. Install
 
 ## Manual Installation
 
@@ -101,7 +100,8 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [commits-shield]: https://img.shields.io/github/commit-activity/y/CJNE/ha-porscheconnect.svg?style=for-the-badge
 [commits]: https://github.com/CJNE/ha-porscheconnect/commits/main
 [hacs]: https://hacs.xyz
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
