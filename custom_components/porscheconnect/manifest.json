@@ -1,7 +1,7 @@
 {
   "domain": "porscheconnect",
   "name": "Porsche Connect",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "issue_tracker": "https://github.com/CJNE/ha-porscheconnect/issues",
   "config_flow": true,
   "documentation": "https://github.com/CJNE/ha-porscheconnect",
