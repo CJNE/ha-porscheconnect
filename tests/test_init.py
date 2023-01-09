@@ -85,6 +85,26 @@ async def test_setup_entry_initial_load(hass, mock_connection):
 
 
 @pytest.mark.asyncio
+@pytest.mark.only
+async def test_setup_entry_initial_load_privacy(hass, mock_connection_privacy):
+    """Test ConfigEntryNotReady when API raises an exception during entry setup."""
+    config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
+
+    # In this case we are testing the condition where async_setup_entry raises
+    # ConfigEntryNotReady using the `error_on_get_data` fixture which simulates
+    # an error.
+    assert await async_setup_entry(hass, config_entry)
+    assert len(hass.data[DOMAIN][config_entry.entry_id].vehicles) == 1
+
+    # This is a little hacky, we need to cover the case when privacy mode changes
+    # Couldn't find a clean way to use different versions of the fixture
+    update_coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    update_coordinator.config_entry = config_entry
+    update_coordinator.vehicles[0]["privacyMode"] = False
+    await update_coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
 async def test_setup_entry_initial_load_no_perms(hass, mock_connection, mock_noaccess):
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")

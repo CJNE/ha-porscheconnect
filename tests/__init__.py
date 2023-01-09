@@ -1,6 +1,7 @@
 """Tests for Porsche Connect integration."""
 from __future__ import annotations
 
+import json
 from typing import Any
 from unittest.mock import Mock
 from unittest.mock import patch
@@ -13,6 +14,12 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from .const import MOCK_CONFIG
 
 TEST_CONFIG_ENTRY_ID = "77889900ac"
+
+
+def load_fixture_json(name):
+    with open(f"tests/fixtures/{name}.json") as json_file:
+        data = json.load(json_file)
+        return data
 
 
 def create_mock_porscheconnect_config_entry(
@@ -44,12 +51,16 @@ async def setup_mock_porscheconnect_config_entry(
     """Add a mock porscheconnect config entry to hass."""
     config_entry = config_entry or create_mock_porscheconnect_config_entry(hass, data)
 
-    from .fixtures.taycan import GET
+    fixture_name = "taycan"
+    fixture_data = load_fixture_json(fixture_name)
+    print(f"Using mock connedion fixture {fixture_name}")
 
     async def mock_get(self, url, params=None):
-        print(f"GET {url}")
+        print(f"Mock connection GET {url}")
         print(params)
-        return GET.get(url, {})
+        ret = fixture_data["GET"].get(url, {})
+        print(ret)
+        return ret
 
     async def mock_post(self, url, data=None, json=None):
         print(f"POST {url}")

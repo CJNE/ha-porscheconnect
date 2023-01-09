@@ -1,0 +1,699 @@
+{
+  "POST": {
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request": {
+      "requestId": "abc"
+    }
+  },
+  "GET": {
+    "https://api.porsche.com/core/api/v3/de/de_DE/services?WPTAYCAN": {
+      "settingsUrl": "",
+      "services": []
+    },
+    "https://api.porsche.com/profiles/mydata?country=de": {
+      "ciamId": "xxghxxxcbdwxyxuv",
+      "porscheId": "testuser@testemail.com",
+      "acceptedDataPrivacyDate": "2022-01-05T07:37:58Z",
+      "acceptedDataPrivacyVersion": "PorscheConnectDPG/SE/sv_SE/v3.8",
+      "acceptedDealerConsentDate": "2021-01-11T11:47:31Z",
+      "acceptedDealerConsentVersion": "PorscheConnectDPG_DC/SE/sv_SE/v2.0",
+      "acceptedTermsAndConditionsDate": "2021-01-11T11:47:31Z",
+      "acceptedTermsAndConditionsVersion": "PorscheConnectTAC/SE/sv_SE/v1.3",
+      "preferredDealerId": "x8x42820-a9ff-11e8-917b-bb5x3xb96x6x",
+      "dateOfBirth": "19771108",
+      "dealers": ["88642820-a9ff-11e8-917b-bbx7xxl96c64"],
+      "firstName": "Test",
+      "identityVerificationState": "UNVERIFIED",
+      "lastName": "User",
+      "language": "sv-se",
+      "localizedFirstName": "Test",
+      "localizedLastName": "User",
+      "mbbUid": "xxJrvdmuxxkbEwG61xW65zphiix",
+      "mbbNames": ["MBB-DE"],
+      "salutation": "0001",
+      "salutationValue": "Herr",
+      "status": "CONFIRMED",
+      "preferredCountry": "SE",
+      "addresses": [
+        {
+          "addressId": "axxexnudxxdxmxbx",
+          "ciamId": "xxghexxcbdwxyxuv",
+          "usage": "home",
+          "street1": "Street",
+          "houseNumber": "3",
+          "city": "city",
+          "postalCode": "000000",
+          "postalCodeRegion": "003",
+          "postalCodeRegionValue": "Region",
+          "country": "SE",
+          "isStandard": true,
+          "isExpressBuyAddress": false,
+          "isBillingAddress": false,
+          "isDeliveryAddress": false
+        }
+      ],
+      "emails": [
+        {
+          "emailId": "vwsinxmbopjzxxhkx",
+          "email": "testuser@testemail.com",
+          "isVerified": true,
+          "isPending": false,
+          "isStandard": true,
+          "usage": "home"
+        }
+      ],
+      "mobiles": [
+        {
+          "mobileId": "dlmtdyxrdddkbexv",
+          "number": "+4623453543",
+          "isVerified": true,
+          "isPending": false,
+          "isStandard": true,
+          "usage": "home"
+        }
+      ],
+      "phones": [],
+      "vehicles": [
+        {
+          "vin": "WPTAYCAN",
+          "state": "N",
+          "ownershipType": "owner",
+          "invitedBy": "xx642820-a9ff-11e8-917b-bxxxxxexxcxx",
+          "pcc": true,
+          "confirmed": true,
+          "validFrom": "2021-01-19T13:28:19Z"
+        }
+      ]
+    },
+    "https://api.porsche.com/core/api/v2/se/sv_SE/vehicles/WPTAYCAN/permissions": {
+      "userIsActive": true,
+      "userRoleStatus": "ENABLED"
+    },
+    "https://api.porsche.com/service-vehicle/service-access/WPTAYCAN/details": {
+      "vehicleServiceEnabledMap": {
+        "RAH": "HIDDEN",
+        "RPC": "ENABLED",
+        "CF": "ENABLED",
+        "CN": "ENABLED",
+        "ORU": "ENABLED",
+        "RBC": "ENABLED",
+        "TAP": "ENABLED",
+        "GF": "ENABLED",
+        "RTS": "ENABLED",
+        "SA": "ENABLED",
+        "CC": "ENABLED"
+      },
+      "serviceAccessDetails": [
+        {
+          "serviceId": "rclima_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["RPC", "RBC"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "statusreport_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["CC"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "uota_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["ORU"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "carfinder_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["CF"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "rhonk_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "mond_applemusic_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "mond_applepodcasts_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "speedalert_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["SA"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "rolesrights_authorization_v2",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "rprofilesandtimer_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "dwap",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["TAP"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "trip_statistic_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["RTS"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "rlu_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["CC"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "geofence_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["GF"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "rbatterycharge_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["RPC", "RBC"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "nc_destsync_v2",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": ["CN"],
+          "actionUrl": null,
+          "isConfigurable": null
+        },
+        {
+          "serviceId": "otafc_predmaint_v1",
+          "disabled": false,
+          "disabledReason": null,
+          "dependingServices": [],
+          "actionUrl": null,
+          "isConfigurable": null
+        }
+      ]
+    },
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request/abc/status": {
+      "actionState": "OK"
+    },
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/current/request/abc": {
+      "vin": "WPTAYCAN",
+      "oilLevel": null,
+      "fuelLevel": null,
+      "batteryLevel": {
+        "value": 96,
+        "unit": "PERCENT",
+        "unitTranslationKey": "GRAY_SLICE_UNIT_PERCENT"
+      },
+      "remainingRanges": {
+        "conventionalRange": {
+          "distance": null,
+          "engineType": "UNSUPPORTED",
+          "isPrimary": false
+        },
+        "electricalRange": {
+          "distance": {
+            "value": 348,
+            "unit": "KILOMETERS",
+            "originalValue": 348,
+            "originalUnit": "KILOMETERS",
+            "valueInKilometers": 348,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+          },
+          "engineType": "ELECTRIC",
+          "isPrimary": true
+        }
+      },
+      "mileage": {
+        "value": 13247,
+        "unit": "KILOMETERS",
+        "originalValue": 13247,
+        "originalUnit": "KILOMETERS",
+        "valueInKilometers": 13247,
+        "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+      },
+      "parkingLight": "OFF",
+      "parkingLightStatus": null,
+      "parkingBreak": "ACTIVE",
+      "parkingBreakStatus": null,
+      "doors": {
+        "frontLeft": "CLOSED_LOCKED",
+        "frontRight": "CLOSED_LOCKED",
+        "backLeft": "CLOSED_LOCKED",
+        "backRight": "CLOSED_LOCKED",
+        "frontTrunk": "CLOSED_UNLOCKED",
+        "backTrunk": "CLOSED_LOCKED",
+        "overallLockStatus": "CLOSED_LOCKED"
+      },
+      "serviceIntervals": {
+        "oilService": { "distance": null, "time": null },
+        "inspection": {
+          "distance": {
+            "value": -16800,
+            "unit": "KILOMETERS",
+            "originalValue": -16800,
+            "originalUnit": "KILOMETERS",
+            "valueInKilometers": -16800,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+          },
+          "time": {
+            "value": -415,
+            "unit": "DAYS",
+            "unitTranslationKey": "GRAY_SLICE_UNIT_DAY"
+          }
+        }
+      },
+      "tires": {
+        "frontLeft": {
+          "currentPressure": {
+            "value": 3,
+            "unit": "BAR",
+            "valueInBar": 3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.3,
+            "unit": "BAR",
+            "valueInBar": 3.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.3,
+            "unit": "BAR",
+            "valueInBar": 0.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "frontRight": {
+          "currentPressure": {
+            "value": 3,
+            "unit": "BAR",
+            "valueInBar": 3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.3,
+            "unit": "BAR",
+            "valueInBar": 3.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.3,
+            "unit": "BAR",
+            "valueInBar": 0.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "backLeft": {
+          "currentPressure": {
+            "value": 3.2,
+            "unit": "BAR",
+            "valueInBar": 3.2,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.8,
+            "unit": "BAR",
+            "valueInBar": 3.8,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.6,
+            "unit": "BAR",
+            "valueInBar": 0.6,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "backRight": {
+          "currentPressure": {
+            "value": 3.2,
+            "unit": "BAR",
+            "valueInBar": 3.2,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.8,
+            "unit": "BAR",
+            "valueInBar": 3.8,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.6,
+            "unit": "BAR",
+            "valueInBar": 0.6,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        }
+      },
+      "windows": {
+        "frontLeft": "CLOSED",
+        "frontRight": "CLOSED",
+        "backLeft": "CLOSED",
+        "backRight": "CLOSED",
+        "roof": "UNSUPPORTED",
+        "maintenanceHatch": "UNSUPPORTED",
+        "sunroof": { "status": "UNSUPPORTED", "positionInPercent": null }
+      },
+      "parkingTime": "16.11.2021 14:17:03",
+      "overallOpenStatus": "CLOSED"
+    },
+    "https://api.porsche.com/core/api/v3/de/de_DE/vehicles": [
+      {
+        "vin": "WPTAYCAN",
+        "isPcc": true,
+        "relationship": "OWNER",
+        "maxSecondaryUsers": 5,
+        "modelDescription": "Taycan Turbo S",
+        "modelType": "Y1AFH1",
+        "modelYear": "2021",
+        "exteriorColor": "Ice Grey Metallic/Ice Grey Metallic",
+        "exteriorColorHex": "#2d1746",
+        "spinEnabled": true,
+        "loginMethod": "PORSCHE_ID",
+        "pictures": [],
+        "attributes": [],
+        "validFrom": "2021-01-15T15:38:03.000Z"
+      }
+    ],
+    "https://api.porsche.com/service-vehicle/vehicle-summary/WPTAYCAN": {
+      "modelDescription": "Taycan Turbo S",
+      "nickName": null
+    },
+    "https://api.porsche.com/service-vehicle/vcs/capabilities/WPTAYCAN": {
+      "displayParkingBrake": true,
+      "needsSPIN": true,
+      "hasRDK": true,
+      "engineType": "BEV",
+      "carModel": "J1",
+      "onlineRemoteUpdateStatus": { "editableByUser": true, "active": true },
+      "heatingCapabilities": {
+        "frontSeatHeatingAvailable": true,
+        "rearSeatHeatingAvailable": true
+      },
+      "steeringWheelPosition": "LEFT",
+      "hasHonkAndFlash": true
+    },
+    "https://api.porsche.com/service-vehicle/car-finder/WPTAYCAN/position": {
+      "carCoordinate": {
+        "geoCoordinateSystem": "WGS84",
+        "latitude": 63.883564,
+        "longitude": 12.884809
+      },
+      "heading": 273
+    },
+    "https://api.porsche.com/e-mobility/de/de_DE/J1/WPTAYCAN?timezone=Europe/Stockholm": {
+      "batteryChargeStatus": {
+        "plugState": "DISCONNECTED",
+        "lockState": "UNLOCKED",
+        "chargingState": "OFF",
+        "chargingReason": "INVALID",
+        "externalPowerSupplyState": "UNAVAILABLE",
+        "ledColor": "NONE",
+        "ledState": "OFF",
+        "chargingMode": "OFF",
+        "stateOfChargeInPercentage": 96,
+        "remainingChargeTimeUntil100PercentInMinutes": null,
+        "remainingERange": {
+          "value": 348,
+          "unit": "KILOMETERS",
+          "originalValue": 348,
+          "originalUnit": "KILOMETERS",
+          "valueInKilometers": 348,
+          "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+        },
+        "remainingCRange": null,
+        "chargingTargetDateTime": "2021-11-12T15:35",
+        "status": null,
+        "chargeRate": {
+          "value": 0,
+          "unit": "KM_PER_MIN",
+          "valueInKmPerHour": 0,
+          "unitTranslationKey": "EM.COMMON.UNIT.KM_PER_MIN"
+        },
+        "chargingPower": 0,
+        "chargingTargetDateTimeOplEnforced": null,
+        "chargingInDCMode": false
+      },
+      "directCharge": { "disabled": true, "isActive": false },
+      "directClimatisation": {
+        "climatisationState": "OFF",
+        "remainingClimatisationTime": null
+      },
+      "chargingStatus": "NOT_CHARGING",
+      "timers": [
+        {
+          "timerID": "1",
+          "departureDateTime": "2021-11-17T21:18:00.000Z",
+          "preferredChargingTimeEnabled": false,
+          "preferredChargingStartTime": null,
+          "preferredChargingEndTime": null,
+          "frequency": "SINGLE",
+          "climatised": true,
+          "weekDays": null,
+          "active": false,
+          "chargeOption": true,
+          "targetChargeLevel": 85,
+          "e3_CLIMATISATION_TIMER_ID": "4",
+          "climatisationTimer": false
+        }
+      ],
+      "climateTimer": null,
+      "chargingProfiles": {
+        "currentProfileId": 0,
+        "profiles": [
+          {
+            "profileId": 4,
+            "profileName": "Allgemein",
+            "profileActive": false,
+            "chargingOptions": {
+              "minimumChargeLevel": 25,
+              "smartChargingEnabled": true,
+              "preferredChargingEnabled": false,
+              "preferredChargingTimeStart": "00:00",
+              "preferredChargingTimeEnd": "06:00"
+            },
+            "position": { "latitude": 0, "longitude": 0 }
+          }
+        ]
+      },
+      "errorInfo": []
+    },
+    "https://api.porsche.com/service-vehicle/de/de_DE/vehicle-data/WPTAYCAN/stored": {
+      "vin": "WPTAYCAN",
+      "oilLevel": null,
+      "fuelLevel": null,
+      "batteryLevel": {
+        "value": 96,
+        "unit": "PERCENT",
+        "unitTranslationKey": "GRAY_SLICE_UNIT_PERCENT"
+      },
+      "remainingRanges": {
+        "conventionalRange": {
+          "distance": null,
+          "engineType": "UNSUPPORTED",
+          "isPrimary": false
+        },
+        "electricalRange": {
+          "distance": {
+            "value": 348,
+            "unit": "KILOMETERS",
+            "originalValue": 348,
+            "originalUnit": "KILOMETERS",
+            "valueInKilometers": 348,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+          },
+          "engineType": "ELECTRIC",
+          "isPrimary": true
+        }
+      },
+      "mileage": {
+        "value": 13247,
+        "unit": "KILOMETERS",
+        "originalValue": 13247,
+        "originalUnit": "KILOMETERS",
+        "valueInKilometers": 13247,
+        "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+      },
+      "parkingLight": "OFF",
+      "parkingLightStatus": null,
+      "parkingBreak": "ACTIVE",
+      "parkingBreakStatus": null,
+      "doors": {
+        "frontLeft": "CLOSED_LOCKED",
+        "frontRight": "CLOSED_LOCKED",
+        "backLeft": "CLOSED_LOCKED",
+        "backRight": "CLOSED_LOCKED",
+        "frontTrunk": "CLOSED_UNLOCKED",
+        "backTrunk": "CLOSED_LOCKED",
+        "overallLockStatus": "CLOSED_LOCKED"
+      },
+      "serviceIntervals": {
+        "oilService": { "distance": null, "time": null },
+        "inspection": {
+          "distance": {
+            "value": -16800,
+            "unit": "KILOMETERS",
+            "originalValue": -16800,
+            "originalUnit": "KILOMETERS",
+            "valueInKilometers": -16800,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_KILOMETER"
+          },
+          "time": {
+            "value": -415,
+            "unit": "DAYS",
+            "unitTranslationKey": "GRAY_SLICE_UNIT_DAY"
+          }
+        }
+      },
+      "tires": {
+        "frontLeft": {
+          "currentPressure": {
+            "value": 3,
+            "unit": "BAR",
+            "valueInBar": 3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.3,
+            "unit": "BAR",
+            "valueInBar": 3.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.3,
+            "unit": "BAR",
+            "valueInBar": 0.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "frontRight": {
+          "currentPressure": {
+            "value": 3,
+            "unit": "BAR",
+            "valueInBar": 3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.3,
+            "unit": "BAR",
+            "valueInBar": 3.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.3,
+            "unit": "BAR",
+            "valueInBar": 0.3,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "backLeft": {
+          "currentPressure": {
+            "value": 3.2,
+            "unit": "BAR",
+            "valueInBar": 3.2,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.8,
+            "unit": "BAR",
+            "valueInBar": 3.8,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.6,
+            "unit": "BAR",
+            "valueInBar": 0.6,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        },
+        "backRight": {
+          "currentPressure": {
+            "value": 3.2,
+            "unit": "BAR",
+            "valueInBar": 3.2,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "optimalPressure": {
+            "value": 3.8,
+            "unit": "BAR",
+            "valueInBar": 3.8,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "differencePressure": {
+            "value": 0.6,
+            "unit": "BAR",
+            "valueInBar": 0.6,
+            "unitTranslationKey": "GRAY_SLICE_UNIT_BAR"
+          },
+          "tirePressureDifferenceStatus": "DIVERGENT"
+        }
+      },
+      "windows": {
+        "frontLeft": "CLOSED",
+        "frontRight": "CLOSED",
+        "backLeft": "CLOSED",
+        "backRight": "CLOSED",
+        "roof": "UNSUPPORTED",
+        "maintenanceHatch": "UNSUPPORTED",
+        "sunroof": { "status": "UNSUPPORTED", "positionInPercent": null }
+      },
+      "parkingTime": "16.11.2021 14:17:03",
+      "overallOpenStatus": "CLOSED"
+    }
+  }
+}

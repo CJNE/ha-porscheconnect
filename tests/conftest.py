@@ -7,6 +7,8 @@ import pytest
 from pyporscheconnectapi.exceptions import PorscheException
 from pyporscheconnectapi.exceptions import WrongCredentials
 
+from . import load_fixture_json
+
 # from unittest.mock import Mock
 
 pytest_plugins = "pytest_homeassistant_custom_component"
@@ -41,20 +43,22 @@ def auto_enable_custom_integrations(
 def mock_connection():
     """Prevent setup."""
 
-    from .fixtures.taycan import GET, POST
+    fixture_name = "taycan"
+    fixture_data = load_fixture_json(fixture_name)
+    print(f"Using mock connedion fixture {fixture_name}")
 
     async def mock_get(self, url, params=None):
-        print(f"Mock GET {url}")
+        print(f"Mock connection GET {url}")
         print(params)
-        ret = GET.get(url, {})
+        ret = fixture_data["GET"].get(url, {})
         print(ret)
         return ret
 
     async def mock_post(self, url, data=None, json=None):
-        print(f"Mock POST {url}")
+        print(f"Mock connection POST {url}")
         print(data)
         print(json)
-        ret = POST.get(url)
+        ret = fixture_data["POST"].get(url, {})
         print(ret)
         return ret
 
@@ -65,7 +69,47 @@ def mock_connection():
     async def mock_getAllTokens(self):
         return {}
 
-    print("Using mock connedion")
+    with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
+        "pyporscheconnectapi.client.Connection.post", mock_post
+    ), patch(
+        "pyporscheconnectapi.client.Connection.getAllTokens", mock_getAllTokens
+    ), patch(
+        "pyporscheconnectapi.client.Connection._requestToken", mock_tokens
+    ):
+        yield
+
+
+@pytest.fixture
+def mock_connection_privacy():
+    """Prevent setup."""
+
+    fixture_name = "taycan_privacy"
+    fixture_data = load_fixture_json(fixture_name)
+
+    print(f"Using mock connedion fixture {fixture_name}")
+
+    async def mock_get(self, url, params=None):
+        print(f"Mock connection GET {url}")
+        print(params)
+        ret = fixture_data["GET"].get(url, {})
+        print(ret)
+        return ret
+
+    async def mock_post(self, url, data=None, json=None):
+        print(f"Mock connection POST {url}")
+        print(data)
+        print(json)
+        ret = fixture_data["POST"].get(url, {})
+        print(ret)
+        return ret
+
+    async def mock_tokens(self, application, wasExpired=False):
+        print(f"Request mock token for {application}")
+        return {}
+
+    async def mock_getAllTokens(self):
+        return {}
+
     with patch("pyporscheconnectapi.client.Connection.get", mock_get), patch(
         "pyporscheconnectapi.client.Connection.post", mock_post
     ), patch(

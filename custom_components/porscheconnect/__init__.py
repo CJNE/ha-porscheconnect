@@ -116,6 +116,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, config_entry, controller):
         """Initialize global Porsche data updater."""
         _LOGGER.debug("Init new data update coordinator")
+        _LOGGER.debug(config_entry)
         self.controller = controller
         self.vehicles = None
         self.hass = hass
@@ -272,6 +273,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
+    print("WILL RELOAD")
+    print(entry)
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
 
