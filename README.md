@@ -82,7 +82,7 @@ custom_components/porscheconnect/switch.py
 
 ## Contributions are welcome!
 
-If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
+If you want to contribute to this please read the [Contribution guidelines](https://github.com/CJNE/ha-porscheconnect/blob/main/CONTRIBUTING.md)
 
 ## Credits
 
