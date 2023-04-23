@@ -27,7 +27,7 @@ PORSCHE_COMPONENTS = [
 
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.11"
+VERSION = "0.0.13"
 ISSUE_URL = "https://github.com/cjne/ha-porscheconnect/issues"
 
 STARTUP_MESSAGE = f"""
