@@ -99,6 +99,7 @@
         "TAP": "DISABLED",
         "GF": "DISABLED",
         "RTS": "DISABLED",
+        "VSR": "ENABLED",
         "SA": "DISABLED",
         "CC": "ENABLED"
       },

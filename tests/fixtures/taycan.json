@@ -100,7 +100,8 @@
         "GF": "ENABLED",
         "RTS": "ENABLED",
         "SA": "ENABLED",
-        "CC": "ENABLED"
+        "CC": "ENABLED",
+        "VSR": "DISABLED"
       },
       "serviceAccessDetails": [
         {
