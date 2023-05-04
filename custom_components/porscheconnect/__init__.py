@@ -172,6 +172,16 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     for item in vdata["chargingProfiles"]["profiles"]
                 }
             )
+            
+
+        vdata["timersDict"] = {}
+        vdata["currentTimerId"] = None
+        for item in vdata.get("timers", []):
+            if item.get("active", False) and vdata["currentTimerId"] is None:
+                vdata["currentTimerId"] = item["timerID"]
+            vdata["timersDict"].update({item["timerID"]: item})
+
+
         if vdata["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
             vdata.update(await self.controller.getPosition(vin))
         return vdata
@@ -225,7 +235,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                             sensor_meta,
                             sensor_data,
                         )
-                        if sensor_data is not None:
+                        if sensor_data is not None or len(sensor_meta.attributes) > 0:
                             ha_type = "sensor"
                             if isinstance(sensor_meta, SwitchMeta):
                                 ha_type = "switch"
