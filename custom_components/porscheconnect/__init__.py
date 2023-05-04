@@ -172,7 +172,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     for item in vdata["chargingProfiles"]["profiles"]
                 }
             )
-            
 
         vdata["timersDict"] = {}
         vdata["currentTimerId"] = None
@@ -180,7 +179,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             if item.get("active", False) and vdata["currentTimerId"] is None:
                 vdata["currentTimerId"] = item["timerID"]
             vdata["timersDict"].update({item["timerID"]: item})
-
 
         if vdata["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
             vdata.update(await self.controller.getPosition(vin))
