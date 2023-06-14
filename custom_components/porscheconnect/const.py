@@ -125,6 +125,12 @@ DATA_MAP = [
         "mdi:battery-charging",
         attributes=[SensorAttr("profiles", "chargingProfilesDict")],
     ),
+    SensorMeta(
+        "charging timer",
+        "currentTimerId",
+        "mdi:car-clock",
+        attributes=[SensorAttr("timers", "timersDict")],
+    ),
     SwitchMeta(
         "climate",
         "directClimatisation.climatisationState",
@@ -176,6 +182,7 @@ DEVICE_NAMES = {
     "remainingRanges.electricalRange.distance": "range",
     "chargingStatus": "charger",
     "chargingProfiles.currentProfileId": "charging profile",
+    "currentTimerId": "charging timer",
     "directClimatisation.climatisationState": "climatisation",
     "directCharge.isActive": "direct charge",
     "doors.overallLockStatus": "door lock",
