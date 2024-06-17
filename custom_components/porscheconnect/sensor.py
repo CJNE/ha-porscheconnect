@@ -4,7 +4,12 @@ from typing import Optional
 from dataclasses import dataclass
 
 from . import DOMAIN as PORSCHE_DOMAIN
-from . import PorscheConnectDataUpdateCoordinator, PorscheVehicle, PorscheBaseEntity
+from . import (
+    PorscheConnectDataUpdateCoordinator,
+    PorscheVehicle,
+    PorscheBaseEntity,
+    getFromDict,
+)
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import (
@@ -39,6 +44,51 @@ class PorscheSensorEntityDescription(SensorEntityDescription):
 
 
 SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
+    PorscheSensorEntityDescription(
+        name="Target state of charge",
+        key="charging_target",
+        translation_key="charging_target",
+        measurement_node="CHARGING_SUMMARY",
+        measurement_leaf="chargingProfile.minSoC",
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        icon="mdi:battery-high",
+    ),
+    PorscheSensorEntityDescription(
+        name="Charging status",
+        key="charging_status",
+        translation_key="charging_status",
+        measurement_node="CHARGING_SUMMARY",
+        measurement_leaf="status",
+        icon="mdi:battery-charging",
+        device_class=SensorDeviceClass.ENUM,
+    ),
+    PorscheSensorEntityDescription(
+        name="Remaining range on electricity",
+        key="remaining_range_electric",
+        translation_key="remaining_range_electric",
+        measurement_node="E_RANGE",
+        measurement_leaf="kilometers",
+        icon="mdi:gauge",
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+    ),
+    PorscheSensorEntityDescription(
+        name="State of charge",
+        key="state of charge",
+        translation_key="state_of_charge",
+        measurement_node="BATTERY_LEVEL",
+        measurement_leaf="percent",
+        icon="mdi:battery-medium",
+        device_class=SensorDeviceClass.BATTERY,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+    ),
     PorscheSensorEntityDescription(
         name="Mileage",
         key="mileage",
@@ -95,11 +145,18 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
 
-        state = (
+        state = getFromDict(
             self.coordinator.getDataByVIN(
                 self.vehicle["vin"], self.entity_description.measurement_node
-            )
-        )[self.entity_description.measurement_leaf]
+            ),
+            self.entity_description.measurement_leaf,
+        )
+
+        # state = (
+        #    self.coordinator.getDataByVIN(
+        #        self.vehicle["vin"], self.entity_description.measurement_node
+        #    )
+        # )[self.entity_description.measurement_leaf]
 
         _LOGGER.debug(
             "Updating sensor '%s' of %s with state '%s'",

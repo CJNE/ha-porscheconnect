@@ -1,12 +1,12 @@
 {
-  "domain": "porscheconnect",
-  "name": "Porsche Connect",
-  "codeowners": ["@cjne"],
-  "config_flow": true,
-  "dependencies": [],
-  "documentation": "https://github.com/CJNE/ha-porscheconnect",
-  "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/CJNE/ha-porscheconnect/issues",
-  "requirements": ["pyporscheconnectapi==0.2.0"],
-  "version": "0.1.0"
+    "domain": "porscheconnect",
+    "name": "Porsche Connect",
+    "codeowners": ["@cjne"],
+    "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/CJNE/ha-porscheconnect",
+    "iot_class": "cloud_polling",
+    "issue_tracker": "https://github.com/CJNE/ha-porscheconnect/issues",
+    "requirements": ["pyporscheconnectapi==0.2.0"],
+    "version": "0.1.0",
 }

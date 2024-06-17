@@ -2,4 +2,4 @@ homeassistant
 pyporscheconnectapi
 flake8
 pytest
-reorder-python-imports
+reorder - python - imports
