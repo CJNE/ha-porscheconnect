@@ -16,30 +16,24 @@ from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.device_registry import DeviceInfo
+
 from homeassistant.util import slugify
 from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 
-from .const import BinarySensorMeta
-from .const import DATA_MAP
 from .const import DOMAIN
-from .const import LockMeta
-from .const import NumberMeta
 from .const import STARTUP_MESSAGE
-from .const import SwitchMeta
 from .services import setup_services
 from .services import unload_services
 
 
-# from homeassistant.const import ATTR_BATTERY_CHARGING
-# from homeassistant.const import ATTR_BATTERY_LEVEL
-# from .const import PORSCHE_COMPONENTS
-
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=300)
 
-PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock", "number"]
+# PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock", "number"]
+PLATFORMS = ["sensor"]
 
 
 class PinError(PorscheException):
@@ -57,13 +51,12 @@ def getFromDict(dataDict, keyString):
 
 
 @callback
-def _async_save_tokens(hass, config_entry, access_tokens):
-    _LOGGER.debug("Saving tokens")
+def _async_save_token(hass, config_entry, access_token):
     hass.config_entries.async_update_entry(
         config_entry,
         data={
             **config_entry.data,
-            CONF_ACCESS_TOKEN: access_tokens,
+            CONF_ACCESS_TOKEN: access_token,
         },
     )
 
@@ -77,22 +70,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
-        _LOGGER.info(STARTUP_MESSAGE)
 
     websession = aiohttp_client.async_get_clientsession(hass)
 
     connection = Connection(
         entry.data.get("email"),
         entry.data.get("password"),
-        tokens=entry.data.get(CONF_ACCESS_TOKEN, None),
+        token=entry.data.get(CONF_ACCESS_TOKEN, None),
         websession=websession,
     )
-    lang = "de"
-    country = "de"
-    controller = Client(connection, country, lang)
+    controller = Client(connection)
 
-    access_tokens = await controller.getAllTokens()
-    _async_save_tokens(hass, entry, access_tokens)
+    access_token = await controller.getToken()
+    _async_save_token(hass, entry, access_token)
 
     coordinator = PorscheConnectDataUpdateCoordinator(
         hass, config_entry=entry, controller=controller
@@ -100,29 +90,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    for platform in PLATFORMS:
-        hass.async_add_job(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
+    await hass.config_entries.async_forward_entry_setups(
+        entry, [platform for platform in PLATFORMS]
+    )
+
+    # for platform in PLATFORMS:
+    #    hass.async_add_job(
+    #        hass.config_entries.async_forward_entry_setup(entry, platform)
+    #    )
 
     setup_services(hass)
 
     return True
 
 
-class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
+class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
     """Class to manage fetching Porsche data."""
 
-    def __init__(self, hass, config_entry, controller):
-        """Initialize global Porsche data updater."""
-        _LOGGER.debug("Init new data update coordinator")
-        _LOGGER.debug(config_entry)
+    def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, controller):
         self.controller = controller
         self.vehicles = None
         self.hass = hass
         self.config_entry = config_entry
-
-        self.data = {}
 
         scan_interval = timedelta(
             seconds=config_entry.options.get(
@@ -136,60 +125,28 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
     def getDataByVIN(self, vin, key):
-        # if self.data is None:
-        #     return None
         return getFromDict(self.data.get(vin, {}), key)
 
     async def _update_data_for_vehicle(self, vehicle):
         vin = vehicle["vin"]
-        model = vehicle["capabilities"]["carModel"]
-        services = await self.controller.getServices(vin)
-        was_privacy_mode = vehicle["privacyMode"]
-        is_privacy_mode = services["privacyMode"]
-        vehicle["privacyMode"] = is_privacy_mode
-        vdata = {}
-        vdata["privacyMode"] = vehicle["privacyMode"]
-        vdata["services"] = services
-        if was_privacy_mode != is_privacy_mode:
-            # Reload config entry to enable all entities that are now working
-            _LOGGER.debug(
-                "Vehicle %s privacy mode changed, will reload config entry", vin
-            )
-            await async_reload_entry(self.hass, self.config_entry)
+        mdata = {}
 
-        if vehicle["privacyMode"]:
-            _LOGGER.debug("Vehicle %s is in privacy mode, will not fetch data", vin)
-            return vdata
+        vdata = [
+            m
+            for m in (await self.controller.getStoredOverview(vin))["measurements"]
+            if m["status"]["isEnabled"] == True
+        ]
 
-        vdata.update(await self.controller.getStoredOverview(vin))
-        vdata.update(await self.controller.getEmobility(vin, model))
+        for m in vdata:
+            mdata[m["key"]] = m["value"]
 
-        if vdata.get("chargingProfiles", None) is not None:
-            vdata["chargingProfilesDict"] = {}
-            vdata["chargingProfilesDict"].update(
-                {
-                    item["profileId"]: item
-                    for item in vdata["chargingProfiles"]["profiles"]
-                }
-            )
-
-        vdata["timersDict"] = {}
-        vdata["currentTimerId"] = None
-        for item in vdata.get("timers", []):
-            if item.get("active", False) and vdata["currentTimerId"] is None:
-                vdata["currentTimerId"] = item["timerID"]
-            vdata["timersDict"].update({item["timerID"]: item})
-
-        if vdata["services"]["vehicleServiceEnabledMap"]["CF"] == "ENABLED":
-            vdata.update(await self.controller.getPosition(vin))
-        return vdata
+        return mdata
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
         if self.controller.isTokenRefreshed():
-            _LOGGER.debug("Saving new tokens in config_entry")
-            access_tokens = await self.controller.getAllTokens()
-            _async_save_tokens(self.hass, self.config_entry, access_tokens)
+            access_token = await self.controller.getToken()
+            _async_save_token(self.hass, self.config_entry, access_token)
 
         data = {}
         try:
@@ -199,63 +156,22 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
 
                 for vehicle in all_vehicles:
                     vin = vehicle["vin"]
-                    permission_for_vin = await self.controller.isAllowed(vin)
-                    if not permission_for_vin["allowed"]:
-                        _LOGGER.warning(
-                            "User is not granted access to vehicle VIN %s, reason %s",
-                            vin,
-                            permission_for_vin["reason"],
-                        )
-                        continue
-                    _LOGGER.info(f"User is authorized for vehicle vin {vin}")
-                    summary = await self.controller.getSummary(vin)
-                    _LOGGER.debug("Fetching initial data for vehicle %s", vin)
-                    vehicle["name"] = summary["nickName"] or summary["modelDescription"]
-                    vehicle["capabilities"] = await self.controller.getCapabilities(vin)
-                    vehicle["services"] = await self.controller.getServices(vin)
-                    vehicle["privacyMode"] = vehicle["services"]["privacyMode"]
-                    # Find out what sensors are supported and store in vehicle
-                    vdata = {}
-                    vdata = await self._update_data_for_vehicle(vehicle)
+                    vehicle["name"] = vehicle["customName"] or vehicle["modelName"]
+                    mdata = await self._update_data_for_vehicle(vehicle)
+
                     vehicle["components"] = {
                         "sensor": [],
-                        "switch": [],
-                        "lock": [],
-                        "binary_sensor": [],
-                        "number": [],
                     }
-                    _LOGGER.debug(vdata)
-                    for sensor_meta in DATA_MAP:
-                        sensor_data = getFromDict(vdata, sensor_meta.key)
-                        _LOGGER.debug(
-                            "Appending entity for sensor if data is not none: %s %s %s",
-                            sensor_meta.key,
-                            sensor_meta,
-                            sensor_data,
-                        )
-                        if sensor_data is not None or len(sensor_meta.attributes) > 0:
-                            ha_type = "sensor"
-                            if isinstance(sensor_meta, SwitchMeta):
-                                ha_type = "switch"
-                            if isinstance(sensor_meta, LockMeta):
-                                ha_type = "lock"
-                            if isinstance(sensor_meta, NumberMeta):
-                                ha_type = "number"
-                            elif isinstance(sensor_meta, BinarySensorMeta):
-                                ha_type = "binary_sensor"
-                            vehicle["components"][ha_type].append(sensor_meta)
 
-                    _LOGGER.debug(f"Found vehicle {vehicle['name']}")
-                    _LOGGER.debug(vehicle)
                     self.vehicles.append(vehicle)
-                    data[vin] = vdata
+                    data[vin] = mdata
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         vin = vehicle["vin"]
-                        vdata = await self._update_data_for_vehicle(vehicle)
-                        data[vin] = vdata
-                    # _LOGGER.debug(data)
+                        mdata = await self._update_data_for_vehicle(vehicle)
+                        data[vin] = mdata
+
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
         return data
@@ -287,34 +203,47 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     await async_setup_entry(hass, entry)
 
 
-class PorscheDevice(CoordinatorEntity):
-    """Representation of a Porsche device."""
+class PorscheVehicle:
+    """Representation of a Porsche vehicle"""
 
-    def __init__(self, vehicle, coordinator):
-        """Initialise the Porsche device."""
+    def __init__(
+        self,
+        vehicle_base: dict,
+    ) -> None:
+        self.data = vehicle_base
+
+    @property
+    def vin(self) -> str:
+        """Get the VIN (vehicle identification number) of the vehicle."""
+        return self.data["vin"]
+
+
+class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
+    """Common base for entities"""
+
+    coordinator: PorscheConnectDataUpdateCoordinator
+
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+    ) -> None:
+        """Initialise the entity"""
         super().__init__(coordinator)
+
         self.vehicle = vehicle
-        self.vin = vehicle["vin"]
-        self._name = vehicle["name"]
-        self._unique_id = slugify(vehicle["vin"])
-        self._attributes = {}
 
-    @property
-    def name(self):
-        """Return the name of the device."""
-        return self._name
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, self.vehicle["vin"])},
+            name=vehicle["name"],
+            model=vehicle["modelName"],
+            manufacturer="Porsche",
+        )
 
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self._unique_id
+        # self._unique_id = slugify(vehicle["vin"])
+        # self._attributes = {}
 
-    @property
-    def device_info(self):
-        """Return the device_info of the device."""
-        return {
-            "identifiers": {(DOMAIN, self.vehicle["vin"])},
-            "name": self.vehicle["name"],
-            "manufacturer": "Porsche",
-            "model": self.vehicle["modelDescription"],
-        }
+    async def async_added_to_hass(self) -> None:
+        """When entity is added to hass."""
+        await super().async_added_to_hass()
+        self._handle_coordinator_update()

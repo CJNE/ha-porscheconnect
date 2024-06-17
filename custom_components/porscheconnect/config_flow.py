@@ -37,11 +37,11 @@ async def validate_input(hass: core.HomeAssistant, data):
         _LOGGER.info("Login failed, wrong credentials.")
         raise InvalidAuth
 
-    tokens = await conn.getAllTokens()
+    token = await conn.getToken()
     #    await conn.close()
 
     # Return info that you want to store in the config entry.
-    return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: tokens}
+    return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

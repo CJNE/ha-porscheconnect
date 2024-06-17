@@ -1,91 +1,112 @@
 """Support for the Porsche Connect sensors."""
 import logging
 from typing import Optional
-
-from homeassistant.const import LENGTH_KILOMETERS
-from homeassistant.const import PERCENTAGE
-from homeassistant.helpers.entity import Entity
+from dataclasses import dataclass
 
 from . import DOMAIN as PORSCHE_DOMAIN
-from . import PorscheDevice
-from .const import DEVICE_NAMES
-from .const import HA_SENSOR
-from .const import SensorMeta
+from . import PorscheConnectDataUpdateCoordinator, PorscheVehicle, PorscheBaseEntity
 
-# from homeassistant.const import LENGTH_MILES
-# from homeassistant.const import TIME_DAYS
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 
-# from homeassistant.const import TEMP_CELSIUS
-# from homeassistant.const import TEMP_FAHRENHEIT
+from homeassistant.const import (
+    PERCENTAGE,
+    STATE_UNKNOWN,
+    UnitOfElectricCurrent,
+    UnitOfLength,
+    UnitOfVolume,
+)
+
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+
+import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the Porsche sensors by config_entry."""
-    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
-    entities = []
-    for vehicle in coordinator.vehicles:
-        # if vehicle["components"].get(HA_SENSOR, None) is None:
-        #    continue
-        for sensor in vehicle["components"][HA_SENSOR]:
-            entities.append(PorscheSensor(vehicle, coordinator, sensor))
+@dataclass(frozen=True)
+class PorscheSensorEntityDescription(SensorEntityDescription):
+    measurement_node: str | None = None
+    measurement_leaf: str | None = None
+    # is_available: Callable[[PorscheVehicle], bool] = lambda v: v.is_mf_enabled
+
+
+SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
+    PorscheSensorEntityDescription(
+        name="Mileage",
+        key="mileage",
+        translation_key="mileage",
+        measurement_node="MILEAGE",
+        measurement_leaf="kilometers",
+        icon="mdi:counter",
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=0,
+    ),
+]
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the sensors from config entry."""
+    coordinator: PorscheConnectDataUpdateCoordinator = hass.data[PORSCHE_DOMAIN][
+        config_entry.entry_id
+    ]
+
+    entities = [
+        PorscheSensor(coordinator, vehicle, description)
+        for vehicle in coordinator.vehicles
+        for description in SENSOR_TYPES
+    ]
+
     async_add_entities(entities, True)
 
 
-class PorscheSensor(PorscheDevice, Entity):
-    """Representation of Porsche sensors."""
+class PorscheSensor(PorscheBaseEntity, SensorEntity):
+    """Representation of a Porsche sensor"""
 
-    def __init__(self, vehicle, coordinator, sensor_meta: SensorMeta):
-        """Initialize of the sensor."""
-        super().__init__(vehicle, coordinator)
-        self.key = sensor_meta.key
-        self.meta = sensor_meta
-        device_name = DEVICE_NAMES.get(self.key, self.key)
-        self._name = f"{self._name} {device_name}"
-        self._unique_id = f"{super().unique_id}_{self.key}"
+    entity_description: PorscheSensorEntityDescription
 
-    @property
-    def state(self) -> Optional[float]:
-        """Return the state of the sensor."""
-        data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if isinstance(data, dict):
-            return data.get("value", None)
-        else:
-            return data
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+        description: PorscheSensorEntityDescription,
+    ) -> None:
+        """Initialize of the sensor"""
+        super().__init__(coordinator, vehicle)
 
-    @property
-    def icon(self):
-        """Return the icon of this switch."""
-        return self.meta.icon
+        self.entity_description = description
+        self._attr_name = f'{vehicle["name"]} {description.name}'
+        self._attr_unique_id = f'{vehicle["name"]}-{description.key}'
 
-    @property
-    def unit_of_measurement(self) -> Optional[str]:
-        """Return the unit_of_measurement of the device."""
-        data = self.coordinator.getDataByVIN(self.vin, self.key)
-        if isinstance(data, dict):
-            units = data.get("unit", None)
-        else:
-            return None
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
 
-        if units == "PERCENT":
-            return PERCENTAGE
-        # if units == "DAYS":
-        #    return TIME_DAYS
-        # if units == "MILES":
-        #    return LENGTH_MILES
-        if units == "KILOMETERS":
-            return LENGTH_KILOMETERS
+        state = (
+            self.coordinator.getDataByVIN(
+                self.vehicle["vin"], self.entity_description.measurement_node
+            )
+        )[self.entity_description.measurement_leaf]
 
-    @property
-    def device_class(self) -> Optional[str]:
-        """Return the device_class of the device."""
-        return self.meta.device_class
+        _LOGGER.debug(
+            "Updating sensor '%s' of %s with state '%s'",
+            self.entity_description.key,
+            self.vehicle["name"],
+            state,
+        )
 
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes of the device."""
-        attrdict = {}
-        for attr in self.meta.attributes:
-            attrdict[attr.name] = self.coordinator.getDataByVIN(self.vin, attr.key)
-        return attrdict
+        self._attr_native_value = state
+        super()._handle_coordinator_update()
