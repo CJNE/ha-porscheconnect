@@ -25,16 +25,17 @@ from pyporscheconnectapi.exceptions import PorscheException
 
 from .const import DOMAIN
 from .const import STARTUP_MESSAGE
-from .services import setup_services
-from .services import unload_services
+
+# from .services import setup_services
+# from .services import unload_services
 
 import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=300)
+SCAN_INTERVAL = timedelta(seconds=600)
 
-# PLATFORMS = ["binary_sensor", "switch", "lock", "number"]
-PLATFORMS = ["sensor", "device_tracker"]
+# PLATFORMS = [ "switch", "lock", "number"]
+PLATFORMS = ["sensor", "binary_sensor", "device_tracker"]
 
 BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo"]
 
@@ -97,12 +98,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         entry, [platform for platform in PLATFORMS]
     )
 
-    # for platform in PLATFORMS:
-    #    hass.async_add_job(
-    #        hass.config_entries.async_forward_entry_setup(entry, platform)
-    #    )
-
-    setup_services(hass)
+    # setup_services(hass)
 
     return True
 
@@ -135,6 +131,9 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
         bdata = {}
         mdata = {}
         vdata = await self.controller.getStoredOverview(vin)
+
+        if "vin" not in vdata:
+            vdata = await self.controller.getCurrentOverview(vin)
 
         if "vin" in vdata:
             bdata = dict((k, vdata[k]) for k in BASE_DATA)
@@ -180,20 +179,16 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 for vehicle in all_vehicles:
                     vin = vehicle["vin"]
                     vehicle["name"] = vehicle["customName"] or vehicle["modelName"]
-                    mdata = await self._update_data_for_vehicle(vehicle)
-
-                    vehicle["components"] = {
-                        "sensor": [],
-                    }
+                    vdata = await self._update_data_for_vehicle(vehicle)
 
                     self.vehicles.append(vehicle)
-                    data[vin] = mdata
+                    data[vin] = vdata
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         vin = vehicle["vin"]
-                        mdata = await self._update_data_for_vehicle(vehicle)
-                        data[vin] = mdata
+                        vdata = await self._update_data_for_vehicle(vehicle)
+                        data[vin] = vdata
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
@@ -201,21 +196,15 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Handle removal of an entry."""
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-            ]
-        )
+    """Unload a config entry"""
+    unload_ok = await hass.config_entries.async_unload_platforms(
+        entry, [platform for platform in PLATFORMS]
     )
-    if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
-        if not hass.data[DOMAIN]:
-            unload_services(hass)
 
-    return unloaded
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
+
+    return unload_ok
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -262,9 +251,6 @@ class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
             model=vehicle["modelName"],
             manufacturer="Porsche",
         )
-
-        # self._unique_id = slugify(vehicle["vin"])
-        # self._attributes = {}
 
     @property
     def vin(self) -> str:

@@ -1,4 +1,4 @@
-"""Support for the Porsche Connect sensors."""
+"""Support for the Porsche Connect sensors"""
 import logging
 from typing import Optional
 from dataclasses import dataclass
