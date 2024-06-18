@@ -28,12 +28,15 @@ from .const import STARTUP_MESSAGE
 from .services import setup_services
 from .services import unload_services
 
+import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=300)
 
-# PLATFORMS = ["device_tracker", "sensor", "binary_sensor", "switch", "lock", "number"]
-PLATFORMS = ["sensor"]
+# PLATFORMS = ["binary_sensor", "switch", "lock", "number"]
+PLATFORMS = ["sensor", "device_tracker"]
+
+BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo"]
 
 
 class PinError(PorscheException):
@@ -129,18 +132,38 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
     async def _update_data_for_vehicle(self, vehicle):
         vin = vehicle["vin"]
+        bdata = {}
         mdata = {}
+        vdata = await self.controller.getStoredOverview(vin)
 
-        vdata = [
-            m
-            for m in (await self.controller.getStoredOverview(vin))["measurements"]
-            if m["status"]["isEnabled"] == True
-        ]
+        if "vin" in vdata:
+            bdata = dict((k, vdata[k]) for k in BASE_DATA)
 
-        for m in vdata:
-            mdata[m["key"]] = m["value"]
+            _LOGGER.debug(
+                "Got base data for vehicle '%s': %s",
+                vin,
+                json.dumps(bdata, indent=2),
+            )
+        else:
+            _LOGGER.debug("Base data missing for vehicle '%s", vin)
 
-        return mdata
+        if "measurements" in vdata:
+            tdata = [
+                m for m in vdata["measurements"] if m["status"]["isEnabled"] == True
+            ]
+
+            for m in tdata:
+                mdata[m["key"]] = m["value"]
+
+            _LOGGER.debug(
+                "Got measurement data for vehicle '%s': %s",
+                vin,
+                json.dumps(mdata, indent=2),
+            )
+        else:
+            _LOGGER.debug("Measurement data missing for vehicle '%s", vin)
+
+        return bdata | mdata
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
@@ -204,13 +227,13 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 
 class PorscheVehicle:
-    """Representation of a Porsche vehicle"""
+    """Placeholder för representation of a Porsche vehicle"""
 
     def __init__(
         self,
-        vehicle_base: dict,
+        data: dict,
     ) -> None:
-        self.data = vehicle_base
+        self.data = data
 
     @property
     def vin(self) -> str:
@@ -242,6 +265,11 @@ class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
 
         # self._unique_id = slugify(vehicle["vin"])
         # self._attributes = {}
+
+    @property
+    def vin(self) -> str:
+        """Get the VIN (vehicle identification number) of the vehicle."""
+        return self.vehicle["vin"]
 
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""

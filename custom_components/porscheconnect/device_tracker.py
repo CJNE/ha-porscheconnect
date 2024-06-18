@@ -1,47 +1,88 @@
-"""Support for tracking Porsche cars."""
-from typing import Optional
+"""Device tracker for Porsche vehicles."""
 
-from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
-from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from __future__ import annotations
 
-from . import PorscheDevice
-from .const import DOMAIN as PORSCHE_DOMAIN
+import logging
+from typing import Any
+
+from homeassistant.components.device_tracker import SourceType, TrackerEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from . import (
+    PorscheConnectDataUpdateCoordinator,
+    PorscheVehicle,
+    PorscheBaseEntity,
+)
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the Porsche device tracket by config_entry."""
-    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
-    entities = []
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the device tracker from config entry."""
+    coordinator: PorscheConnectDataUpdateCoordinator = hass.data[DOMAIN][
+        config_entry.entry_id
+    ]
+    entities: list[PorscheDeviceTracker] = []
+
     for vehicle in coordinator.vehicles:
-        entities.append(PorscheTrackerEntity(vehicle, coordinator))
-    async_add_entities(entities, True)
+        entities.append(PorscheDeviceTracker(coordinator, vehicle))
+        # if not vehicle.privacy_mode:
+        #    _LOGGER.info(
+        #        (
+        #            "Vehicle %s (%s) is in privacy mode with location tracking,"
+        #            " disabled defaulting to unknown"
+        #        ),
+        #        vehicle.name,
+        #        vehicle.vin,
+        #    )
+    async_add_entities(entities)
 
 
-class PorscheTrackerEntity(PorscheDevice, TrackerEntity):
-    """A class representing a Porsche device."""
+class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
+    """Porsche Connect device tracker."""
+
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+    ) -> None:
+        """Initialize the device tracker"""
+        super().__init__(coordinator, vehicle)
+
+        self._attr_unique_id = vehicle["vin"]
+        self._attr_name = f'{vehicle["name"]}'
+        self._attr_icon = "mdi:crosshairs-gps"
+        self._loc = self.coordinator.getDataByVIN(
+            self.vehicle["vin"], "GPS_LOCATION.location"
+        )
+        self._dir = self.coordinator.getDataByVIN(
+            self.vehicle["vin"], "GPS_LOCATION.direction"
+        )
+        self._x, self._y = self._loc.split(",")
 
     @property
-    def latitude(self) -> Optional[float]:
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return entity specific state attributes."""
+        return {"direction": float(self._dir)}
+
+    @property
+    def latitude(self) -> float | None:
         """Return latitude value of the device."""
-        return self.coordinator.getDataByVIN(self.vin, "carCoordinate.latitude")
+        return float(self._x)
 
     @property
-    def longitude(self) -> Optional[float]:
+    def longitude(self) -> float | None:
         """Return longitude value of the device."""
-        return self.coordinator.getDataByVIN(self.vin, "carCoordinate.longitude")
+        return float(self._y)
 
     @property
-    def source_type(self):
+    def source_type(self) -> SourceType:
         """Return the source type, eg gps or router, of the device."""
-        return SOURCE_TYPE_GPS
-
-    @property
-    def icon(self):
-        """Return the icon of the sensor."""
-        return "mdi:crosshairs-gps"
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes of the device."""
-        heading = self.coordinator.getDataByVIN(self.vin, "heading")
-        return {"heading": heading}
+        return SourceType.GPS
