@@ -32,7 +32,7 @@ from .const import STARTUP_MESSAGE
 import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=600)
+SCAN_INTERVAL = timedelta(seconds=900)
 
 # PLATFORMS = [ "switch", "lock", "number"]
 PLATFORMS = ["sensor", "binary_sensor", "device_tracker"]
@@ -130,10 +130,26 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
         vin = vehicle["vin"]
         bdata = {}
         mdata = {}
-        vdata = await self.controller.getStoredOverview(vin)
+        try:
+            vdata = await self.controller.getStoredOverview(vin)
+        except PorscheException as err:
+            _LOGGER.error("Could not get stored overview, error communicating with API: '%s", err)
+            _LOGGER.debug(
+                "Payload for stored overview query was: %s",
+                json.dumps(vdata, indent=2),
+            )
+
 
         if "vin" not in vdata:
-            vdata = await self.controller.getCurrentOverview(vin)
+            try:
+                vdata = await self.controller.getCurrentOverview(vin)
+            except PorscheException as err:
+                _LOGGER.error("Could not get current overview, error communicating with API: '%s", err)
+                _LOGGER.debug(
+                    "Payload for current overview query was: %s",
+                    json.dumps(vdata, indent=2),
+                )
+
 
         if "vin" in vdata:
             bdata = dict((k, vdata[k]) for k in BASE_DATA)
@@ -143,24 +159,48 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 vin,
                 json.dumps(bdata, indent=2),
             )
+
+            if "measurements" in vdata:
+                tdata = [
+                    m for m in vdata["measurements"] if m["status"]["isEnabled"] == True
+                ]
+
+                for m in tdata:
+                    mdata[m["key"]] = m["value"]
+                _LOGGER.debug(
+                    "Got measurement data for vehicle '%s': %s",
+                    vin,
+                    json.dumps(mdata, indent=2),
+                )
+
+                # Here we do some measurements translations to make them accessible
+
+                if "BATTERY_CHARGING_STATE" in mdata:
+                    if "chargingRate" in mdata["BATTERY_CHARGING_STATE"]:
+                        # Convert charging rate from km/min to km/h
+                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = mdata["BATTERY_CHARGING_STATE"]["chargingRate"] * 60 
+                    else:
+                        # Charging is currently not ongoing, but we should still feed som data to the sensor
+                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = 0
+
+                    if "chargingPower" not in mdata["BATTERY_CHARGING_STATE"]:
+                        # Charging is currently not ongoing, but we should still feed som data to the sensor
+                        mdata["BATTERY_CHARGING_STATE"]["chargingPower"] = 0
+
+
+            else:
+                _LOGGER.debug("Measurement data missing for vehicle '%s", vin)
+                _LOGGER.debug(
+                    "Payload for current overview query was: %s",
+                    json.dumps(vdata, indent=2),
+                )
+
         else:
             _LOGGER.debug("Base data missing for vehicle '%s", vin)
-
-        if "measurements" in vdata:
-            tdata = [
-                m for m in vdata["measurements"] if m["status"]["isEnabled"] == True
-            ]
-
-            for m in tdata:
-                mdata[m["key"]] = m["value"]
-
             _LOGGER.debug(
-                "Got measurement data for vehicle '%s': %s",
-                vin,
-                json.dumps(mdata, indent=2),
+                "Payload for current overview query was: %s",
+                json.dumps(vdata, indent=2),
             )
-        else:
-            _LOGGER.debug("Measurement data missing for vehicle '%s", vin)
 
         return bdata | mdata
 
@@ -234,6 +274,7 @@ class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
     """Common base for entities"""
 
     coordinator: PorscheConnectDataUpdateCoordinator
+    _attr_has_entity_name = True
 
     def __init__(
         self,

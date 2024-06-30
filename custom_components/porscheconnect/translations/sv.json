@@ -1,0 +1,22 @@
+{
+    "entity": {
+        "sensor": {
+            "charging_rate": {
+                "name": "Laddhastighet"
+            },
+            "charging_status":  {
+                "name": "Laddstatus",
+                "state": {
+                    "CHARGING": "Laddar",
+                    "CHARGING_COMPLETED": "Laddning klar",
+                    "ERROR": "Laddfel",
+                    "INITIALISING": "Initierar laddning",
+                    "INSTANT_CHARGING": "Direktladdar",
+                    "NOT_CHARGING": "Laddar ej",
+                    "NOT_PLUGGED": "Not connected",
+                    "OFF": "Laddning av"
+                }
+            }
+        }
+    }
+}

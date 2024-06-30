@@ -1,20 +1,23 @@
 {
-  "config": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-    "error": {
-      "cannot_connect": "Failed to connect",
-      "invalid_auth": "Invalid authentication",
-      "unknown": "Unexpected error"
-    },
-    "step": {
-      "user": {
-        "data": {
-          "password": "Password",
-          "email": "Email"
+    "entity": {
+        "sensor": {
+            "charging_rate": {
+                "name": "Charging rate"
+            },
+            "charging_status": {
+                "name": "Charging status",
+                "state": {
+                    "CHARGING": "Charging",
+                    "CHARGING_COMPLETED": "Charging completed",
+                    "ERROR": "Charging error",
+                    "INITIALISING": "Initialising charging",
+                    "INSTANT_CHARGING": "Instant charging",
+                    "NOT_CHARGING": "Not charging",
+                    "NOT_PLUGGED": "Not connected",
+                    "OFF": "Charging off"
+                }
+            }
         }
-      }
     }
-  }
 }
+

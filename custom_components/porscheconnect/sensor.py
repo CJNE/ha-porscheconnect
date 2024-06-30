@@ -25,6 +25,8 @@ from homeassistant.const import (
     UnitOfElectricCurrent,
     UnitOfLength,
     UnitOfVolume,
+    UnitOfPower,
+    UnitOfSpeed,
 )
 
 from homeassistant.core import HomeAssistant, callback
@@ -57,13 +59,31 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         icon="mdi:battery-high",
     ),
     PorscheSensorEntityDescription(
-        name="Charging status",
         key="charging_status",
         translation_key="charging_status",
         measurement_node="CHARGING_SUMMARY",
         measurement_leaf="status",
         icon="mdi:battery-charging",
         device_class=SensorDeviceClass.ENUM,
+    ),
+    PorscheSensorEntityDescription(
+        key="charging_rate",
+        translation_key="charging_rate",
+        measurement_node="BATTERY_CHARGING_STATE",
+        measurement_leaf="chargingRate",
+        icon="mdi:speedometer",
+        device_class=SensorDeviceClass.SPEED,
+        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
+    ),
+    PorscheSensorEntityDescription(
+        name="Charging power",
+        key="charging_power",
+        translation_key="charging_power",
+        measurement_node="BATTERY_CHARGING_STATE",
+        measurement_leaf="chargingPower",
+        icon="mdi:lightning-bolt-circle",
+        device_class=SensorDeviceClass.POWER,
+        native_unit_of_measurement=UnitOfPower.KILO_WATT
     ),
     PorscheSensorEntityDescription(
         name="Remaining range on electricity",
@@ -90,7 +110,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
     ),
     PorscheSensorEntityDescription(
-        name="Mileage",
         key="mileage",
         translation_key="mileage",
         measurement_node="MILEAGE",
@@ -138,7 +157,7 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
-        self._attr_name = f'{vehicle["name"]} {description.name}'
+        #self._attr_name = f'{vehicle["name"]} {description.name}'
         self._attr_unique_id = f'{vehicle["name"]}-{description.key}'
 
     @callback
