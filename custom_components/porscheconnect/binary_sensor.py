@@ -100,7 +100,7 @@ class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
 
         self.entity_description = description
         self._unit_system: unitsystem
-        self._attr_name = f'{vehicle["name"]} {description.name}'
+        #self._attr_name = f'{vehicle["name"]} {description.name}'
         self._attr_unique_id = f'{vehicle["name"]}-{description.key}'
 
     @callback

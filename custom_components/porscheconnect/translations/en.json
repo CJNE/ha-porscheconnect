@@ -1,8 +1,50 @@
 {
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured",
+            "reauth_successful": "Re-authentication was successful"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Password",
+                    "email": "Email"
+                }
+            }
+        }
+    },
     "entity": {
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Parking brake"
+            },
+            "privacy_mode": {
+                "name": "Privacy mode"
+            }
+        },
         "sensor": {
+            "charging_power": {
+                "name": "Charging power"
+            },
+            "charging_target": {
+                "name": "Charging target"
+            },
             "charging_rate": {
                 "name": "Charging rate"
+            },
+            "remaining_range_electric": {
+                "name": "Remaining range electric"
+            },
+            "state_of_charge": {
+                "name": "State of charge"
+            },
+            "mileage": {
+                "name": "Mileage"
             },
             "charging_status": {
                 "name": "Charging status",

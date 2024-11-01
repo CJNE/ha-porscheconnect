@@ -7,7 +7,7 @@ from dataclasses import field
 
 DOMAIN = "porscheconnect"
 LOGGER = logging.getLogger(__package__)
-DEFAULT_SCAN_INTERVAL = 660
+DEFAULT_SCAN_INTERVAL = 1920
 HA_SENSOR = "sensor"
 HA_SWITCH = "switch"
 HA_LOCK = "lock"

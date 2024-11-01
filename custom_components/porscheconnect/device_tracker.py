@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import logging
 from typing import Any
 
@@ -57,7 +58,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         super().__init__(coordinator, vehicle)
 
         self._attr_unique_id = vehicle["vin"]
-        self._attr_name = f'{vehicle["name"]}'
+        self._attr_name = None
         self._attr_icon = "mdi:crosshairs-gps"
         self._loc = self.coordinator.getDataByVIN(
             self.vehicle["vin"], "GPS_LOCATION.location"
@@ -65,7 +66,8 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         self._dir = self.coordinator.getDataByVIN(
             self.vehicle["vin"], "GPS_LOCATION.direction"
         )
-        self._x, self._y = self._loc.split(",")
+        if isinstance(self._loc, str) and re.match(r'[\.0-9]+,[\.0-9]+', self._loc):
+            self._x, self._y = self._loc.split(",")
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

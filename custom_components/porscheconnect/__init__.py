@@ -2,20 +2,19 @@
 import asyncio
 import logging
 import operator
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from functools import reduce
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import aiohttp_client
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.device_registry import DeviceInfo
 
 from homeassistant.util import slugify
@@ -29,15 +28,15 @@ from .const import STARTUP_MESSAGE
 # from .services import setup_services
 # from .services import unload_services
 
-import json  # only for formatting debug outpu
+import json  # only for formatting debug output
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=900)
+SCAN_INTERVAL = timedelta(seconds=1920)
 
 # PLATFORMS = [ "switch", "lock", "number"]
 PLATFORMS = ["sensor", "binary_sensor", "device_tracker"]
 
-BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo"]
+BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo", "timestamp"]
 
 
 class PinError(PorscheException):
@@ -130,32 +129,22 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
         vin = vehicle["vin"]
         bdata = {}
         mdata = {}
+        vdata = {}
+
         try:
             vdata = await self.controller.getStoredOverview(vin)
         except PorscheException as err:
-            _LOGGER.error("Could not get stored overview, error communicating with API: '%s", err)
-            _LOGGER.debug(
-                "Payload for stored overview query was: %s",
-                json.dumps(vdata, indent=2),
-            )
-
-
-        if "vin" not in vdata:
-            try:
-                vdata = await self.controller.getCurrentOverview(vin)
-            except PorscheException as err:
-                _LOGGER.error("Could not get current overview, error communicating with API: '%s", err)
-                _LOGGER.debug(
-                    "Payload for current overview query was: %s",
-                    json.dumps(vdata, indent=2),
-                )
+            _LOGGER.error("Could not get current overview, error communicating with API: '%s", err.message)
 
 
         if "vin" in vdata:
-            # customName is only provided if set by the owner
+            _LOGGER.debug(
+                "Vehicle data dict for %s is now: %s",
+                vin,
+                json.dumps(vdata, indent=2),
+            )
             if "customName" not in vdata:
                 vdata["customName"] = ""
-
             bdata = dict((k, vdata[k]) for k in BASE_DATA)
 
             _LOGGER.debug(
@@ -212,7 +201,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
         """Fetch data from API endpoint."""
         if self.controller.isTokenRefreshed():
             access_token = await self.controller.getToken()
-            _async_save_token(self.hass, self.config_entry, access_token)
 
         data = {}
         try:

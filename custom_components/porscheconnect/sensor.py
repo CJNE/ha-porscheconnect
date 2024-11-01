@@ -47,7 +47,6 @@ class PorscheSensorEntityDescription(SensorEntityDescription):
 
 SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
-        name="Target state of charge",
         key="charging_target",
         translation_key="charging_target",
         measurement_node="CHARGING_SUMMARY",
@@ -76,7 +75,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
     ),
     PorscheSensorEntityDescription(
-        name="Charging power",
         key="charging_power",
         translation_key="charging_power",
         measurement_node="BATTERY_CHARGING_STATE",
@@ -86,7 +84,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=UnitOfPower.KILO_WATT
     ),
     PorscheSensorEntityDescription(
-        name="Remaining range on electricity",
         key="remaining_range_electric",
         translation_key="remaining_range_electric",
         measurement_node="E_RANGE",
@@ -98,8 +95,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
     ),
     PorscheSensorEntityDescription(
-        name="State of charge",
-        key="state of charge",
+        key="state_of_charge",
         translation_key="state_of_charge",
         measurement_node="BATTERY_LEVEL",
         measurement_leaf="percent",

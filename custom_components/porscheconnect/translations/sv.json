@@ -1,8 +1,50 @@
 {
+     "config": {
+        "abort": {
+            "already_configured": "Enheten är redan konfigurerad",
+            "reauth_successful": "Återautentiseringen lyckades"
+        },
+        "error": {
+            "cannot_connect": "Anslutningsfel",
+            "invalid_auth": "Misslyckades att autentisera",
+            "unknown": "Oväntat fel"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Lösenord",
+                    "email": "E-postadress"
+                }
+            }
+        }
+    },
     "entity": {
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Parkeringsbroms"
+            },
+            "privacy_mode": {
+                "name": "Privat läge"
+            }
+        },
         "sensor": {
+            "charging_power": {
+                "name": "Laddeffekt"
+            },
+            "charging_target": {
+                "name": "Laddinställning"
+            },
             "charging_rate": {
                 "name": "Laddhastighet"
+            },
+            "remaining_range_electric": {
+                "name": "Räckvidd på batteri"
+            },
+            "state_of_charge": {
+                "name": "Laddnivå"
+            },
+            "mileage": {
+                "name": "Miltal"
             },
             "charging_status":  {
                 "name": "Laddstatus",

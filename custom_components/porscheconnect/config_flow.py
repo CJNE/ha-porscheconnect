@@ -1,7 +1,9 @@
 """Config flow for Porsche Connect integration."""
 import logging
-
 import voluptuous as vol
+from collections.abc import Mapping
+from typing import Any
+
 from homeassistant import config_entries
 from homeassistant import core
 from homeassistant import exceptions
@@ -71,6 +73,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
+    async def async_step_reauth(
+        self, entry_data: Mapping[str, Any]
+    ) -> config_entries.ConfigFlowResult:
+        """Handle configuration by re-auth."""
+        self._reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
+        )
+        return await self.async_step_user()
 
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""
