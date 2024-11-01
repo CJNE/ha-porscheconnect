@@ -152,6 +152,10 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
 
         if "vin" in vdata:
+            # customName is only provided if set by the owner
+            if "customName" not in vdata:
+                vdata["customName"] = ""
+
             bdata = dict((k, vdata[k]) for k in BASE_DATA)
 
             _LOGGER.debug(
@@ -218,7 +222,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
                 for vehicle in all_vehicles:
                     vin = vehicle["vin"]
-                    vehicle["name"] = vehicle["customName"] or vehicle["modelName"]
+                    vehicle["name"] = vehicle["customName"] if "customName" in vehicle else vehicle["modelName"]
                     vdata = await self._update_data_for_vehicle(vehicle)
 
                     self.vehicles.append(vehicle)
