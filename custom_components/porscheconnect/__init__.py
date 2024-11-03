@@ -13,7 +13,6 @@ from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.device_registry import DeviceInfo
 
@@ -74,13 +73,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
 
-    websession = aiohttp_client.async_get_clientsession(hass)
-
     connection = Connection(
         entry.data.get("email"),
         entry.data.get("password"),
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
-        websession=websession,
     )
     controller = Client(connection)
 
@@ -199,8 +195,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
-        if self.controller.isTokenRefreshed():
-            access_token = await self.controller.getToken()
+        access_token = await self.controller.getToken()
 
         data = {}
         try:
@@ -241,8 +236,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
-    print("WILL RELOAD")
-    print(entry)
+    _LOGGER.info(f"Reloading config entry: {entry}")
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
 

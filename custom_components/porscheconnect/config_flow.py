@@ -10,7 +10,6 @@ from homeassistant import exceptions
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
-from homeassistant.helpers import aiohttp_client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import WrongCredentials
 
@@ -29,18 +28,21 @@ async def validate_input(hass: core.HomeAssistant, data):
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    websession = aiohttp_client.async_get_clientsession(hass)
-    conn = Connection(data[CONF_EMAIL], data[CONF_PASSWORD], websession=websession)
-
-    _LOGGER.debug("Attempt login...")
+    token = {}
     try:
-        await conn._login()
-    except WrongCredentials:
-        _LOGGER.info("Login failed, wrong credentials.")
+        conn = Connection(email=data[CONF_EMAIL], password=data[CONF_PASSWORD], token=token)
+    except Exception as e:
+        _LOGGER.debug(f"Exception {e}")
+
+
+    _LOGGER.debug("Attempting login")
+    try:
+        token = await conn.getToken()
+    except Exception as e:
+        _LOGGER.info(f"Login failed, {e}")
         raise InvalidAuth
 
-    token = await conn.getToken()
-    #    await conn.close()
+    await conn.close()
 
     # Return info that you want to store in the config entry.
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
@@ -60,14 +62,24 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         errors = {}
+        _LOGGER.debug("Validating input.")
+
         try:
             info = await validate_input(self.hass, user_input)
+            entry_data = {
+                    **user_input,
+                    CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
+                }
         except InvalidAuth:
-            errors["base"] = "auth"
-        except Exception:
-            errors["base"] = "connect"
-        else:
-            return self.async_create_entry(title=info["title"], data=user_input)
+            errors["base"] = "invalid_auth"
+        except CannotConnect:
+            errors["base"] = "cannot_connect"
+
+        if info:
+            return self.async_create_entry(
+                title=info["title"],
+                data=entry_data,
+            )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors

@@ -59,6 +59,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
 
         self._attr_unique_id = vehicle["vin"]
         self._attr_name = None
+        self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
         self._loc = self.coordinator.getDataByVIN(
             self.vehicle["vin"], "GPS_LOCATION.location"
@@ -68,21 +69,32 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         )
         if isinstance(self._loc, str) and re.match(r'[\.0-9]+,[\.0-9]+', self._loc):
             self._x, self._y = self._loc.split(",")
+        else:
+            self._tracking_enabled = False
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
-        return {"direction": float(self._dir)}
+        if self._tracking_enabled:
+            return {"direction": float(self._dir)}
+        else:
+            return None
 
     @property
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
-        return float(self._x)
+        if self._tracking_enabled:
+            return float(self._x)
+        else:
+            return None
 
     @property
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
-        return float(self._y)
+        if self._tracking_enabled:
+            return float(self._y)
+        else:
+            return None
 
     @property
     def source_type(self) -> SourceType:
