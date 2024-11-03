@@ -100,26 +100,21 @@ class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
 
         self.entity_description = description
         self._unit_system: unitsystem
-        #self._attr_name = f'{vehicle["name"]} {description.name}'
-        self._attr_unique_id = f'{vehicle["name"]}-{description.key}'
+        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-
-        self._attr_is_on = getFromDict(
-            self.coordinator.getDataByVIN(
-                self.vehicle["vin"], self.entity_description.measurement_node
-            ),
+        self._attr_is_on = self.coordinator.getVehicleDataLeaf(
+            self.vehicle,
+            self.entity_description.measurement_node,
             self.entity_description.measurement_leaf,
         )
-
-        # self._attr_is_on = (state == 'True')
 
         _LOGGER.debug(
             "Updating binary sensor '%s' of %s with state '%s'",
             self.entity_description.key,
-            self.vehicle["name"],
+            self.vehicle.data["name"],
             self._attr_is_on,
             # state,
         )

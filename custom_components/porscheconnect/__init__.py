@@ -3,6 +3,9 @@ import asyncio
 import logging
 import operator
 from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass, field
+from typing import List
+
 from functools import reduce
 
 import async_timeout
@@ -13,27 +16,31 @@ from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 from homeassistant.helpers.device_registry import DeviceInfo
 
 from homeassistant.util import slugify
 from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.vehicle import PorscheVehicle
+from pyporscheconnectapi.account import PorscheConnectAccount
+
 
 from .const import DOMAIN
 from .const import STARTUP_MESSAGE
-
-# from .services import setup_services
-# from .services import unload_services
 
 import json  # only for formatting debug output
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=1920)
 
-# PLATFORMS = [ "switch", "lock", "number"]
-PLATFORMS = ["sensor", "binary_sensor", "device_tracker"]
+# PLATFORMS = [ "switch", "lock" ]
+PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number"]
 
 BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo", "timestamp"]
 
@@ -73,15 +80,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
 
-    connection = Connection(
-        entry.data.get("email"),
-        entry.data.get("password"),
+    controller = PorscheConnectAccount(
+        username=entry.data.get("email"),
+        password=entry.data.get("password"),
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
     )
-    controller = Client(connection)
-
-    access_token = await controller.getToken()
-    _async_save_token(hass, entry, access_token)
 
     coordinator = PorscheConnectDataUpdateCoordinator(
         hass, config_entry=entry, controller=controller
@@ -93,7 +96,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         entry, [platform for platform in PLATFORMS]
     )
 
-    # setup_services(hass)
+    _async_save_token(hass, entry, controller.token)
 
     return True
 
@@ -118,20 +121,26 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
-    def getDataByVIN(self, vin, key):
-        return getFromDict(self.data.get(vin, {}), key)
+    def getVehicleDataLeaf(self, vehicle, node, leaf):
+        return getFromDict(getFromDict(vehicle.data, node), leaf)
+
+    def getVehicleDataNode(self, vehicle, node):
+        return getFromDict(vehicle.data, node)
 
     async def _update_data_for_vehicle(self, vehicle):
-        vin = vehicle["vin"]
+        vin = vehicle.vin
         bdata = {}
         mdata = {}
         vdata = {}
 
         try:
-            vdata = await self.controller.getStoredOverview(vin)
+            _LOGGER.debug(f"Setting status for vehicle {vehicle.status}")
+            vdata = vehicle.status
         except PorscheException as err:
-            _LOGGER.error("Could not get current overview, error communicating with API: '%s", err.message)
-
+            _LOGGER.error(
+                "Could not get current overview, error communicating with API: '%s",
+                err.message,
+            )
 
         if "vin" in vdata:
             _LOGGER.debug(
@@ -139,6 +148,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 vin,
                 json.dumps(vdata, indent=2),
             )
+
             if "customName" not in vdata:
                 vdata["customName"] = ""
             bdata = dict((k, vdata[k]) for k in BASE_DATA)
@@ -167,7 +177,9 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 if "BATTERY_CHARGING_STATE" in mdata:
                     if "chargingRate" in mdata["BATTERY_CHARGING_STATE"]:
                         # Convert charging rate from km/min to km/h
-                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = mdata["BATTERY_CHARGING_STATE"]["chargingRate"] * 60 
+                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = (
+                            mdata["BATTERY_CHARGING_STATE"]["chargingRate"] * 60
+                        )
                     else:
                         # Charging is currently not ongoing, but we should still feed som data to the sensor
                         mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = 0
@@ -175,7 +187,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                     if "chargingPower" not in mdata["BATTERY_CHARGING_STATE"]:
                         # Charging is currently not ongoing, but we should still feed som data to the sensor
                         mdata["BATTERY_CHARGING_STATE"]["chargingPower"] = 0
-
 
             else:
                 _LOGGER.debug("Measurement data missing for vehicle '%s", vin)
@@ -191,31 +202,31 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 json.dumps(vdata, indent=2),
             )
 
-        return bdata | mdata
+        vehicle.data = vehicle.data | bdata | mdata
+        # return bdata | mdata
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
-        access_token = await self.controller.getToken()
 
         data = {}
         try:
             if self.vehicles is None:
-                self.vehicles = []
-                all_vehicles = await self.controller.getVehicles()
+                self.vehicles = await self.controller.get_vehicles()
 
-                for vehicle in all_vehicles:
-                    vin = vehicle["vin"]
-                    vehicle["name"] = vehicle["customName"] if "customName" in vehicle else vehicle["modelName"]
-                    vdata = await self._update_data_for_vehicle(vehicle)
+                for vehicle in self.vehicles:
+                    vin = vehicle.vin
+                    vehicle.data["name"] = (
+                        vehicle.data["customName"]
+                        if "customName" in vehicle.data
+                        else vehicle.data["modelName"]
+                    )
+                    await self._update_data_for_vehicle(vehicle)
 
-                    self.vehicles.append(vehicle)
-                    data[vin] = vdata
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
-                        vin = vehicle["vin"]
-                        vdata = await self._update_data_for_vehicle(vehicle)
-                        data[vin] = vdata
+                        vin = vehicle.vin
+                        await self._update_data_for_vehicle(vehicle)
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
@@ -241,21 +252,6 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     await async_setup_entry(hass, entry)
 
 
-class PorscheVehicle:
-    """Placeholder för representation of a Porsche vehicle"""
-
-    def __init__(
-        self,
-        data: dict,
-    ) -> None:
-        self.data = data
-
-    @property
-    def vin(self) -> str:
-        """Get the VIN (vehicle identification number) of the vehicle."""
-        return self.data["vin"]
-
-
 class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
     """Common base for entities"""
 
@@ -273,16 +269,16 @@ class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
         self.vehicle = vehicle
 
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.vehicle["vin"])},
-            name=vehicle["name"],
-            model=vehicle["modelName"],
+            identifiers={(DOMAIN, self.vehicle.vin)},
+            name=vehicle.data["name"],
+            model=vehicle.data["modelName"],
             manufacturer="Porsche",
         )
 
     @property
     def vin(self) -> str:
         """Get the VIN (vehicle identification number) of the vehicle."""
-        return self.vehicle["vin"]
+        return self.vehicle.vin
 
     async def async_added_to_hass(self) -> None:
         """When entity is added to hass."""

@@ -30,10 +30,11 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     token = {}
     try:
-        conn = Connection(email=data[CONF_EMAIL], password=data[CONF_PASSWORD], token=token)
+        conn = Connection(
+            email=data[CONF_EMAIL], password=data[CONF_PASSWORD], token=token
+        )
     except Exception as e:
         _LOGGER.debug(f"Exception {e}")
-
 
     _LOGGER.debug("Attempting login")
     try:
@@ -67,9 +68,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         try:
             info = await validate_input(self.hass, user_input)
             entry_data = {
-                    **user_input,
-                    CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
-                }
+                **user_input,
+                CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
+            }
         except InvalidAuth:
             errors["base"] = "invalid_auth"
         except CannotConnect:
@@ -93,6 +94,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self.context["entry_id"]
         )
         return await self.async_step_user()
+
 
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""

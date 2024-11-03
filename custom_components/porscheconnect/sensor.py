@@ -72,7 +72,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         measurement_leaf="chargingRate",
         icon="mdi:speedometer",
         device_class=SensorDeviceClass.SPEED,
-        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR
+        native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR,
     ),
     PorscheSensorEntityDescription(
         key="charging_power",
@@ -81,7 +81,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         measurement_leaf="chargingPower",
         icon="mdi:lightning-bolt-circle",
         device_class=SensorDeviceClass.POWER,
-        native_unit_of_measurement=UnitOfPower.KILO_WATT
+        native_unit_of_measurement=UnitOfPower.KILO_WATT,
     ),
     PorscheSensorEntityDescription(
         key="remaining_range_electric",
@@ -153,30 +153,22 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
-        #self._attr_name = f'{vehicle["name"]} {description.name}'
-        self._attr_unique_id = f'{vehicle["name"]}-{description.key}'
+        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
 
-        state = getFromDict(
-            self.coordinator.getDataByVIN(
-                self.vehicle["vin"], self.entity_description.measurement_node
-            ),
+        state = self.coordinator.getVehicleDataLeaf(
+            self.vehicle,
+            self.entity_description.measurement_node,
             self.entity_description.measurement_leaf,
         )
-
-        # state = (
-        #    self.coordinator.getDataByVIN(
-        #        self.vehicle["vin"], self.entity_description.measurement_node
-        #    )
-        # )[self.entity_description.measurement_leaf]
 
         _LOGGER.debug(
             "Updating sensor '%s' of %s with state '%s'",
             self.entity_description.key,
-            self.vehicle["name"],
+            self.vehicle.data["name"],
             state,
         )
 

@@ -57,17 +57,17 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         """Initialize the device tracker"""
         super().__init__(coordinator, vehicle)
 
-        self._attr_unique_id = vehicle["vin"]
+        self._attr_unique_id = vehicle.vin
         self._attr_name = None
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
-        self._loc = self.coordinator.getDataByVIN(
-            self.vehicle["vin"], "GPS_LOCATION.location"
+        self._loc = self.coordinator.getVehicleDataNode(
+            self.vehicle, "GPS_LOCATION.location"
         )
-        self._dir = self.coordinator.getDataByVIN(
-            self.vehicle["vin"], "GPS_LOCATION.direction"
+        self._dir = self.coordinator.getVehicleDataNode(
+            self.vehicle, "GPS_LOCATION.direction"
         )
-        if isinstance(self._loc, str) and re.match(r'[\.0-9]+,[\.0-9]+', self._loc):
+        if isinstance(self._loc, str) and re.match(r"[\.0-9]+,[\.0-9]+", self._loc):
             self._x, self._y = self._loc.split(",")
         else:
             self._tracking_enabled = False
