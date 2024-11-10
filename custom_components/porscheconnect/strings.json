@@ -4,33 +4,27 @@
             "user": {
                 "data": {
                     "email": "[%key:common::config_flow::data::email%]",
-                    "password": "[%key:common::config_flow::data::password%]"
+                    "password": "[%key:common::config_flow::data::password%]",
                 }
             }
         },
         "error": {
             "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
             "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
-            "unknown": "[%key:common::config_flow::error::unknown%]"
+            "unknown": "[%key:common::config_flow::error::unknown%]",
         },
         "abort": {
             "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
-            "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
-        }
+            "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]",
+        },
     },
     "entity": {
         "binary_sensor": {
-            "parking_brake": {
-                "name": "Parking brake"
-            },
-            "privacy_mode": {
-                "name": "Privacy mode"
-            }
+            "parking_brake": {"name": "Parking brake"},
+            "privacy_mode": {"name": "Privacy mode"},
         },
         "sensor": {
-            "charging_rate": {
-                "name": "Charging rate"
-            },
+            "charging_rate": {"name": "Charging rate"},
             "charging_status": {
                 "name": "Charging status",
                 "state": {
@@ -41,10 +35,9 @@
                     "INSTANT_CHARGING": "Instant charging",
                     "NOT_CHARGING": "Not charging",
                     "NOT_PLUGGED": "Not connected",
-                    "OFF": "Charging off"
-                }
-            }
-        }
-    }
-
+                    "OFF": "Charging off",
+                },
+            },
+        },
+    },
 }
