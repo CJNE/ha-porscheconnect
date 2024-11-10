@@ -34,15 +34,11 @@ from pyporscheconnectapi.account import PorscheConnectAccount
 from .const import DOMAIN
 from .const import STARTUP_MESSAGE
 
-import json  # only for formatting debug output
-
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=1920)
 
 # PLATFORMS = [ "switch", "lock" ]
 PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number"]
-
-BASE_DATA = ["vin", "modelName", "customName", "modelType", "systemInfo", "timestamp"]
 
 
 class PinError(PorscheException):
@@ -127,84 +123,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
     def getVehicleDataNode(self, vehicle, node):
         return getFromDict(vehicle.data, node)
 
-    async def _update_data_for_vehicle(self, vehicle):
-        vin = vehicle.vin
-        bdata = {}
-        mdata = {}
-        vdata = {}
-
-        try:
-            _LOGGER.debug(f"Setting status for vehicle {vehicle.status}")
-            vdata = vehicle.status
-        except PorscheException as err:
-            _LOGGER.error(
-                "Could not get current overview, error communicating with API: '%s",
-                err.message,
-            )
-
-        if "vin" in vdata:
-            _LOGGER.debug(
-                "Vehicle data dict for %s is now: %s",
-                vin,
-                json.dumps(vdata, indent=2),
-            )
-
-            if "customName" not in vdata:
-                vdata["customName"] = ""
-            bdata = dict((k, vdata[k]) for k in BASE_DATA)
-
-            _LOGGER.debug(
-                "Got base data for vehicle '%s': %s",
-                vin,
-                json.dumps(bdata, indent=2),
-            )
-
-            if "measurements" in vdata:
-                tdata = [
-                    m for m in vdata["measurements"] if m["status"]["isEnabled"] == True
-                ]
-
-                for m in tdata:
-                    mdata[m["key"]] = m["value"]
-                _LOGGER.debug(
-                    "Got measurement data for vehicle '%s': %s",
-                    vin,
-                    json.dumps(mdata, indent=2),
-                )
-
-                # Here we do some measurements translations to make them accessible
-
-                if "BATTERY_CHARGING_STATE" in mdata:
-                    if "chargingRate" in mdata["BATTERY_CHARGING_STATE"]:
-                        # Convert charging rate from km/min to km/h
-                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = (
-                            mdata["BATTERY_CHARGING_STATE"]["chargingRate"] * 60
-                        )
-                    else:
-                        # Charging is currently not ongoing, but we should still feed som data to the sensor
-                        mdata["BATTERY_CHARGING_STATE"]["chargingRate"] = 0
-
-                    if "chargingPower" not in mdata["BATTERY_CHARGING_STATE"]:
-                        # Charging is currently not ongoing, but we should still feed som data to the sensor
-                        mdata["BATTERY_CHARGING_STATE"]["chargingPower"] = 0
-
-            else:
-                _LOGGER.debug("Measurement data missing for vehicle '%s", vin)
-                _LOGGER.debug(
-                    "Payload for current overview query was: %s",
-                    json.dumps(vdata, indent=2),
-                )
-
-        else:
-            _LOGGER.debug("Base data missing for vehicle '%s", vin)
-            _LOGGER.debug(
-                "Payload for current overview query was: %s",
-                json.dumps(vdata, indent=2),
-            )
-
-        vehicle.data = vehicle.data | bdata | mdata
-        # return bdata | mdata
-
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
 
@@ -220,13 +138,13 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                         if "customName" in vehicle.data
                         else vehicle.data["modelName"]
                     )
-                    await self._update_data_for_vehicle(vehicle)
+                    await vehicle._update_data_for_vehicle()
 
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         vin = vehicle.vin
-                        await self._update_data_for_vehicle(vehicle)
+                        await vehicle._update_data_for_vehicle()
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
