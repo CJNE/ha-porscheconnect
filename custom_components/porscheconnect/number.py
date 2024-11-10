@@ -92,7 +92,7 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
         """Initialize an Porsche Number."""
         super().__init__(coordinator, vehicle)
         self.entity_description = description
-        self._attr_unique_id = f"{vehicle.vin}-{description.key}"
+        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
     @property
     def native_value(self) -> float | None:

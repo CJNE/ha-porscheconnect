@@ -59,6 +59,9 @@
                     "OFF": "Laddning av"
                 }
             }
+        },
+        "number": {
+            "target_soc": {"name": "Begärd laddnivå"}
         }
     }
 }

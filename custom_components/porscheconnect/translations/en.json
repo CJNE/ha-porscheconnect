@@ -59,6 +59,9 @@
                     "OFF": "Charging off"
                 }
             }
+        },
+        "number": {
+            "target_soc": {"name": "Target state of charge"}
         }
     }
 }
