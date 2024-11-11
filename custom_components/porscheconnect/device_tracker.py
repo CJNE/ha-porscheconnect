@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 import logging
 from typing import Any
 
@@ -61,22 +60,12 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         self._attr_name = None
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
-        self._loc = self.coordinator.getVehicleDataNode(
-            self.vehicle, "GPS_LOCATION.location"
-        )
-        self._dir = self.coordinator.getVehicleDataNode(
-            self.vehicle, "GPS_LOCATION.direction"
-        )
-        if isinstance(self._loc, str) and re.match(r"[\.0-9]+,[\.0-9]+", self._loc):
-            self._x, self._y = self._loc.split(",")
-        else:
-            self._tracking_enabled = False
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
         if self._tracking_enabled:
-            return {"direction": float(self._dir)}
+            return {"direction": float(self.vehicle.location[2])}
         else:
             return None
 
@@ -84,7 +73,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
         if self._tracking_enabled:
-            return float(self._x)
+            return float(self.vehicle.location[0])
         else:
             return None
 
@@ -92,7 +81,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
         if self._tracking_enabled:
-            return float(self._y)
+            return float(self.vehicle.location[1])
         else:
             return None
 
