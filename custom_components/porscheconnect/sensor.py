@@ -116,6 +116,27 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         state_class=SensorStateClass.TOTAL_INCREASING,
         suggested_display_precision=0,
     ),
+    PorscheSensorEntityDescription(
+        key="remaining_range",
+        translation_key="remaining_range",
+        measurement_node="RANGE",
+        measurement_leaf="kilometers",
+        icon="mdi:gas-station",
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+    ),
+    PorscheSensorEntityDescription(
+        key="fuel_level",
+        translation_key="fuel_level",
+        measurement_node="FUEL_LEVEL",
+        measurement_leaf="percent",
+        icon="mdi:gas-station",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+    ),
 ]
 
 
