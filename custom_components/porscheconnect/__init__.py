@@ -24,8 +24,6 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.helpers.device_registry import DeviceInfo
 
 from homeassistant.util import slugify
-from pyporscheconnectapi.client import Client
-from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheException
 from pyporscheconnectapi.vehicle import PorscheVehicle
 from pyporscheconnectapi.account import PorscheConnectAccount
@@ -126,18 +124,11 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
 
-        data = {}
         try:
             if self.vehicles is None:
                 self.vehicles = await self.controller.get_vehicles()
 
                 for vehicle in self.vehicles:
-                    vin = vehicle.vin
-                    vehicle.data["name"] = (
-                        vehicle.data["customName"]
-                        if "customName" in vehicle.data
-                        else vehicle.data["modelName"]
-                    )
                     await vehicle._update_data_for_vehicle()
 
             else:
@@ -148,7 +139,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
-        return data
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
