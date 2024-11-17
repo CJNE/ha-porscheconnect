@@ -62,6 +62,10 @@
         },
         "number": {
             "target_soc": {"name": "Begärd laddnivå"}
+        },
+        "switch": {
+            "climatise": {"name": "Fjärrklimatisering"},
+            "direct_charging": {"name": "Direktladdning"}
         }
     }
 }

@@ -41,6 +41,10 @@
         },
         "number": {
             "target_soc": {"name": "Target state of charge"}
+        },
+        "switch": {
+            "climatise": {"name": "Remote climatisation"},
+            "direct_charging": {"name": "Direct charging"}
         }
     }
 }

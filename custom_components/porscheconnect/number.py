@@ -91,6 +91,7 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
     ) -> None:
         """Initialize an Porsche Number."""
         super().__init__(coordinator, vehicle)
+
         self.entity_description = description
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 

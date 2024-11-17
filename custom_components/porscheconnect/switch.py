@@ -1,63 +1,116 @@
-"""Switch platform for Porsche Connect."""
-from homeassistant.components.switch import SwitchEntity
+"""Support for the Porsche Connect switch entities."""
 
-from . import DOMAIN as PORSCHE_DOMAIN
-from . import PorscheDevice
-from .const import DEVICE_NAMES
-from .const import HA_SWITCH
-from .const import SwitchMeta
+from collections.abc import Callable, Coroutine
+from dataclasses import dataclass
+from typing import Any
+import logging
+
+from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.config_entries import ConfigEntry
+
+from . import (
+    PorscheConnectDataUpdateCoordinator,
+    PorscheVehicle,
+    PorscheBaseEntity,
+    PorscheException,
+)
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup switch platform."""
-    coordinator = hass.data[PORSCHE_DOMAIN][entry.entry_id]
-    entities = []
+@dataclass(frozen=True, kw_only=True)
+class PorscheSwitchEntityDescription(SwitchEntityDescription):
+    """Describes Porsche switch entity."""
+
+    value_fn: Callable[[PorscheVehicle], bool]
+    remote_service_on: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
+    remote_service_off: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
+    is_available: Callable[[PorscheVehicle], bool] = lambda _: False
+    dynamic_options: Callable[[PorscheVehicle], list[str]] | None = None
+
+
+NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
+    PorscheSwitchEntityDescription(
+        key="climatise",
+        translation_key="climatise",
+        is_available=lambda v: v.has_remote_climatisation,
+        value_fn=lambda v: v.is_remote_climatise_on,
+        remote_service_on=lambda v: v.remote_services.climatise_on(),
+        remote_service_off=lambda v: v.remote_services.climatise_off(),
+    ),
+    PorscheSwitchEntityDescription(
+        key="direct_charging",
+        translation_key="direct_charging",
+        is_available=lambda v: v.has_direct_charge,
+        value_fn=lambda v: v.is_direct_charge_on,
+        remote_service_on=lambda v: v.remote_services.direct_charge_on(),
+        remote_service_off=lambda v: v.remote_services.direct_charge_off(),
+    ),
+]
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Porsche switch from config entry."""
+    coordinator: PorscheConnectDataUpdateCoordinator = hass.data[DOMAIN][
+        config_entry.entry_id
+    ]
+
+    entities: list[PorscheSwitch] = []
+
     for vehicle in coordinator.vehicles:
-        for switch in vehicle["components"][HA_SWITCH]:
-            entities.append(PorscheConnectSwitch(vehicle, coordinator, switch))
-    async_add_devices(entities)
+        entities.extend(
+            [
+                PorscheSwitch(coordinator, vehicle, description)
+                for description in NUMBER_TYPES
+                if description.is_available(vehicle)
+            ]
+        )
+    async_add_entities(entities)
 
 
-class PorscheConnectSwitch(PorscheDevice, SwitchEntity):
-    """porscheconnect switch class."""
+class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
+    """Representation of Porsche switch."""
 
-    def __init__(self, vehicle, coordinator, switch_meta: SwitchMeta):
-        """Initialize of the sensor."""
-        super().__init__(vehicle, coordinator)
-        self.key = switch_meta.key
-        self.meta = switch_meta
-        device_name = DEVICE_NAMES.get(self.key, self.key)
-        self._name = f"{self._name} {device_name}"
-        self._unique_id = f"{super().unique_id}_{self.key}"
+    entity_description: PorscheSwitchEntityDescription
 
-    async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
-        """Turn on the switch."""
-        if self.meta.on_action == "climate-on":
-            await self.coordinator.controller.climateOn(self.vin, True)
-        elif self.meta.on_action == "directcharge-on":
-            await self.coordinator.controller.directChargeOn(self.vin, None, True)
-        await self.coordinator.async_request_refresh()
-
-    async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
-        """Turn off the switch."""
-        if self.meta.off_action == "climate-off":
-            await self.coordinator.controller.climateOff(self.vin, True)
-        elif self.meta.off_action == "directcharge-off":
-            await self.coordinator.controller.directChargeOff(self.vin, None, True)
-        await self.coordinator.async_request_refresh()
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+        description: PorscheSwitchEntityDescription,
+    ) -> None:
+        """Initialize an Porsche Switch."""
+        super().__init__(coordinator, vehicle)
+        self.entity_description = description
+        self._attr_unique_id = f"{vehicle.vin}-{description.key}"
 
     @property
-    def name(self):
-        """Return the name of the switch."""
-        return self._name
+    def is_on(self) -> bool:
+        """Return the entity value to represent the entity state."""
+        return self.entity_description.value_fn(self.vehicle)
 
-    @property
-    def icon(self):
-        """Return the icon of this switch."""
-        return self.meta.icon
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn the switch on."""
+        try:
+            await self.entity_description.remote_service_on(self.vehicle)
+        except PorscheException as ex:
+            raise HomeAssistantError(ex) from ex
 
-    @property
-    def is_on(self):
-        """Return true if the switch is on."""
-        data = self.coordinator.getDataByVIN(self.vin, self.key)
-        return data == "ON" or data is True
+        self.coordinator.async_update_listeners()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn the switch off."""
+        try:
+            await self.entity_description.remote_service_off(self.vehicle)
+        except PorscheException as ex:
+            raise HomeAssistantError(ex) from ex
+
+        self.coordinator.async_update_listeners()

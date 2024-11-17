@@ -53,7 +53,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         measurement_leaf="chargingProfile.minSoC",
         device_class=SensorDeviceClass.BATTERY,
         native_unit_of_measurement=PERCENTAGE,
-        state_class=SensorStateClass.MEASUREMENT,
+        state_class=None,
         suggested_display_precision=0,
         icon="mdi:battery-high",
     ),
