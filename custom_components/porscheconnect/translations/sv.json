@@ -46,6 +46,12 @@
             "mileage": {
                 "name": "Miltal"
             },
+            "remaining_range": {
+                "name": "Återstående räckvidd"
+            },
+            "fuel_level": {
+                "name": "Bränslenivå"
+            },
             "charging_status":  {
                 "name": "Laddstatus",
                 "state": {
