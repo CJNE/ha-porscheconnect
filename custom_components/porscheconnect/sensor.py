@@ -1,6 +1,7 @@
 """Support for the Porsche Connect sensors"""
 import logging
 from typing import Optional
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from . import DOMAIN as PORSCHE_DOMAIN
@@ -42,7 +43,7 @@ _LOGGER = logging.getLogger(__name__)
 class PorscheSensorEntityDescription(SensorEntityDescription):
     measurement_node: str | None = None
     measurement_leaf: str | None = None
-    # is_available: Callable[[PorscheVehicle], bool] = lambda v: v.is_mf_enabled
+    is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_porsche_connect
 
 
 SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
@@ -56,6 +57,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         state_class=None,
         suggested_display_precision=0,
         icon="mdi:battery-high",
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="charging_status",
@@ -64,6 +66,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         measurement_leaf="status",
         icon="mdi:battery-charging",
         device_class=SensorDeviceClass.ENUM,
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="charging_rate",
@@ -73,6 +76,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         icon="mdi:speedometer",
         device_class=SensorDeviceClass.SPEED,
         native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR,
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="charging_power",
@@ -82,6 +86,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         icon="mdi:lightning-bolt-circle",
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="remaining_range_electric",
@@ -93,6 +98,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="state_of_charge",
@@ -104,6 +110,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
+        is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="mileage",
@@ -126,6 +133,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
+        is_available=lambda v: v.has_ice_drivetrain,
     ),
     PorscheSensorEntityDescription(
         key="fuel_level",
@@ -136,6 +144,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
+        is_available=lambda v: v.has_ice_drivetrain,
     ),
 ]
 
@@ -154,6 +163,7 @@ async def async_setup_entry(
         PorscheSensor(coordinator, vehicle, description)
         for vehicle in coordinator.vehicles
         for description in SENSOR_TYPES
+        if description.is_available(vehicle)
     ]
 
     async_add_entities(entities, True)
