@@ -46,6 +46,12 @@
             "mileage": {
                 "name": "Mileage"
             },
+            "remaining_range": {
+                "name": "Remaining range"
+            },
+            "fuel_level": {
+                "name": "Fuel level"
+            },
             "charging_status": {
                 "name": "Charging status",
                 "state": {

@@ -14,7 +14,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
-from homeassistant.core import Config
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -64,7 +64,7 @@ def _async_save_token(hass, config_entry, access_token):
     )
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up this integration using YAML is not supported."""
     return True
 
