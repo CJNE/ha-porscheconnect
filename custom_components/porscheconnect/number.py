@@ -45,6 +45,7 @@ NUMBER_TYPES: list[PorscheNumberEntityDescription] = [
         is_available=lambda v: v.has_electric_drivetrain,
         native_max_value=100.0,
         native_min_value=25.0,
+        native_unit_of_measurement="%",
         native_step=5.0,
         mode=NumberMode.SLIDER,
         value_fn=lambda v: v.charging_target,
@@ -91,6 +92,7 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
     ) -> None:
         """Initialize an Porsche Number."""
         super().__init__(coordinator, vehicle)
+
         self.entity_description = description
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 

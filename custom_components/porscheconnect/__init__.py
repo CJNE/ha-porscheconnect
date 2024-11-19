@@ -35,8 +35,8 @@ from .const import STARTUP_MESSAGE
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=1920)
 
-# PLATFORMS = [ "switch", "lock" ]
-PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number"]
+# PLATFORMS = [ "lock" ]
+PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number", "switch"]
 
 
 class PinError(PorscheException):

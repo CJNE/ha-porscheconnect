@@ -1,0 +1,21 @@
+{
+  "entity": {
+    "number": {
+      "target_soc": {
+        "default": "mdi:battery-charging-medium"
+      }
+    },
+    "switch": {
+      "climatise": {
+        "default": "mdi:fan"
+      },
+      "direct_charging": {
+        "default": "mdi:ev-station",
+        "state": {
+          "on": "mdi:ev-station",
+          "off": "mdi:ev-station"
+        }
+      }
+    }
+  }
+}
