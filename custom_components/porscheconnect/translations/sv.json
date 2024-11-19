@@ -21,10 +21,25 @@
     "entity": {
         "binary_sensor": {
             "parking_brake": {
-                "name": "Parkeringsbroms"
+                "name": "Parkeringsbroms",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
+            },
+            "parking_light": {
+                "name": "Parkeringsljus",
+                "state": {
+                    "on": "Tänt",
+                    "off": "Släckt"
+                }
             },
             "privacy_mode": {
-                "name": "Privat läge"
+                "name": "Privat läge",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
             }
         },
         "sensor": {
@@ -57,7 +72,7 @@
                 "state": {
                     "CHARGING": "Laddar",
                     "CHARGING_COMPLETED": "Laddning klar",
-                    "ERROR": "Laddfel",
+                    "CHARGING_ERROR": "Laddfel",
                     "INITIALISING": "Initierar laddning",
                     "INSTANT_CHARGING": "Direktladdar",
                     "NOT_CHARGING": "Laddar ej",

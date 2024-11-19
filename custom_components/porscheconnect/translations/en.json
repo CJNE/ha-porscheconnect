@@ -23,6 +23,9 @@
             "parking_brake": {
                 "name": "Parking brake"
             },
+            "parking_light": {
+                "name": "Parking light"
+            },
             "privacy_mode": {
                 "name": "Privacy mode"
             }
@@ -57,7 +60,7 @@
                 "state": {
                     "CHARGING": "Charging",
                     "CHARGING_COMPLETED": "Charging completed",
-                    "ERROR": "Charging error",
+                    "CHARGING_ERROR": "Charging error",
                     "INITIALISING": "Initialising charging",
                     "INSTANT_CHARGING": "Instant charging",
                     "NOT_CHARGING": "Not charging",

@@ -61,6 +61,14 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         measurement_leaf="isOn",
         device_class=None,
     ),
+    PorscheBinarySensorEntityDescription(
+        name="Parking light",
+        key="parking_light",
+        translation_key="parking_light",
+        measurement_node="PARKING_LIGHT",
+        measurement_leaf="isOn",
+        device_class=BinarySensorDeviceClass.LIGHT,
+    ),
 ]
 
 

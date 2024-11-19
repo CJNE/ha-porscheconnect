@@ -1,5 +1,10 @@
 {
   "entity": {
+    "binary_sensor": {
+      "parking_light": {
+        "default": "mdi:car-parking-lights"
+      }
+    },
     "number": {
       "target_soc": {
         "default": "mdi:battery-charging-medium"
