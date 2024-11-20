@@ -28,6 +28,9 @@
             },
             "privacy_mode": {
                 "name": "Privacy mode"
+            },
+            "remote_access": {
+                "name": "Remote access"
             }
         },
         "button": {

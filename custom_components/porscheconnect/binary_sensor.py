@@ -46,6 +46,14 @@ class PorscheBinarySensorEntityDescription(BinarySensorEntityDescription):
 
 SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
     PorscheBinarySensorEntityDescription(
+        name="Remote access",
+        key="remote_access",
+        translation_key="remote_access",
+        measurement_node="REMOTE_ACCESS_AUTHORIZATION",
+        measurement_leaf="isEnabled",
+        device_class=None,
+    ),
+    PorscheBinarySensorEntityDescription(
         name="Privacy mode",
         key="privacy_mode",
         translation_key="privacy_mode",

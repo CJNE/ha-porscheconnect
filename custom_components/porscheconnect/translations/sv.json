@@ -40,6 +40,13 @@
                     "on": "På",
                     "off": "Av"
                 }
+            },
+            "remote_access": {
+                "name": "Fjärrstyrning",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
             }
         },
         "button": {
