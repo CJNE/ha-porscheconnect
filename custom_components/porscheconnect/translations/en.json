@@ -30,6 +30,10 @@
                 "name": "Privacy mode"
             }
         },
+        "button": {
+            "flash_indicators": {"name": "Flash indicators"},
+            "honk_and_flash_indicators": {"name": "Honk and flash indicators"}
+        },
         "sensor": {
             "charging_power": {
                 "name": "Charging power"

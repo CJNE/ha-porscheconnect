@@ -19,6 +19,10 @@
         },
     },
     "entity": {
+        "button": {
+            "flash_indicators": {"name": "Flash indicators"},
+            "honk_and_flash_indicators": {"name": "Honk and flash indicators"}
+        },
         "binary_sensor": {
             "parking_brake": {"name": "Parking brake"},
             "privacy_mode": {"name": "Privacy mode"},

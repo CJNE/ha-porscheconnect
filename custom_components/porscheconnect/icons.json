@@ -5,6 +5,14 @@
         "default": "mdi:car-parking-lights"
       }
     },
+    "button": {
+      "flash_indicators": {
+        "default": "mdi:unfold-more-vertical"
+      },
+      "honk_and_flash_indicators": {
+        "default": "mdi:bugle"
+      }
+    },
     "number": {
       "target_soc": {
         "default": "mdi:battery-charging-medium"

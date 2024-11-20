@@ -42,6 +42,10 @@
                 }
             }
         },
+        "button": {
+            "flash_indicators": {"name": "Blinka"},
+            "honk_and_flash_indicators": {"name": "Tuta och blinka"}
+        },
         "sensor": {
             "charging_power": {
                 "name": "Laddeffekt"
