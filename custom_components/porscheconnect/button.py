@@ -33,6 +33,11 @@ class PorscheButtonEntityDescription(ButtonEntityDescription):
 
 BUTTON_TYPES: tuple[PorscheButtonEntityDescription, ...] = (
     PorscheButtonEntityDescription(
+        key="get_current_overview",
+        translation_key="get_current_overview",
+        remote_function=lambda v: v.get_current_overview(),
+    ),
+    PorscheButtonEntityDescription(
         key="flash_indicators",
         translation_key="flash_indicators",
         remote_function=lambda v: v.remote_services.flash_indicators(),

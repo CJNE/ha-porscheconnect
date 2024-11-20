@@ -22,6 +22,7 @@
         "button": {
             "flash_indicators": {"name": "Flash indicators"},
             "honk_and_flash_indicators": {"name": "Honk and flash indicators"}
+            "get_corrent_overview": {"name": "Get current overview"}
         },
         "binary_sensor": {
             "parking_brake": {"name": "Parking brake"},

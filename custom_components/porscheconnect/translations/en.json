@@ -35,7 +35,8 @@
         },
         "button": {
             "flash_indicators": {"name": "Flash indicators"},
-            "honk_and_flash_indicators": {"name": "Honk and flash indicators"}
+            "honk_and_flash_indicators": {"name": "Honk and flash indicators"},
+            "get_current_overview": {"name": "Get current vehicle information"}
         },
         "sensor": {
             "charging_power": {

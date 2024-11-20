@@ -51,7 +51,8 @@
         },
         "button": {
             "flash_indicators": {"name": "Blinka"},
-            "honk_and_flash_indicators": {"name": "Tuta och blinka"}
+            "honk_and_flash_indicators": {"name": "Tuta och blinka"},
+            "get_current_overview": {"name": "Uppdatera fordonsinformation"}
         },
         "sensor": {
             "charging_power": {

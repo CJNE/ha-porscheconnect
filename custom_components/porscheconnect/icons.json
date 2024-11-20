@@ -11,6 +11,9 @@
       },
       "honk_and_flash_indicators": {
         "default": "mdi:bugle"
+      },
+      "get_current_overview": {
+        "default": "mdi:reload"
       }
     },
     "number": {
