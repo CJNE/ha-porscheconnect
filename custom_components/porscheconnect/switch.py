@@ -37,7 +37,7 @@ NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
     PorscheSwitchEntityDescription(
         key="climatise",
         translation_key="climatise",
-        is_available=lambda v: v.has_remote_climatisation,
+        is_available=lambda v: v.has_remote_climatisation and v.has_remote_services,
         value_fn=lambda v: v.is_remote_climatise_on,
         remote_service_on=lambda v: v.remote_services.climatise_on(),
         remote_service_off=lambda v: v.remote_services.climatise_off(),
@@ -45,7 +45,7 @@ NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
     PorscheSwitchEntityDescription(
         key="direct_charging",
         translation_key="direct_charging",
-        is_available=lambda v: v.has_direct_charge,
+        is_available=lambda v: v.has_direct_charge and v.has_remote_services,
         value_fn=lambda v: v.is_direct_charge_on,
         remote_service_on=lambda v: v.remote_services.direct_charge_on(),
         remote_service_off=lambda v: v.remote_services.direct_charge_off(),

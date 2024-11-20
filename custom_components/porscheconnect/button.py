@@ -28,7 +28,7 @@ class PorscheButtonEntityDescription(ButtonEntityDescription):
 
     remote_function: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
     enabled_when_read_only: bool = False
-    is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_porsche_connect
+    is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_remote_services
 
 
 BUTTON_TYPES: tuple[PorscheButtonEntityDescription, ...] = (
