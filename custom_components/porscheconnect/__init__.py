@@ -1,7 +1,8 @@
 """The Porsche Connect integration."""
 import asyncio
-import logging
 import operator
+import logging
+
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 from typing import List
@@ -29,18 +30,10 @@ from pyporscheconnectapi.vehicle import PorscheVehicle
 from pyporscheconnectapi.account import PorscheConnectAccount
 
 
-from .const import DOMAIN
-from .const import STARTUP_MESSAGE
+from .const import DOMAIN, STARTUP_MESSAGE, DEFAULT_SCAN_INTERVAL, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=1920)
-
-# PLATFORMS = [ "lock" ]
-PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number", "switch", "button", "lock"]
-
-
-class PinError(PorscheException):
-    pass
+SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
 
 
 def getFromDict(dataDict, keyString):
@@ -117,9 +110,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
     def getVehicleDataLeaf(self, vehicle, node, leaf):
         return getFromDict(getFromDict(vehicle.data, node), leaf)
-
-    def getVehicleDataNode(self, vehicle, node):
-        return getFromDict(vehicle.data, node)
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""

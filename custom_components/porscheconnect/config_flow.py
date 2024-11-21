@@ -11,11 +11,8 @@ from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
 from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import WrongCredentials
 
-from .const import DOMAIN  # pylint:disable=unused-import
-
-# from homeassistant.const import CONF_SCAN_INTERVAL
+from .const import DOMAIN 
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,12 +35,11 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     _LOGGER.debug("Attempting login")
     try:
-        token = await conn.getToken()
+        token = await conn.get_token()
     except Exception as e:
         _LOGGER.info(f"Login failed, {e}")
         raise InvalidAuth
 
-    # Return info that you want to store in the config entry.
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
 
 

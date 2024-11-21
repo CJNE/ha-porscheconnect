@@ -32,16 +32,11 @@ async def async_setup_entry(
     entities: list[PorscheDeviceTracker] = []
 
     for vehicle in coordinator.vehicles:
-        entities.append(PorscheDeviceTracker(coordinator, vehicle))
-        # if not vehicle.privacy_mode:
-        #    _LOGGER.info(
-        #        (
-        #            "Vehicle %s (%s) is in privacy mode with location tracking,"
-        #            " disabled defaulting to unknown"
-        #        ),
-        #        vehicle.name,
-        #        vehicle.vin,
-        #    )
+        if not vehicle.privacy_mode:
+            entities.append(PorscheDeviceTracker(coordinator, vehicle))
+        else:
+            _LOGGER.info("Vehicle is in privacy mode with location tracking disabled")
+
     async_add_entities(entities)
 
 

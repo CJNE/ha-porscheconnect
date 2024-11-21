@@ -3,7 +3,6 @@
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from typing import Any
-import logging
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.core import HomeAssistant
@@ -15,11 +14,11 @@ from . import (
     PorscheConnectDataUpdateCoordinator,
     PorscheVehicle,
     PorscheBaseEntity,
-    PorscheException,
 )
-from .const import DOMAIN
 
-_LOGGER = logging.getLogger(__name__)
+from pyporscheconnectapi.exceptions import PorscheException
+
+from .const import DOMAIN
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -30,7 +29,6 @@ class PorscheSwitchEntityDescription(SwitchEntityDescription):
     remote_service_on: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
     remote_service_off: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
     is_available: Callable[[PorscheVehicle], bool] = lambda _: False
-    dynamic_options: Callable[[PorscheVehicle], list[str]] | None = None
 
 
 NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
@@ -38,7 +36,7 @@ NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
         key="climatise",
         translation_key="climatise",
         is_available=lambda v: v.has_remote_climatisation and v.has_remote_services,
-        value_fn=lambda v: v.is_remote_climatise_on,
+        value_fn=lambda v: v.remote_climatise_on,
         remote_service_on=lambda v: v.remote_services.climatise_on(),
         remote_service_off=lambda v: v.remote_services.climatise_off(),
     ),
@@ -46,7 +44,7 @@ NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
         key="direct_charging",
         translation_key="direct_charging",
         is_available=lambda v: v.has_direct_charge and v.has_remote_services,
-        value_fn=lambda v: v.is_direct_charge_on,
+        value_fn=lambda v: v.direct_charge_on,
         remote_service_on=lambda v: v.remote_services.direct_charge_on(),
         remote_service_off=lambda v: v.remote_services.direct_charge_off(),
     ),

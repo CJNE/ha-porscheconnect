@@ -1,6 +1,5 @@
 """Support for the Porsche Connect binary sensors"""
 import logging
-from typing import Optional
 from dataclasses import dataclass
 
 from . import DOMAIN as PORSCHE_DOMAIN
@@ -18,21 +17,10 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 
-from homeassistant.const import (
-    PERCENTAGE,
-    STATE_UNKNOWN,
-    UnitOfElectricCurrent,
-    UnitOfLength,
-    UnitOfVolume,
-)
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.unit_system import UnitSystem
-
-
-import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
 

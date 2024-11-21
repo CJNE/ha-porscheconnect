@@ -3,7 +3,6 @@
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from typing import Any
-import logging
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
 from homeassistant.core import HomeAssistant
@@ -15,11 +14,11 @@ from . import (
     PorscheConnectDataUpdateCoordinator,
     PorscheVehicle,
     PorscheBaseEntity,
-    PorscheException,
 )
-from .const import DOMAIN
 
-_LOGGER = logging.getLogger(__name__)
+from pyporscheconnectapi.exceptions import PorscheException
+
+from .const import DOMAIN
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -27,7 +26,6 @@ class PorscheButtonEntityDescription(ButtonEntityDescription):
     """Class describing Porsche button entities."""
 
     remote_function: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
-    enabled_when_read_only: bool = False
     is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_remote_services
 
 

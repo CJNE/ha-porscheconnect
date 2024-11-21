@@ -31,7 +31,9 @@
             "remote_access": {"name": "Remote access"}
         },
         "sensor": {
+			"charging_power": {"name": "Charging power"},
             "charging_rate": {"name": "Charging rate"},
+            "charging_target": {"name": "Charging target"},
             "charging_status": {
                 "name": "Charging status",
                 "state": {
@@ -44,7 +46,12 @@
                     "NOT_PLUGGED": "Not connected",
                     "OFF": "Charging off"
                 }
-            }
+            },
+			"fuel_level": {"name": "Fuel level"},
+			"mileage": {"name": "Mileage"},
+			"state_of_charge": {"name": "State of charge"},
+			"remaining_range": {"name": "Remaining range"},
+			"remaining_range_electric": {"name": "Remaining range electric"},
         },
         "number": {
             "target_soc": {"name": "Target state of charge"}

@@ -13,8 +13,10 @@ from . import (
     PorscheConnectDataUpdateCoordinator,
     PorscheVehicle,
     PorscheBaseEntity,
-    PorscheException,
 )
+
+from pyporscheconnectapi.exceptions import PorscheException
+
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -65,19 +67,22 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
     async def async_unlock(self, **kwargs: Any) -> None:
         """Unlock the vehicle."""
         pin = kwargs.get("code", None)
-        try:
-            await self.vehicle.remote_services.unlock_vehicle(pin)
-        except PorscheException as ex:
-            self._attr_is_locked = None
-            self.async_write_ha_state()
-            raise HomeAssistantError(ex) from ex
-        finally:
-            self.coordinator.async_update_listeners()
+        if pin:
+            try:
+                await self.vehicle.remote_services.unlock_vehicle(pin)
+            except PorscheException as ex:
+                self._attr_is_locked = None
+                self.async_write_ha_state()
+                raise HomeAssistantError(ex) from ex
+            finally:
+                self.coordinator.async_update_listeners()
+        else:
+            raise ValueError("PIN code not provided.")
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         _LOGGER.debug("Updating lock data of %s", self.vehicle.vin)
-        self._attr_is_locked = self.vehicle.is_vehicle_locked
+        self._attr_is_locked = self.vehicle.vehicle_locked
 
         super()._handle_coordinator_update()

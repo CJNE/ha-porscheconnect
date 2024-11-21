@@ -34,7 +34,6 @@ class PorscheNumberEntityDescription(NumberEntityDescription):
     value_fn: Callable[[PorscheVehicle], float | int | None]
     remote_service: Callable[[PorscheVehicle, float | int], Coroutine[Any, Any, Any]]
     is_available: Callable[[PorscheVehicle], bool] = lambda _: False
-    dynamic_options: Callable[[PorscheVehicle], list[str]] | None = None
 
 
 NUMBER_TYPES: list[PorscheNumberEntityDescription] = [

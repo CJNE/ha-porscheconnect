@@ -1,6 +1,5 @@
 """Support for the Porsche Connect sensors"""
 import logging
-from typing import Optional
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -9,7 +8,6 @@ from . import (
     PorscheConnectDataUpdateCoordinator,
     PorscheVehicle,
     PorscheBaseEntity,
-    getFromDict,
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -23,9 +21,7 @@ from homeassistant.components.sensor import (
 from homeassistant.const import (
     PERCENTAGE,
     STATE_UNKNOWN,
-    UnitOfElectricCurrent,
     UnitOfLength,
-    UnitOfVolume,
     UnitOfPower,
     UnitOfSpeed,
 )
@@ -33,8 +29,6 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-
-import json  # only for formatting debug outpu
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,7 +46,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         translation_key="charging_target",
         measurement_node="CHARGING_SUMMARY",
         measurement_leaf="minSoC",
-        device_class=SensorDeviceClass.BATTERY,
+        device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         state_class=None,
         suggested_display_precision=0,
