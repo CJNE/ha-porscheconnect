@@ -134,7 +134,6 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
-                        vin = vehicle.vin
                         await vehicle.get_stored_overview()
 
         except PorscheException as err:

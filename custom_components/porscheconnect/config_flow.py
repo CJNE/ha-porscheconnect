@@ -43,8 +43,6 @@ async def validate_input(hass: core.HomeAssistant, data):
         _LOGGER.info(f"Login failed, {e}")
         raise InvalidAuth
 
-    await conn.close()
-
     # Return info that you want to store in the config entry.
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
 
