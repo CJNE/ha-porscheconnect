@@ -1,22 +1,20 @@
 """The Porsche Connect integration."""
-import asyncio
+
 import operator
 import logging
 
-from datetime import datetime, timedelta, timezone
-from dataclasses import dataclass, field
-from typing import List
+from datetime import timedelta
 
 from functools import reduce
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.httpx_client import get_async_client
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -24,13 +22,13 @@ from homeassistant.helpers.update_coordinator import (
 )
 from homeassistant.helpers.device_registry import DeviceInfo
 
-from homeassistant.util import slugify
 from pyporscheconnectapi.exceptions import PorscheException
 from pyporscheconnectapi.vehicle import PorscheVehicle
 from pyporscheconnectapi.account import PorscheConnectAccount
+from pyporscheconnectapi.connection import Connection
 
 
-from .const import DOMAIN, STARTUP_MESSAGE, DEFAULT_SCAN_INTERVAL, PLATFORMS
+from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
@@ -38,11 +36,12 @@ SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
 
 def getFromDict(dataDict, keyString):
     mapList = keyString.split(".")
-    safe_getitem = (
-        lambda latest_value, key: None
-        if latest_value is None or key not in latest_value
-        else operator.getitem(latest_value, key)
-    )
+
+    def safe_getitem(latest_value, key):
+        if latest_value is None or key not in latest_value:
+            return None
+        return operator.getitem(latest_value, key)
+
     return reduce(safe_getitem, mapList, dataDict)
 
 
@@ -67,10 +66,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
 
-    controller = PorscheConnectAccount(
-        username=entry.data.get("email"),
-        password=entry.data.get("password"),
+    async_client = get_async_client(hass)
+    connection = Connection(
+        entry.data.get("email"),
+        entry.data.get("password"),
+        asyncClient=async_client,
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
+    )
+
+    controller = PorscheConnectAccount(
+        connection=connection,
     )
 
     coordinator = PorscheConnectDataUpdateCoordinator(
