@@ -48,7 +48,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         """Initialize the lock."""
         super().__init__(coordinator, vehicle)
 
-        self._attr_unique_id = f"{vehicle.vin}-lock"
+        self._attr_unique_id = f'{vehicle.data["name"]}-lock'    
         self.door_lock_state_available = vehicle.has_remote_services
 
     async def async_lock(self, **kwargs: Any) -> None:

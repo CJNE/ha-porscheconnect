@@ -80,6 +80,11 @@
         "number": {
             "target_soc": {"name": "Target state of charge"}
         },
+        "lock": {
+            "lock": {
+                "name": "Door lock"
+            }
+        },
         "switch": {
             "climatise": {"name": "Remote climatisation"},
             "direct_charging": {"name": "Direct charging"}

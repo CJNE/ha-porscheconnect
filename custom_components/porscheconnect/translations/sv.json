@@ -96,6 +96,11 @@
         "number": {
             "target_soc": {"name": "Begärd laddnivå"}
         },
+        "lock": {
+            "lock": {
+                "name": "Dörrlås"
+            }
+        },
         "switch": {
             "climatise": {"name": "Fjärrklimatisering"},
             "direct_charging": {"name": "Direktladdning"}
