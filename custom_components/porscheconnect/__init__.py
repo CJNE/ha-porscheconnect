@@ -36,7 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=1920)
 
 # PLATFORMS = [ "lock" ]
-PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number", "switch", "button"]
+PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number", "switch", "button", "lock"]
 
 
 class PinError(PorscheException):
