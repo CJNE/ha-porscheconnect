@@ -129,13 +129,13 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 self.vehicles = await self.controller.get_vehicles()
 
                 for vehicle in self.vehicles:
-                    await vehicle._update_data_for_vehicle()
+                    await vehicle.get_stored_overview()
 
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         vin = vehicle.vin
-                        await vehicle._update_data_for_vehicle()
+                        await vehicle.get_stored_overview()
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
