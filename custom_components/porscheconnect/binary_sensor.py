@@ -1,6 +1,7 @@
 """Support for the Porsche Connect binary sensors"""
 import logging
 from dataclasses import dataclass
+from collections.abc import Callable
 
 from . import DOMAIN as PORSCHE_DOMAIN
 from . import (
@@ -20,7 +21,6 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util.unit_system import UnitSystem
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +29,8 @@ _LOGGER = logging.getLogger(__name__)
 class PorscheBinarySensorEntityDescription(BinarySensorEntityDescription):
     measurement_node: str | None = None
     measurement_leaf: str | None = None
+    value_fn: Callable[[PorscheVehicle], bool] | None = None
+    attr_fn: Callable[[PorscheVehicle], dict[str, str]] | None = None
     # is_available: Callable[[PorscheVehicle], bool] = lambda v: v.is_mf_enabled
 
 
@@ -65,6 +67,14 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         measurement_leaf="isOn",
         device_class=BinarySensorDeviceClass.LIGHT,
     ),
+    PorscheBinarySensorEntityDescription(
+        name="Closed",
+        key="vehicle_closed",
+        translation_key="vehicle_closed",
+        value_fn=lambda v: v.vehicle_closed,
+        attr_fn=lambda v: v.doors_and_lids,
+        device_class=None,
+    ),
 ]
 
 
@@ -79,7 +89,7 @@ async def async_setup_entry(
     ]
 
     entities = [
-        PorscheBinarySensor(coordinator, vehicle, description, hass.config.units)
+        PorscheBinarySensor(coordinator, vehicle, description)
         for vehicle in coordinator.vehicles
         for description in SENSOR_TYPES
     ]
@@ -97,23 +107,24 @@ class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
         coordinator: PorscheConnectDataUpdateCoordinator,
         vehicle: PorscheVehicle,
         description: PorscheBinarySensorEntityDescription,
-        unit_system: UnitSystem,
     ) -> None:
         """Initialize of the sensor"""
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
-        self._unit_system: unitsystem
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._attr_is_on = self.coordinator.getVehicleDataLeaf(
-            self.vehicle,
-            self.entity_description.measurement_node,
-            self.entity_description.measurement_leaf,
-        )
+        if self.entity_description.value_fn:
+            self._attr_is_on = self.entity_description.value_fn(self.vehicle)
+        else:
+            self._attr_is_on = self.coordinator.getVehicleDataLeaf(
+                self.vehicle,
+                self.entity_description.measurement_node,
+                self.entity_description.measurement_leaf,
+            )
 
         _LOGGER.debug(
             "Updating binary sensor '%s' of %s with state '%s'",
@@ -122,5 +133,10 @@ class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
             self._attr_is_on,
             # state,
         )
+
+        if self.entity_description.attr_fn:
+            self._attr_extra_state_attributes = self.entity_description.attr_fn(
+                self.vehicle
+            )
 
         super()._handle_coordinator_update()

@@ -19,24 +19,17 @@
         }
     },
     "entity": {
-        "binary_sensor": {
-            "parking_brake": {
-                "name": "Parking brake"
-            },
-            "parking_light": {
-                "name": "Parking light"
-            },
-            "privacy_mode": {
-                "name": "Privacy mode"
-            },
-            "remote_access": {
-                "name": "Remote access"
-            }
-        },
         "button": {
             "flash_indicators": {"name": "Flash indicators"},
             "honk_and_flash_indicators": {"name": "Honk and flash indicators"},
             "get_current_overview": {"name": "Get current vehicle information"}
+        },
+        "binary_sensor": {
+            "parking_brake": {"name": "Parking brake"},
+            "parking_light": {"name": "Parking light"},
+            "privacy_mode": {"name": "Privacy mode"},
+            "vehicle_closed": {"name": "Vehicle is closed"},
+            "remote_access": {"name": "Remote access"}
         },
         "image": {
             "front_view": {"name": "View from the front"},

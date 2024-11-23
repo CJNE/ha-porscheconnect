@@ -41,6 +41,13 @@
                     "off": "Av"
                 }
             },
+            "vehicle_closed": {
+				"name": "Bilen är stängd",
+                "state": {
+                    "on": "Ja",
+                    "off": "Nej"
+                }
+			},
             "remote_access": {
                 "name": "Fjärrstyrning",
                 "state": {

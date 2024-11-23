@@ -28,6 +28,7 @@
             "parking_brake": {"name": "Parking brake"},
             "parking_light": {"name": "Parking light"},
             "privacy_mode": {"name": "Privacy mode"},
+            "vehicle_closed": {"name": "Vehicle is closed"},
             "remote_access": {"name": "Remote access"}
         },
         "image": {
