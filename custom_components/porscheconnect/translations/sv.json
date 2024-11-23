@@ -54,6 +54,13 @@
             "honk_and_flash_indicators": {"name": "Tuta och blinka"},
             "get_current_overview": {"name": "Uppdatera fordonsinformation"}
         },
+        "image": {
+            "front_view": {"name": "Vy framifrån"},
+            "side_view": {"name": "Vy från sidan"},
+            "rear_view": {"name": "Vy bakifrån"},
+            "rear_top_view": {"name": "Vy snett ovanifrån"},
+            "top_view": {"name": "Vy ovanifrån"}
+        },
         "sensor": {
             "charging_power": {
                 "name": "Laddeffekt"

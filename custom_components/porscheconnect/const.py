@@ -8,7 +8,16 @@ DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1.0"
 ISSUE_URL = "https://github.com/cjne/ha-porscheconnect/issues"
 
-PLATFORMS = ["sensor", "binary_sensor", "device_tracker", "number", "switch", "button", "lock"]
+PLATFORMS = [
+    "sensor",
+    "binary_sensor",
+    "device_tracker",
+    "number",
+    "switch",
+    "button",
+    "lock",
+    "image",
+]
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

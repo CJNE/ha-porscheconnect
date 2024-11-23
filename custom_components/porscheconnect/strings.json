@@ -30,6 +30,13 @@
             "privacy_mode": {"name": "Privacy mode"},
             "remote_access": {"name": "Remote access"}
         },
+        "image": {
+            "front_view": {"name": "View from the front"},
+            "side_view": {"name": "View from the side"},
+            "rear_view": {"name": "View from the rear"},
+            "rear_top_view": {"name": "View diagonally from above"},
+            "top_view": {"name": "View from above"}
+        },
         "sensor": {
 			"charging_power": {"name": "Charging power"},
             "charging_rate": {"name": "Charging rate"},

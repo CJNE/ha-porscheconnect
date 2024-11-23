@@ -120,6 +120,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
 
                 for vehicle in self.vehicles:
                     await vehicle.get_stored_overview()
+                    await vehicle.get_picture_locations()
 
             else:
                 async with async_timeout.timeout(30):

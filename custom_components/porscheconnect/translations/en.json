@@ -38,6 +38,13 @@
             "honk_and_flash_indicators": {"name": "Honk and flash indicators"},
             "get_current_overview": {"name": "Get current vehicle information"}
         },
+        "image": {
+            "front_view": {"name": "View from the front"},
+            "side_view": {"name": "View from the side"},
+            "rear_view": {"name": "View from the rear"},
+            "rear_top_view": {"name": "View diagonally from above"},
+            "top_view": {"name": "View from above"}
+        },
         "sensor": {
             "charging_power": {
                 "name": "Charging power"

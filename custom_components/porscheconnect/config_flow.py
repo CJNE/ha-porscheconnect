@@ -12,7 +12,7 @@ from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
 from pyporscheconnectapi.connection import Connection
 
-from .const import DOMAIN 
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
