@@ -31,7 +31,7 @@ class PorscheBinarySensorEntityDescription(BinarySensorEntityDescription):
     measurement_leaf: str | None = None
     value_fn: Callable[[PorscheVehicle], bool] | None = None
     attr_fn: Callable[[PorscheVehicle], dict[str, str]] | None = None
-    # is_available: Callable[[PorscheVehicle], bool] = lambda v: v.is_mf_enabled
+    is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_porsche_connect
 
 
 SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
@@ -81,6 +81,7 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         translation_key="tire_pressure_status",
         value_fn=lambda v: not v.tire_pressure_status,
         attr_fn=lambda v: v.tire_pressures,
+        is_available=lambda v: v.has_tire_pressure_monitoring,
         device_class=BinarySensorDeviceClass.PROBLEM,
     ),
 ]
@@ -100,6 +101,7 @@ async def async_setup_entry(
         PorscheBinarySensor(coordinator, vehicle, description)
         for vehicle in coordinator.vehicles
         for description in SENSOR_TYPES
+        if description.is_available(vehicle)
     ]
 
     async_add_entities(entities, True)
