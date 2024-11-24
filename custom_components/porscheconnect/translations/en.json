@@ -28,7 +28,14 @@
             "parking_brake": {"name": "Parking brake"},
             "parking_light": {"name": "Parking light"},
             "privacy_mode": {"name": "Privacy mode"},
-            "vehicle_closed": {"name": "Vehicle is closed"},
+            "doors_and_lids": {"name": "Doors and lids"},
+            "tire_pressure_status": {
+				"name": "Tire pressure status",
+                "state": {
+                    "on": "Warning",
+                    "off": "Ok"
+                }
+			},
             "remote_access": {"name": "Remote access"}
         },
         "image": {

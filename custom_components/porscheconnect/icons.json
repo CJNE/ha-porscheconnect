@@ -3,6 +3,9 @@
     "binary_sensor": {
       "parking_light": {
         "default": "mdi:car-parking-lights"
+      },
+      "tire_pressure_status": {
+        "default": "mdi:car-tire-alert"
       }
     },
     "button": {

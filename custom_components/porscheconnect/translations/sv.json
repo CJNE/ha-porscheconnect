@@ -41,11 +41,18 @@
                     "off": "Av"
                 }
             },
-            "vehicle_closed": {
-				"name": "Bilen är stängd",
+            "tire_pressure_status": {
+				"name": "Däcktrycksövervakning",
                 "state": {
-                    "on": "Ja",
-                    "off": "Nej"
+                    "on": "Varning",
+                    "off": "Ok"
+                }
+			},
+            "doors_and_lids": {
+				"name": "Dörrar och luckor",
+                "state": {
+                    "on": "Öppen",
+                    "off": "Stängd"
                 }
 			},
             "remote_access": {
@@ -85,7 +92,7 @@
                 "name": "Laddnivå"
             },
             "mileage": {
-                "name": "Miltal"
+                "name": "Mätarställning"
             },
             "remaining_range": {
                 "name": "Återstående räckvidd"

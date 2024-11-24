@@ -68,12 +68,20 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         device_class=BinarySensorDeviceClass.LIGHT,
     ),
     PorscheBinarySensorEntityDescription(
-        name="Closed",
-        key="vehicle_closed",
-        translation_key="vehicle_closed",
-        value_fn=lambda v: v.vehicle_closed,
+        name="Doors and lids",
+        key="doors_and_lids",
+        translation_key="doors_and_lids",
+        value_fn=lambda v: not v.vehicle_closed,
         attr_fn=lambda v: v.doors_and_lids,
-        device_class=None,
+        device_class=BinarySensorDeviceClass.OPENING,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Tire pressure status",
+        key="tire_pressure_status",
+        translation_key="tire_pressure_status",
+        value_fn=lambda v: not v.tire_pressure_status,
+        attr_fn=lambda v: v.tire_pressures,
+        device_class=BinarySensorDeviceClass.PROBLEM,
     ),
 ]
 

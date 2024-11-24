@@ -171,6 +171,7 @@ class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
             name=vehicle.data["name"],
             model=vehicle.data["modelName"],
             manufacturer="Porsche",
+            serial_number=vehicle.vin,
         )
 
     @property
