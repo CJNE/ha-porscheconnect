@@ -12,11 +12,11 @@ from homeassistant.config_entries import ConfigEntry
 
 from . import (
     PorscheConnectDataUpdateCoordinator,
-    PorscheVehicle,
     PorscheBaseEntity,
 )
 
 from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from .const import DOMAIN
 

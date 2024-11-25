@@ -93,12 +93,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
+class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, controller):
         self.controller = controller
-        self.vehicles = None
+        self.vehicles = []
         self.hass = hass
         self.config_entry = config_entry
 
@@ -120,7 +120,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
         """Fetch data from API endpoint."""
 
         try:
-            if self.vehicles is None:
+            if len(self.vehicles) == 0:
                 self.vehicles = await self.controller.get_vehicles()
 
                 for vehicle in self.vehicles:
@@ -131,6 +131,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator[None]):
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         await vehicle.get_stored_overview()
+            return {}
 
         except PorscheException as err:
             raise UpdateFailed(f"Error communicating with API: {err}") from err
@@ -155,7 +156,7 @@ async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     await async_setup_entry(hass, entry)
 
 
-class PorscheBaseEntity(CoordinatorEntity[PorscheConnectDataUpdateCoordinator]):
+class PorscheBaseEntity(CoordinatorEntity):
     """Common base for entities"""
 
     coordinator: PorscheConnectDataUpdateCoordinator
