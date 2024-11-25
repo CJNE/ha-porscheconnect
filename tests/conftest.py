@@ -1,11 +1,12 @@
 """Global fixtures for Porsche Connect integration."""
+
 import asyncio
 from typing import Any
 from unittest.mock import patch
 
 import pytest
 from pyporscheconnectapi.exceptions import PorscheException
-from pyporscheconnectapi.exceptions import WrongCredentials
+from pyporscheconnectapi.exceptions import PorscheWrongCredentials
 
 from . import load_fixture_json
 
@@ -259,7 +260,7 @@ def error_connection_login_fixture():
     """Simulate error when retrieving data from API."""
     with patch(
         "pyporscheconnectapi.connection.Connection._login",
-        side_effect=WrongCredentials,
+        side_effect=PorscheWrongCredentials,
     ), patch("pyporscheconnectapi.connection.Connection.getAllTokens"):
         yield
 
