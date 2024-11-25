@@ -5,17 +5,18 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.components.device_tracker import SourceType, TrackerEntity
+from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from homeassistant.components.device_tracker.const import SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import (
     PorscheConnectDataUpdateCoordinator,
-    PorscheVehicle,
     PorscheBaseEntity,
 )
 from .const import DOMAIN
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,8 +62,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         """Return entity specific state attributes."""
         if self._tracking_enabled:
             return {"direction": float(self.vehicle.location[2])}
-        else:
-            return None
+        return {}
 
     @property
     def latitude(self) -> float | None:

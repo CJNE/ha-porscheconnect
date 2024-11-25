@@ -1,4 +1,5 @@
 """Support for the Porsche Connect sensors"""
+
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -6,9 +7,9 @@ from dataclasses import dataclass
 from . import DOMAIN as PORSCHE_DOMAIN
 from . import (
     PorscheConnectDataUpdateCoordinator,
-    PorscheVehicle,
     PorscheBaseEntity,
 )
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import (
@@ -20,7 +21,6 @@ from homeassistant.components.sensor import (
 
 from homeassistant.const import (
     PERCENTAGE,
-    STATE_UNKNOWN,
     UnitOfLength,
     UnitOfPower,
     UnitOfSpeed,

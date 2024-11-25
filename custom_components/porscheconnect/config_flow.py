@@ -1,4 +1,5 @@
 """Config flow for Porsche Connect integration."""
+
 import logging
 import voluptuous as vol
 from collections.abc import Mapping
@@ -65,16 +66,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 **user_input,
                 CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
             }
-        except InvalidAuth:
-            errors["base"] = "invalid_auth"
-        except CannotConnect:
-            errors["base"] = "cannot_connect"
-
-        if info:
             return self.async_create_entry(
                 title=info["title"],
                 data=entry_data,
             )
+        except InvalidAuth:
+            errors["base"] = "invalid_auth"
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors

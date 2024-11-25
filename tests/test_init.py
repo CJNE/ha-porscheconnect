@@ -1,4 +1,5 @@
 """Test Porsche Connect setup process."""
+
 import pytest
 from custom_components.porscheconnect import async_reload_entry
 from custom_components.porscheconnect import async_setup_entry
@@ -10,8 +11,8 @@ from custom_components.porscheconnect.const import (
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import aiohttp_client
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pyporscheconnectapi.client import Client
 from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.account import PorscheConnectAccount
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .const import MOCK_CONFIG
@@ -35,7 +36,7 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
         type(hass.data[DOMAIN][config_entry.entry_id])
-        == PorscheConnectDataUpdateCoordinator
+        is PorscheConnectDataUpdateCoordinator
     )
 
     # Reload the entry and assert that the data from above is still there
@@ -43,7 +44,7 @@ async def test_setup_unload_and_reload_entry(hass, mock_client):
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
     assert (
         type(hass.data[DOMAIN][config_entry.entry_id])
-        == PorscheConnectDataUpdateCoordinator
+        is PorscheConnectDataUpdateCoordinator
     )
 
     # Unload the entry and verify that the data has been removed
@@ -125,7 +126,7 @@ async def test_update_error(hass, mock_connection, mock_client_update_error):
         tokens=None,
         websession=websession,
     )
-    controller = Client(connection)
+    controller = PorscheConnectAccount(connection)
 
     coordinator = PorscheConnectDataUpdateCoordinator(
         hass, config_entry=config_entry, controller=controller

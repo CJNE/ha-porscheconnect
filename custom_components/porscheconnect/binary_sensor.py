@@ -1,14 +1,14 @@
 """Support for the Porsche Connect binary sensors"""
+
 import logging
 from dataclasses import dataclass
 from collections.abc import Callable
 
+
 from . import DOMAIN as PORSCHE_DOMAIN
 from . import (
     PorscheConnectDataUpdateCoordinator,
-    PorscheVehicle,
     PorscheBaseEntity,
-    getFromDict,
 )
 
 
@@ -18,6 +18,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 
+from pyporscheconnectapi.vehicle import PorscheVehicle
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -107,7 +108,7 @@ async def async_setup_entry(
     async_add_entities(entities, True)
 
 
-class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
+class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
     """Representation of a Porsche binary sensor"""
 
     entity_description: PorscheBinarySensorEntityDescription
@@ -121,6 +122,7 @@ class PorscheBinarySensor(PorscheBaseEntity, BinarySensorEntity):
         """Initialize of the sensor"""
         super().__init__(coordinator, vehicle)
 
+        self.coordinator = coordinator
         self.entity_description = description
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
