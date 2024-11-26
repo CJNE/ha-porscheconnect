@@ -60,14 +60,14 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
-        if self._tracking_enabled:
+        if self._tracking_enabled and self.vehicle.location[2] is not None:
             return {"direction": float(self.vehicle.location[2])}
         return {}
 
     @property
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
-        if self._tracking_enabled:
+        if self._tracking_enabled and self.vehicle.location[0] is not None:
             return float(self.vehicle.location[0])
         else:
             return None
@@ -75,7 +75,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
     @property
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
-        if self._tracking_enabled:
+        if self._tracking_enabled and self.vehicle.location[1] is not None:
             return float(self.vehicle.location[1])
         else:
             return None
