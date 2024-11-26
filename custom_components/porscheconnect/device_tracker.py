@@ -53,16 +53,25 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         super().__init__(coordinator, vehicle)
 
         self._attr_unique_id = vehicle.vin
-        self._attr_name = None
+        self._attr_name = "Location"
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
 
     @property
+    def battery_level(self) -> int | None:
+        """Return the battery level of the device.
+
+        Percentage from 0-100.
+        """
+        return self.vehicle.main_battery_level
+
+    @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
+        data = {"updated_at": self.vehicle.location_updated_at}
         if self._tracking_enabled and self.vehicle.location[2] is not None:
-            return {"direction": float(self.vehicle.location[2])}
-        return {}
+            data["direction"] = float(self.vehicle.location[2])
+        return data
 
     @property
     def latitude(self) -> float | None:
