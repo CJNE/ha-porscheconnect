@@ -1,70 +1,88 @@
-"""Lock platform for Porsche Connect."""
+"""Support for Porsche lock entity."""
+
 import logging
+from typing import Any
 
 from homeassistant.components.lock import LockEntity
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.config_entries import ConfigEntry
 
-from . import DOMAIN as PORSCHE_DOMAIN
-from . import PinError
-from . import PorscheDevice
-from .const import DEVICE_NAMES
-from .const import HA_LOCK
-from .const import LockMeta
+from . import (
+    PorscheConnectDataUpdateCoordinator,
+    PorscheBaseEntity,
+)
+
+from pyporscheconnectapi.vehicle import PorscheVehicle
+from pyporscheconnectapi.exceptions import PorscheException
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup lock platform."""
-    coordinator = hass.data[PORSCHE_DOMAIN][entry.entry_id]
-    entities = []
-    for vehicle in coordinator.vehicles:
-        for lock in vehicle["components"][HA_LOCK]:
-            entities.append(PorscheConnectLock(vehicle, coordinator, lock))
-    async_add_entities(entities)
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Porsche Connect lock entity from config entry."""
+    coordinator: PorscheConnectDataUpdateCoordinator = hass.data[DOMAIN][
+        config_entry.entry_id
+    ]
+
+    async_add_entities(
+        PorscheLock(coordinator, vehicle) for vehicle in coordinator.vehicles
+    )
 
 
-class PorscheConnectLock(PorscheDevice, LockEntity):
-    """Porsche Connect lock class."""
+class PorscheLock(PorscheBaseEntity, LockEntity):
+    """Representation of a Porsche vehicle lock."""
 
-    def __init__(self, vehicle, coordinator, lock_meta: LockMeta):
+    _attr_translation_key = "lock"
+
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+    ) -> None:
         """Initialize the lock."""
-        super().__init__(vehicle, coordinator)
-        self.key = lock_meta.key
-        self.meta = lock_meta
-        device_name = DEVICE_NAMES.get(self.key, self.key)
-        self._name = f"{self._name} {device_name}"
-        self._unique_id = f"{super().unique_id}_{self.key}"
-        self._attr_code_format = "[0-9]+"
+        super().__init__(coordinator, vehicle)
 
-    async def async_lock(self, **kwargs):  # pylint: disable=unused-argument
-        """Lock the vechicle."""
-        _LOGGER.debug("Locking %s", self._name)
-        await self.coordinator.controller.lock(self.vin, True)
-        await self.coordinator.async_request_refresh()
+        self._attr_unique_id = f'{vehicle.data["name"]}-lock'
+        self.door_lock_state_available = vehicle.has_remote_services
 
-    async def async_unlock(self, **kwargs):  # pylint: disable=unused-argument
-        """Unlock the vechicle."""
-        _LOGGER.debug("Unlocking %s", self._name)
+    async def async_lock(self, **kwargs: Any) -> None:
+        """Lock the vehicle."""
+        try:
+            await self.vehicle.remote_services.lock_vehicle()
+        except PorscheException as ex:
+            self._attr_is_locked = None
+            self.async_write_ha_state()
+            raise HomeAssistantError(ex) from ex
+        finally:
+            self.coordinator.async_update_listeners()
+
+    async def async_unlock(self, **kwargs: Any) -> None:
+        """Unlock the vehicle."""
         pin = kwargs.get("code", None)
-        if pin is None:
-            raise PinError("No PIN code")
-        await self.coordinator.controller.unlock(
-            self.vin, kwargs.get("code", None), True
-        )
-        await self.coordinator.async_request_refresh()
+        if pin:
+            try:
+                await self.vehicle.remote_services.unlock_vehicle(pin)
+            except PorscheException as ex:
+                self._attr_is_locked = None
+                self.async_write_ha_state()
+                raise HomeAssistantError(ex) from ex
+            finally:
+                self.coordinator.async_update_listeners()
+        else:
+            raise ValueError("PIN code not provided.")
 
-    @property
-    def name(self):
-        """Return the name of the lock."""
-        return self._name
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        _LOGGER.debug("Updating lock data of %s", self.vehicle.vin)
+        self._attr_is_locked = self.vehicle.vehicle_locked
 
-    @property
-    def icon(self):
-        """Return the icon of this lock."""
-        return self.meta.icon
-
-    @property
-    def is_locked(self):
-        """Return true if the vehicle is locked."""
-        data = self.coordinator.getDataByVIN(self.vin, self.key)
-        return data == "CLOSED_LOCKED"
+        super()._handle_coordinator_update()
