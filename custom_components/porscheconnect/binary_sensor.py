@@ -1,52 +1,154 @@
-"""Binary sensor platform for Porsche Connect."""
-import logging
-from typing import Optional
+"""Support for the Porsche Connect binary sensors"""
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+import logging
+from dataclasses import dataclass
+from collections.abc import Callable
+
 
 from . import DOMAIN as PORSCHE_DOMAIN
-from . import PorscheDevice
-from .const import DEVICE_NAMES
-from .const import HA_BINARY_SENSOR
-from .const import SensorMeta
+from . import (
+    PorscheConnectDataUpdateCoordinator,
+    PorscheBaseEntity,
+)
+
+
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+    BinarySensorEntityDescription,
+)
+
+from pyporscheconnectapi.vehicle import PorscheVehicle
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Setup binary_sensor platform."""
-    coordinator = hass.data[PORSCHE_DOMAIN][config_entry.entry_id]
-    entities = []
-    for vehicle in coordinator.vehicles:
-        for sensor in vehicle["components"][HA_BINARY_SENSOR]:
-            entities.append(PorscheBinarySensor(vehicle, coordinator, sensor))
+@dataclass(frozen=True)
+class PorscheBinarySensorEntityDescription(BinarySensorEntityDescription):
+    measurement_node: str | None = None
+    measurement_leaf: str | None = None
+    value_fn: Callable[[PorscheVehicle], bool] | None = None
+    attr_fn: Callable[[PorscheVehicle], dict[str, str]] | None = None
+    is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_porsche_connect
+
+
+SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
+    PorscheBinarySensorEntityDescription(
+        name="Remote access",
+        key="remote_access",
+        translation_key="remote_access",
+        measurement_node="REMOTE_ACCESS_AUTHORIZATION",
+        measurement_leaf="isEnabled",
+        device_class=None,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Privacy mode",
+        key="privacy_mode",
+        translation_key="privacy_mode",
+        measurement_node="GLOBAL_PRIVACY_MODE",
+        measurement_leaf="isEnabled",
+        device_class=None,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Parking brake",
+        key="parking_brake",
+        translation_key="parking_brake",
+        measurement_node="PARKING_BRAKE",
+        measurement_leaf="isOn",
+        device_class=None,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Parking light",
+        key="parking_light",
+        translation_key="parking_light",
+        measurement_node="PARKING_LIGHT",
+        measurement_leaf="isOn",
+        device_class=BinarySensorDeviceClass.LIGHT,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Doors and lids",
+        key="doors_and_lids",
+        translation_key="doors_and_lids",
+        value_fn=lambda v: not v.vehicle_closed,
+        attr_fn=lambda v: v.doors_and_lids,
+        device_class=BinarySensorDeviceClass.OPENING,
+    ),
+    PorscheBinarySensorEntityDescription(
+        name="Tire pressure status",
+        key="tire_pressure_status",
+        translation_key="tire_pressure_status",
+        value_fn=lambda v: not v.tire_pressure_status,
+        attr_fn=lambda v: v.tire_pressures,
+        is_available=lambda v: v.has_tire_pressure_monitoring,
+        device_class=BinarySensorDeviceClass.PROBLEM,
+    ),
+]
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the sensors from config entry."""
+    coordinator: PorscheConnectDataUpdateCoordinator = hass.data[PORSCHE_DOMAIN][
+        config_entry.entry_id
+    ]
+
+    entities = [
+        PorscheBinarySensor(coordinator, vehicle, description)
+        for vehicle in coordinator.vehicles
+        for description in SENSOR_TYPES
+        if description.is_available(vehicle)
+    ]
+
     async_add_entities(entities, True)
 
 
-class PorscheBinarySensor(PorscheDevice, BinarySensorEntity):
-    """porscheconnect binary_sensor class."""
+class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
+    """Representation of a Porsche binary sensor"""
 
-    def __init__(self, vehicle, coordinator, sensor_meta: SensorMeta):
-        """Initialize of the sensor."""
-        super().__init__(vehicle, coordinator)
-        self.key = sensor_meta.key
-        self.meta = sensor_meta
-        device_name = DEVICE_NAMES.get(self.key, self.key)
-        self._name = f"{self._name} {device_name}"
-        self._unique_id = f"{super().unique_id}_{self.key}"
+    entity_description: PorscheBinarySensorEntityDescription
 
-    @property
-    def icon(self):
-        """Return the icon of this entity."""
-        return self.meta.icon
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+        description: PorscheBinarySensorEntityDescription,
+    ) -> None:
+        """Initialize of the sensor"""
+        super().__init__(coordinator, vehicle)
 
-    @property
-    def device_class(self) -> Optional[str]:
-        """Return the device_class of the device."""
-        return self.meta.device_class
+        self.coordinator = coordinator
+        self.entity_description = description
+        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
-    @property
-    def is_on(self):
-        """Return true if the binary_sensor is on."""
-        data = self.coordinator.getDataByVIN(self.vin, self.key)
-        return data == self.meta.isOnState
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        if self.entity_description.value_fn:
+            self._attr_is_on = self.entity_description.value_fn(self.vehicle)
+        else:
+            self._attr_is_on = self.coordinator.getVehicleDataLeaf(
+                self.vehicle,
+                self.entity_description.measurement_node,
+                self.entity_description.measurement_leaf,
+            )
+
+        _LOGGER.debug(
+            "Updating binary sensor '%s' of %s with state '%s'",
+            self.entity_description.key,
+            self.vehicle.data["name"],
+            self._attr_is_on,
+            # state,
+        )
+
+        if self.entity_description.attr_fn:
+            self._attr_extra_state_attributes = self.entity_description.attr_fn(
+                self.vehicle
+            )
+
+        super()._handle_coordinator_update()

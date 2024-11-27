@@ -1,0 +1,40 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "parking_light": {
+        "default": "mdi:car-parking-lights"
+      },
+      "tire_pressure_status": {
+        "default": "mdi:car-tire-alert"
+      }
+    },
+    "button": {
+      "flash_indicators": {
+        "default": "mdi:unfold-more-vertical"
+      },
+      "honk_and_flash_indicators": {
+        "default": "mdi:bugle"
+      },
+      "get_current_overview": {
+        "default": "mdi:reload"
+      }
+    },
+    "number": {
+      "target_soc": {
+        "default": "mdi:battery-charging-medium"
+      }
+    },
+    "switch": {
+      "climatise": {
+        "default": "mdi:fan"
+      },
+      "direct_charging": {
+        "default": "mdi:ev-station",
+        "state": {
+          "on": "mdi:ev-station",
+          "off": "mdi:ev-station"
+        }
+      }
+    }
+  }
+}

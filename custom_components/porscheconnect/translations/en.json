@@ -1,20 +1,101 @@
 {
-  "config": {
-    "abort": {
-      "already_configured": "Device is already configured"
-    },
-    "error": {
-      "cannot_connect": "Failed to connect",
-      "invalid_auth": "Invalid authentication",
-      "unknown": "Unexpected error"
-    },
-    "step": {
-      "user": {
-        "data": {
-          "password": "Password",
-          "email": "Email"
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured",
+            "reauth_successful": "Re-authentication was successful"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Password",
+                    "email": "Email"
+                }
+            }
         }
-      }
+    },
+    "entity": {
+        "button": {
+            "flash_indicators": {"name": "Flash indicators"},
+            "honk_and_flash_indicators": {"name": "Honk and flash indicators"},
+            "get_current_overview": {"name": "Get current vehicle information"}
+        },
+        "binary_sensor": {
+            "parking_brake": {"name": "Parking brake"},
+            "parking_light": {"name": "Parking light"},
+            "privacy_mode": {"name": "Privacy mode"},
+            "doors_and_lids": {"name": "Doors and lids"},
+            "tire_pressure_status": {
+				"name": "Tire pressure status",
+                "state": {
+                    "on": "Warning",
+                    "off": "Ok"
+                }
+			},
+            "remote_access": {"name": "Remote access"}
+        },
+        "image": {
+            "front_view": {"name": "View from the front"},
+            "side_view": {"name": "View from the side"},
+            "rear_view": {"name": "View from the rear"},
+            "rear_top_view": {"name": "View diagonally from above"},
+            "top_view": {"name": "View from above"}
+        },
+        "sensor": {
+            "charging_power": {
+                "name": "Charging power"
+            },
+            "charging_target": {
+                "name": "Charging target"
+            },
+            "charging_rate": {
+                "name": "Charging rate"
+            },
+            "remaining_range_electric": {
+                "name": "Remaining range electric"
+            },
+            "state_of_charge": {
+                "name": "State of charge"
+            },
+            "mileage": {
+                "name": "Mileage"
+            },
+            "remaining_range": {
+                "name": "Remaining range"
+            },
+            "fuel_level": {
+                "name": "Fuel level"
+            },
+            "charging_status": {
+                "name": "Charging status",
+                "state": {
+                    "CHARGING": "Charging",
+                    "CHARGING_COMPLETED": "Charging completed",
+                    "CHARGING_ERROR": "Charging error",
+                    "INITIALISING": "Initialising charging",
+                    "INSTANT_CHARGING": "Instant charging",
+                    "NOT_CHARGING": "Not charging",
+                    "NOT_PLUGGED": "Not connected",
+                    "OFF": "Charging off"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {"name": "Target state of charge"}
+        },
+        "lock": {
+            "lock": {
+                "name": "Door lock"
+            }
+        },
+        "switch": {
+            "climatise": {"name": "Remote climatisation"},
+            "direct_charging": {"name": "Direct charging"}
+        }
     }
-  }
 }
+
