@@ -1,0 +1,130 @@
+{
+     "config": {
+        "abort": {
+            "already_configured": "Enheten är redan konfigurerad",
+            "reauth_successful": "Återautentiseringen lyckades"
+        },
+        "error": {
+            "cannot_connect": "Anslutningsfel",
+            "invalid_auth": "Misslyckades att autentisera",
+            "unknown": "Oväntat fel"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Lösenord",
+                    "email": "E-postadress"
+                }
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Parkeringsbroms",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
+            },
+            "parking_light": {
+                "name": "Parkeringsljus",
+                "state": {
+                    "on": "Tänt",
+                    "off": "Släckt"
+                }
+            },
+            "privacy_mode": {
+                "name": "Privat läge",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
+            },
+            "tire_pressure_status": {
+				"name": "Däcktrycksövervakning",
+                "state": {
+                    "on": "Varning",
+                    "off": "Ok"
+                }
+			},
+            "doors_and_lids": {
+				"name": "Dörrar och luckor",
+                "state": {
+                    "on": "Öppen",
+                    "off": "Stängd"
+                }
+			},
+            "remote_access": {
+                "name": "Fjärrstyrning",
+                "state": {
+                    "on": "På",
+                    "off": "Av"
+                }
+            }
+        },
+        "button": {
+            "flash_indicators": {"name": "Blinka"},
+            "honk_and_flash_indicators": {"name": "Tuta och blinka"},
+            "get_current_overview": {"name": "Uppdatera fordonsinformation"}
+        },
+        "image": {
+            "front_view": {"name": "Vy framifrån"},
+            "side_view": {"name": "Vy från sidan"},
+            "rear_view": {"name": "Vy bakifrån"},
+            "rear_top_view": {"name": "Vy snett ovanifrån"},
+            "top_view": {"name": "Vy ovanifrån"}
+        },
+        "sensor": {
+            "charging_power": {
+                "name": "Laddeffekt"
+            },
+            "charging_target": {
+                "name": "Laddinställning"
+            },
+            "charging_rate": {
+                "name": "Laddhastighet"
+            },
+            "remaining_range_electric": {
+                "name": "Räckvidd på batteri"
+            },
+            "state_of_charge": {
+                "name": "Laddnivå"
+            },
+            "mileage": {
+                "name": "Mätarställning"
+            },
+            "remaining_range": {
+                "name": "Återstående räckvidd"
+            },
+            "fuel_level": {
+                "name": "Bränslenivå"
+            },
+            "charging_status":  {
+                "name": "Laddstatus",
+                "state": {
+                    "CHARGING": "Laddar",
+                    "CHARGING_COMPLETED": "Laddning klar",
+                    "CHARGING_ERROR": "Laddfel",
+                    "INITIALISING": "Initierar laddning",
+                    "INSTANT_CHARGING": "Direktladdar",
+                    "NOT_CHARGING": "Laddar ej",
+                    "NOT_PLUGGED": "Not connected",
+                    "OFF": "Laddning av"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {"name": "Begärd laddnivå"}
+        },
+        "lock": {
+            "lock": {
+                "name": "Dörrlås"
+            }
+        },
+        "switch": {
+            "climatise": {"name": "Fjärrklimatisering"},
+            "direct_charging": {"name": "Direktladdning"}
+        }
+    }
+}

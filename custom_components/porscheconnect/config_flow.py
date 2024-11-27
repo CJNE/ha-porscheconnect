@@ -1,20 +1,19 @@
 """Config flow for Porsche Connect integration."""
-import logging
 
+import logging
 import voluptuous as vol
+from collections.abc import Mapping
+from typing import Any
+
 from homeassistant import config_entries
 from homeassistant import core
 from homeassistant import exceptions
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.const import CONF_EMAIL
 from homeassistant.const import CONF_PASSWORD
-from homeassistant.helpers import aiohttp_client
 from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import WrongCredentials
 
-from .const import DOMAIN  # pylint:disable=unused-import
-
-# from homeassistant.const import CONF_SCAN_INTERVAL
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,21 +26,22 @@ async def validate_input(hass: core.HomeAssistant, data):
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
 
-    websession = aiohttp_client.async_get_clientsession(hass)
-    conn = Connection(data[CONF_EMAIL], data[CONF_PASSWORD], websession=websession)
-
-    _LOGGER.debug("Attempt login...")
+    token = {}
     try:
-        await conn._login()
-    except WrongCredentials:
-        _LOGGER.info("Login failed, wrong credentials.")
+        conn = Connection(
+            email=data[CONF_EMAIL], password=data[CONF_PASSWORD], token=token
+        )
+    except Exception as e:
+        _LOGGER.debug(f"Exception {e}")
+
+    _LOGGER.debug("Attempting login")
+    try:
+        token = await conn.get_token()
+    except Exception as e:
+        _LOGGER.info(f"Login failed, {e}")
         raise InvalidAuth
 
-    tokens = await conn.getAllTokens()
-    #    await conn.close()
-
-    # Return info that you want to store in the config entry.
-    return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: tokens}
+    return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -58,18 +58,33 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
 
         errors = {}
+        _LOGGER.debug("Validating input.")
+
         try:
             info = await validate_input(self.hass, user_input)
+            entry_data = {
+                **user_input,
+                CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
+            }
+            return self.async_create_entry(
+                title=info["title"],
+                data=entry_data,
+            )
         except InvalidAuth:
-            errors["base"] = "auth"
-        except Exception:
-            errors["base"] = "connect"
-        else:
-            return self.async_create_entry(title=info["title"], data=user_input)
+            errors["base"] = "invalid_auth"
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
+
+    async def async_step_reauth(
+        self, entry_data: Mapping[str, Any]
+    ) -> config_entries.ConfigFlowResult:
+        """Handle configuration by re-auth."""
+        self._reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
+        )
+        return await self.async_step_user()
 
 
 class InvalidAuth(exceptions.HomeAssistantError):

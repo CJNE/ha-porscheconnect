@@ -1,6 +1,6 @@
 {
-  "name": "Porsche Connect",
-  "hacs": "1.6.0",
-  "render_readme": true,
-  "homeassistant": "0.118.0"
+    "name": "Porsche Connect",
+    "hacs": "1.6.0",
+    "render_readme": true,
+    "homeassistant": "0.118.0",
 }
