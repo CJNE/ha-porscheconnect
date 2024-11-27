@@ -1,6 +1,7 @@
 """Device tracker for Porsche vehicles."""
 
 from __future__ import annotations
+from propcache import cached_property
 
 import logging
 from typing import Any
@@ -53,11 +54,11 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         super().__init__(coordinator, vehicle)
 
         self._attr_unique_id = vehicle.vin
-        self._attr_name = "Location"
+        self._attr_name = vehicle.model_name
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
 
-    @property
+    @cached_property
     def battery_level(self) -> int | None:
         """Return the battery level of the device.
 
@@ -65,7 +66,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         """
         return self.vehicle.main_battery_level
 
-    @property
+    @cached_property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return entity specific state attributes."""
         data = {"updated_at": self.vehicle.location_updated_at}
@@ -73,7 +74,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
             data["direction"] = float(self.vehicle.location[2])
         return data
 
-    @property
+    @cached_property
     def latitude(self) -> float | None:
         """Return latitude value of the device."""
         if self._tracking_enabled and self.vehicle.location[0] is not None:
@@ -81,7 +82,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         else:
             return None
 
-    @property
+    @cached_property
     def longitude(self) -> float | None:
         """Return longitude value of the device."""
         if self._tracking_enabled and self.vehicle.location[1] is not None:

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 import logging
 
+from propcache import cached_property
 from homeassistant.components.number import (
     NumberDeviceClass,
     NumberEntity,
@@ -95,7 +96,7 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
         self.entity_description = description
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
 
-    @property
+    @cached_property
     def native_value(self) -> float | None:
         """Return the entity value to represent the entity state."""
         return self.entity_description.value_fn(self.vehicle)
