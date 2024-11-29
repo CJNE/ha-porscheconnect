@@ -19,27 +19,32 @@ car to Home Assistant.
 It does not work with Porsche Car Connect.
 Porsche Connect is available for the following Porsche models:
 
+- Boxster & Cayman (718)
+- 911 (from 992)
 - Taycan
-- 911 (from 992 model year 2022)
-- Cayenne (from 2017, E3)
 - Panamera (from 2021, G2 PA)
+- Macan (EV, from 2024)
+- Cayenne (from 2017, E3)
 
 You can also take a look here, select your model and see if your model has support for Porsche Connect:
 https://connect-store.porsche.com/
 
 A Porsche Connect subscription also needs to be active.
 
-It is currently in an early stage, more info will be added as the project develops. Feature
-requests and ideas are welcome, use the issue tracker for that, thanks!
+Feature requests and ideas are welcome, use the Discussions board for that, thanks!
 
 **This component will set up the following platforms.**
 
-| Platform         | Description                         |
-| ---------------- | ----------------------------------- |
-| `binary_sensor`  | Show something `True` or `False`.   |
-| `sensor`         | Show info from Porsche Connect API. |
-| `switch`         | Switch something `True` or `False`. |
-| `device_tracker` | Show your vehicles location         |
+| Platform         | Description                           |
+| ---------------- | ------------------------------------- |
+| `binary_sensor`  | Show something `True` or `False`.     |
+| `button`         | Trigger some action.                  |
+| `device_tracker` | Show your vehicles location.          |
+| `image`          | Show images of your vehicle.          |
+| `lock`           | Control the lock of your vehicle.     |
+| `number`         | Sends a number value to your vehicle. |
+| `sensor`         | Show info from Porsche Connect API.   |
+| `switch`         | Switch something `On` or `Off`.       |
 
 ## HACS Installation
 
@@ -48,7 +53,7 @@ requests and ideas are welcome, use the issue tracker for that, thanks!
 
 ## Manual Installation
 
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
+1. Using the tool of choice to open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `porscheconnect`.
 4. Download _all_ the files from the `custom_components/porscheconnect/` directory (folder) in this repository.
@@ -56,25 +61,6 @@ requests and ideas are welcome, use the issue tracker for that, thanks!
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Porsche Connect"
 
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/porscheconnect/translations/en.json
-custom_components/porscheconnect/translations/fr.json
-custom_components/porscheconnect/translations/nb.json
-custom_components/porscheconnect/translations/sensor.en.json
-custom_components/porscheconnect/translations/sensor.fr.json
-custom_components/porscheconnect/translations/sensor.nb.json
-custom_components/porscheconnect/translations/sensor.nb.json
-custom_components/porscheconnect/__init__.py
-custom_components/porscheconnect/api.py
-custom_components/porscheconnect/binary_sensor.py
-custom_components/porscheconnect/config_flow.py
-custom_components/porscheconnect/const.py
-custom_components/porscheconnect/manifest.json
-custom_components/porscheconnect/sensor.py
-custom_components/porscheconnect/switch.py
-```
 
 ## Configuration is done in the UI
 
@@ -83,12 +69,6 @@ custom_components/porscheconnect/switch.py
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](https://github.com/CJNE/ha-porscheconnect/blob/main/CONTRIBUTING.md)
-
-## Credits
-
-This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
-
-Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [integration_blueprint][integration_blueprint] template
 
 ---
 
