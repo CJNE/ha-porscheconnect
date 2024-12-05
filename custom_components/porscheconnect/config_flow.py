@@ -17,6 +17,7 @@ from pyporscheconnectapi.exceptions import (
     PorscheWrongCredentials,
     PorscheException,
 )
+from homeassistant.core import callback
 
 from .const import DOMAIN
 
@@ -33,8 +34,15 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     token = {}
     try:
+        _LOGGER.debug(
+            f"Opening connection with captcha_code {data.get('captcha_code')}"
+        )
         conn = Connection(
-            email=data[CONF_EMAIL], password=data[CONF_PASSWORD], token=token
+            email=data[CONF_EMAIL],
+            password=data[CONF_PASSWORD],
+            captcha_code=data.get("captcha_code"),
+            state=data.get("state"),
+            token=token,
         )
     except Exception as e:
         _LOGGER.debug(f"Exception {e}")
@@ -42,14 +50,19 @@ async def validate_input(hass: core.HomeAssistant, data):
     _LOGGER.debug("Attempting login")
     try:
         token = await conn.get_token()
-    except PorscheException as e:
-        _LOGGER.info(f"Authentication flow error: {e}")
-        raise InvalidAuth
+    except PorscheCaptchaRequired as e:
+        _LOGGER.info(f"Captcha required to log in; {e.captcha}")
+        return {
+            "email": data[CONF_EMAIL],
+            "password": data[CONF_PASSWORD],
+            "captcha": e.captcha,
+            "state": e.state,
+        }
     except PorscheWrongCredentials:
         _LOGGER.info(f"Wrong credentials.")
         raise InvalidAuth
-    except PorscheCaptchaRequired:
-        _LOGGER.info(f"Captcha required to log in.")
+    except PorscheException as e:
+        _LOGGER.info(f"Authentication flow error: {e}")
         raise InvalidAuth
     except Exception as e:
         _LOGGER.info(f"Login failed, {e}")
@@ -64,6 +77,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
+    email = None
+    password = None
+    captcha = None
+    state = None
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         if user_input is None:
@@ -76,6 +94,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         try:
             info = await validate_input(self.hass, user_input)
+            _LOGGER.debug(f"Info, {info}")
+            if info.get("captcha") and info.get("state"):
+                self.email = info.get("email")
+                self.password = info.get("password")
+                self.captcha = info.get("captcha")
+                self.state = info.get("state")
+                return self._async_form_captcha()
             entry_data = {
                 **user_input,
                 CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
@@ -84,6 +109,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 title=info["title"],
                 data=entry_data,
             )
+
         except InvalidAuth:
             errors["base"] = "invalid_auth"
 
@@ -100,6 +126,55 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         return await self.async_step_user()
 
+    async def async_step_captcha(
+        self, user_input: dict[str, str] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Captcha verification step."""
+        if user_input is not None:
+            user_input = {
+                "email": self.email,
+                "password": self.password,
+                "captcha_code": user_input["captcha_code"],
+                "state": self.state,
+            }
+            _LOGGER.debug(f"User input, {user_input}")
+            try:
+                info = await validate_input(self.hass, user_input)
+                entry_data = {
+                    **user_input,
+                    CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
+                }
+                return self.async_create_entry(
+                    title=info["title"],
+                    data=entry_data,
+                )
+
+            except Exception as e:
+                _LOGGER.info(f"Login failed, {e}")
+                raise InvalidAuth
+
+        return self._async_form_captcha()
+
+    @callback
+    def _async_form_captcha(
+        self,
+    ) -> config_entries.ConfigFlowResult:
+        """Captcha verification form."""
+
+        return self.async_show_form(
+            step_id="captcha",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("captcha_code", default=vol.UNDEFINED): str,
+                }
+            ),
+            description_placeholders={"captcha_img": self.captcha},
+        )
+
 
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""
+
+
+class CaptchaRequired(exceptions.HomeAssistantError):
+    """Error to indicate captcha verification is required."""
