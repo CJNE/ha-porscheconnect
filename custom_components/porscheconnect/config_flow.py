@@ -34,9 +34,6 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     token = {}
     try:
-        _LOGGER.debug(
-            f"Opening connection with captcha_code {data.get('captcha_code')}"
-        )
         conn = Connection(
             email=data[CONF_EMAIL],
             password=data[CONF_PASSWORD],
@@ -94,7 +91,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         try:
             info = await validate_input(self.hass, user_input)
-            _LOGGER.debug(f"Info, {info}")
             if info.get("captcha") and info.get("state"):
                 self.email = info.get("email")
                 self.password = info.get("password")
@@ -137,7 +133,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 "captcha_code": user_input["captcha_code"],
                 "state": self.state,
             }
-            _LOGGER.debug(f"User input, {user_input}")
             try:
                 info = await validate_input(self.hass, user_input)
                 entry_data = {
