@@ -163,7 +163,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required("captcha_code", default=vol.UNDEFINED): str,
                 }
             ),
-            description_placeholders={"captcha_img": self.captcha},
+            description_placeholders={"captcha_img": '<img src="' + self.captcha + '"/>'},
         )
 
 
