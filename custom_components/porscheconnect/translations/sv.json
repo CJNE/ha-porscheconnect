@@ -15,9 +15,16 @@
                     "password": "Lösenord",
                     "email": "E-postadress"
                 }
-            }
-        }
-    },
+            },
+		    "captcha": {
+		        "title": "Captchaverifiering",
+		        "description": "{captcha_img}",
+		        "data": {
+		            "captcha_code": "Captcha-kod"
+		        }
+		    }
+		}
+	},
     "entity": {
         "binary_sensor": {
             "parking_brake": {
