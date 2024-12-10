@@ -1,48 +1,43 @@
 """The Porsche Connect integration."""
 
-import operator
 import logging
-
+import operator
 from datetime import timedelta
-
 from functools import reduce
 
 import async_timeout
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ACCESS_TOKEN
-from homeassistant.const import CONF_SCAN_INTERVAL
-from homeassistant.core import callback
-from homeassistant.helpers.typing import ConfigType
-from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_ACCESS_TOKEN, CONF_SCAN_INTERVAL
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.httpx_client import get_async_client
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
     UpdateFailed,
 )
-from homeassistant.helpers.device_registry import DeviceInfo
-
-from pyporscheconnectapi.exceptions import PorscheException
-from pyporscheconnectapi.vehicle import PorscheVehicle
 from pyporscheconnectapi.account import PorscheConnectAccount
 from pyporscheconnectapi.connection import Connection
+from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
-
-from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, PLATFORMS
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
 
 
-def getFromDict(dataDict, keyString):
-    mapList = keyString.split(".")
+def get_from_dict(datadict, keystring):
+    """Safely get value from dict."""
+    maplist = keystring.split(".")
 
     def safe_getitem(latest_value, key):
         if latest_value is None or key not in latest_value:
             return None
         return operator.getitem(latest_value, key)
 
-    return reduce(safe_getitem, mapList, dataDict)
+    return reduce(safe_getitem, maplist, datadict)
 
 
 @callback
@@ -56,7 +51,7 @@ def _async_save_token(hass, config_entry, access_token):
     )
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType):
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -79,13 +74,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     coordinator = PorscheConnectDataUpdateCoordinator(
-        hass, config_entry=entry, controller=controller
+        hass, config_entry=entry, controller=controller,
     )
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(
-        entry, [platform for platform in PLATFORMS]
+        entry, list(PLATFORMS),
     )
 
     _async_save_token(hass, entry, controller.token)
@@ -97,6 +92,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching Porsche data."""
 
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, controller):
+        """Initialise the controller."""
         self.controller = controller
         self.vehicles = []
         self.hass = hass
@@ -106,19 +102,19 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             seconds=config_entry.options.get(
                 CONF_SCAN_INTERVAL,
                 config_entry.data.get(
-                    CONF_SCAN_INTERVAL, SCAN_INTERVAL.total_seconds()
+                    CONF_SCAN_INTERVAL, SCAN_INTERVAL.total_seconds(),
                 ),
-            )
+            ),
         )
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=scan_interval)
 
-    def getVehicleDataLeaf(self, vehicle, node, leaf):
-        return getFromDict(getFromDict(vehicle.data, node), leaf)
+    def get_vechicle_data_leaf(self, vehicle, node, leaf):
+        """Get data value leaf from dict."""
+        return get_from_dict(get_from_dict(vehicle.data, node), leaf)
 
     async def _async_update_data(self):
         """Fetch data from API endpoint."""
-
         try:
             if len(self.vehicles) == 0:
                 self.vehicles = await self.controller.get_vehicles()
@@ -131,16 +127,18 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
                         await vehicle.get_stored_overview()
-            return {}
 
-        except PorscheException as err:
-            raise UpdateFailed(f"Error communicating with API: {err}") from err
+        except PorscheException as exc:
+            msg = "Error communicating with API: %s"
+            raise UpdateFailed(msg, exc) from exc
+        else:
+            return {}
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Unload a config entry"""
+    """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, [platform for platform in PLATFORMS]
+        entry, list(PLATFORMS),
     )
 
     if unload_ok:
@@ -151,13 +149,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
-    _LOGGER.info(f"Reloading config entry: {entry}")
+    _LOGGER.info("Reloading config entry: %s", entry)
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
 
 
 class PorscheBaseEntity(CoordinatorEntity):
-    """Common base for entities"""
+    """Common base for entities."""
 
     coordinator: PorscheConnectDataUpdateCoordinator
     _attr_has_entity_name = True
@@ -167,7 +165,7 @@ class PorscheBaseEntity(CoordinatorEntity):
         coordinator: PorscheConnectDataUpdateCoordinator,
         vehicle: PorscheVehicle,
     ) -> None:
-        """Initialise the entity"""
+        """Initialise the entity."""
         super().__init__(coordinator)
 
         self.vehicle = vehicle

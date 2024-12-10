@@ -1,22 +1,19 @@
 """Support for Porsche lock entity."""
 
 import logging
-from typing import Any
 
 from homeassistant.components.lock import LockEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
+from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
-    PorscheConnectDataUpdateCoordinator,
     PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
 )
-
-from pyporscheconnectapi.vehicle import PorscheVehicle
-from pyporscheconnectapi.exceptions import PorscheException
-
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,7 +50,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         self._attr_unique_id = f'{vehicle.data["name"]}-lock'
         self.door_lock_state_available = vehicle.has_remote_services
 
-    async def async_lock(self, **kwargs: Any) -> None:
+    async def async_lock(self) -> None:
         """Lock the vehicle."""
         try:
             await self.vehicle.remote_services.lock_vehicle()
@@ -64,9 +61,9 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         finally:
             self.coordinator.async_update_listeners()
 
-    async def async_unlock(self, **kwargs: Any) -> None:
+    async def async_unlock(self, **kwargs: dict) -> None:
         """Unlock the vehicle."""
-        pin = kwargs.get("code", None)
+        pin = kwargs.get("code")
         if pin:
             try:
                 await self.vehicle.remote_services.unlock_vehicle(pin)
@@ -77,7 +74,8 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
             finally:
                 self.coordinator.async_update_listeners()
         else:
-            raise ValueError("PIN code not provided.")
+            msg = "PIN code not provided."
+            raise ValueError(msg)
 
     @callback
     def _handle_coordinator_update(self) -> None:

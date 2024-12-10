@@ -1,9 +1,10 @@
 """Support for the Porsche Connect number entities."""
+from __future__ import annotations
 
+import logging
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
 from typing import Any
-import logging
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -11,17 +12,16 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
-
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
-    PorscheConnectDataUpdateCoordinator,
     PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
 )
-from pyporscheconnectapi.vehicle import PorscheVehicle
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ NUMBER_TYPES: list[PorscheNumberEntityDescription] = [
         mode=NumberMode.SLIDER,
         value_fn=lambda v: v.charging_target,
         remote_service=lambda v, o: v.remote_services.updateChargingProfile(
-            minimumChargeLevel=int(o)
+            minimumChargeLevel=int(o),
         ),
     ),
 ]
@@ -73,13 +73,13 @@ async def async_setup_entry(
                 PorscheNumber(coordinator, vehicle, description)
                 for description in NUMBER_TYPES
                 if description.is_available(vehicle)
-            ]
+            ],
         )
     async_add_entities(entities)
 
 
 class PorscheNumber(PorscheBaseEntity, NumberEntity):
-    """Representation of a Porsche Number entity."""
+    """Class describing Porsche Connect number entities."""
 
     entity_description: PorscheNumberEntityDescription
 

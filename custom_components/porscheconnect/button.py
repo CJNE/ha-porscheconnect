@@ -5,25 +5,23 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
-
-from . import (
-    PorscheConnectDataUpdateCoordinator,
-    PorscheBaseEntity,
-)
-
 from pyporscheconnectapi.exceptions import PorscheException
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
+from . import (
+    PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
+)
 from .const import DOMAIN
 
 
 @dataclass(frozen=True, kw_only=True)
 class PorscheButtonEntityDescription(ButtonEntityDescription):
-    """Class describing Porsche button entities."""
+    """Class describing Porsche Connect button entities."""
 
     remote_function: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
     is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_remote_services
@@ -66,7 +64,7 @@ async def async_setup_entry(
                 PorscheButton(coordinator, vehicle, description)
                 for description in BUTTON_TYPES
                 if description.is_available(vehicle)
-            ]
+            ],
         )
 
     async_add_entities(entities)
