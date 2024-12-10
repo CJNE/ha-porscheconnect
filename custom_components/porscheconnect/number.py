@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -11,21 +12,17 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
     PorscheBaseEntity,
     PorscheConnectDataUpdateCoordinator,
 )
 from .const import DOMAIN
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine
-
-    from homeassistant.config_entries import ConfigEntry
-    from homeassistant.core import HomeAssistant
-    from homeassistant.helpers.entity_platform import AddEntitiesCallback
-    from pyporscheconnectapi.vehicle import PorscheVehicle
 
 _LOGGER = logging.getLogger(__name__)
 

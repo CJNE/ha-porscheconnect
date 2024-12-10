@@ -4,59 +4,55 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from homeassistant.components.image import ImageEntity, ImageEntityDescription, Image
+from homeassistant.components.image import Image, ImageEntity, ImageEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import dt as dt_util
 
 from . import (
+    PorscheBaseEntity,
     PorscheConnectDataUpdateCoordinator,
     PorscheVehicle,
-    PorscheBaseEntity,
 )
-
-from pyporscheconnectapi.exceptions import PorscheException
-
 from .const import DOMAIN
 
 CONTENT_TYPE = "image/png"
 
 
 @dataclass(frozen=True)
-class PorscheImageDescription(ImageEntityDescription):
+class PorscheImageEntityDescription(ImageEntityDescription):
     """Describes a Porsche image entity."""
 
     view: str = None
 
 
-IMAGE_TYPES: list[PorscheImageDescription] = [
-    PorscheImageDescription(
+IMAGE_TYPES: list[PorscheImageEntityDescription] = [
+    PorscheImageEntityDescription(
         name="Front view",
         key="front_view",
         translation_key="front_view",
         view="frontView",
     ),
-    PorscheImageDescription(
+    PorscheImageEntityDescription(
         name="Side view",
         key="side_view",
         translation_key="side_view",
         view="sideView",
     ),
-    PorscheImageDescription(
+    PorscheImageEntityDescription(
         name="Rear view",
         key="rear_view",
         translation_key="rear_view",
         view="rearView",
     ),
-    PorscheImageDescription(
+    PorscheImageEntityDescription(
         name="Rear top view",
         key="rear_top_view",
         translation_key="rear_top_view",
         view="rearTopView",
     ),
-    PorscheImageDescription(
+    PorscheImageEntityDescription(
         name="Top view",
         key="top_view",
         translation_key="top_view",
@@ -87,7 +83,7 @@ async def async_setup_entry(
 class PorscheImage(PorscheBaseEntity, ImageEntity):
     """Representation of an image entity."""
 
-    entity_description: PorscheImageDescription
+    entity_description: PorscheImageEntityDescription
 
     def __init__(
         self,
@@ -104,7 +100,6 @@ class PorscheImage(PorscheBaseEntity, ImageEntity):
 
         self._attr_content_type = CONTENT_TYPE
         self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
-        # self._attr_image_url = description.image_url
         self._attr_image_url = vehicle.picture_locations[description.view]
 
     async def async_added_to_hass(self):

@@ -10,13 +10,13 @@ from homeassistant.components.device_tracker.const import SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
-    PorscheConnectDataUpdateCoordinator,
     PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
 )
 from .const import DOMAIN
-from pyporscheconnectapi.vehicle import PorscheVehicle
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         coordinator: PorscheConnectDataUpdateCoordinator,
         vehicle: PorscheVehicle,
     ) -> None:
-        """Initialize the device tracker"""
+        """Initialize the device tracker."""
         super().__init__(coordinator, vehicle)
 
         self._attr_unique_id = vehicle.vin
@@ -78,8 +78,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         """Return latitude value of the device."""
         if self._tracking_enabled and self.vehicle.location[0] is not None:
             return float(self.vehicle.location[0])
-        else:
-            return None
+        return None
 
     @property
     def longitude(self) -> float | None:

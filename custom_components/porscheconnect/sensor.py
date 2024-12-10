@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -11,6 +11,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
     UnitOfLength,
@@ -18,20 +19,14 @@ from homeassistant.const import (
     UnitOfSpeed,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import DOMAIN as PORSCHE_DOMAIN
 from . import (
     PorscheBaseEntity,
     PorscheConnectDataUpdateCoordinator,
 )
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from homeassistant.config_entries import ConfigEntry
-    from homeassistant.helpers.entity_platform import AddEntitiesCallback
-    from pyporscheconnectapi.vehicle import PorscheVehicle
-
 
 _LOGGER = logging.getLogger(__name__)
 
