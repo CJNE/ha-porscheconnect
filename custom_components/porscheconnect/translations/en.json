@@ -15,7 +15,14 @@
                     "password": "Password",
                     "email": "Email"
                 }
-            }
+            },
+		    "captcha": {
+		        "title": "Captcha verification",
+		        "description": "{captcha_img}",
+		        "data": {
+		            "captcha_code": "Captcha code"
+		        }
+		    }
         }
     },
     "entity": {
