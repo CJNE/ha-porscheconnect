@@ -42,7 +42,7 @@ async def async_setup_entry(
 
 
 class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
-    """Porsche Connect device tracker."""
+    """Class describing Porsche Connect device tracker."""
 
     def __init__(
         self,
@@ -86,8 +86,7 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         """Return longitude value of the device."""
         if self._tracking_enabled and self.vehicle.location[1] is not None:
             return float(self.vehicle.location[1])
-        else:
-            return None
+        return None
 
     @property
     def source_type(self) -> SourceType:

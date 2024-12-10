@@ -1,9 +1,9 @@
 """Support for the Porsche Connect number entities."""
+from __future__ import annotations
 
-from collections.abc import Callable, Coroutine
-from dataclasses import dataclass
-from typing import Any
 import logging
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -11,18 +11,21 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
-
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
 
 from . import (
-    PorscheConnectDataUpdateCoordinator,
     PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
 )
-from pyporscheconnectapi.vehicle import PorscheVehicle
 from .const import DOMAIN
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine
+
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from pyporscheconnectapi.vehicle import PorscheVehicle
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +52,7 @@ NUMBER_TYPES: list[PorscheNumberEntityDescription] = [
         mode=NumberMode.SLIDER,
         value_fn=lambda v: v.charging_target,
         remote_service=lambda v, o: v.remote_services.updateChargingProfile(
-            minimumChargeLevel=int(o)
+            minimumChargeLevel=int(o),
         ),
     ),
 ]
@@ -73,13 +76,13 @@ async def async_setup_entry(
                 PorscheNumber(coordinator, vehicle, description)
                 for description in NUMBER_TYPES
                 if description.is_available(vehicle)
-            ]
+            ],
         )
     async_add_entities(entities)
 
 
 class PorscheNumber(PorscheBaseEntity, NumberEntity):
-    """Representation of a Porsche Number entity."""
+    """Class describing Porsche Connect number entities."""
 
     entity_description: PorscheNumberEntityDescription
 

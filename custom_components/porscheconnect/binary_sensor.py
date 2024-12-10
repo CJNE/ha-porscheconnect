@@ -1,33 +1,37 @@
-"""Support for the Porsche Connect binary sensors"""
+"""Support for the Porsche Connect binary sensors."""
+from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from collections.abc import Callable
-
-
-from . import DOMAIN as PORSCHE_DOMAIN
-from . import (
-    PorscheConnectDataUpdateCoordinator,
-    PorscheBaseEntity,
-)
-
+from typing import TYPE_CHECKING
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
     BinarySensorEntityDescription,
 )
-
-from pyporscheconnectapi.vehicle import PorscheVehicle
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from . import DOMAIN as PORSCHE_DOMAIN
+from . import (
+    PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+    from pyporscheconnectapi.vehicle import PorscheVehicle
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
 class PorscheBinarySensorEntityDescription(BinarySensorEntityDescription):
+    """Class describing Porsche Connect binary sensor entities."""
+
     measurement_node: str | None = None
     measurement_leaf: str | None = None
     value_fn: Callable[[PorscheVehicle], bool] | None = None
@@ -105,11 +109,11 @@ async def async_setup_entry(
         if description.is_available(vehicle)
     ]
 
-    async_add_entities(entities, True)
+    async_add_entities(entities)
 
 
 class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
-    """Representation of a Porsche binary sensor"""
+    """Representation of a Porsche binary sensor."""
 
     entity_description: PorscheBinarySensorEntityDescription
 
@@ -119,7 +123,7 @@ class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
         vehicle: PorscheVehicle,
         description: PorscheBinarySensorEntityDescription,
     ) -> None:
-        """Initialize of the sensor"""
+        """Initialize of the sensor."""
         super().__init__(coordinator, vehicle)
 
         self.coordinator = coordinator
@@ -132,7 +136,7 @@ class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
         if self.entity_description.value_fn:
             self._attr_is_on = self.entity_description.value_fn(self.vehicle)
         else:
-            self._attr_is_on = self.coordinator.getVehicleDataLeaf(
+            self._attr_is_on = self.coordinator.get_vechicle_data_leaf(
                 self.vehicle,
                 self.entity_description.measurement_node,
                 self.entity_description.measurement_leaf,
@@ -148,7 +152,7 @@ class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
 
         if self.entity_description.attr_fn:
             self._attr_extra_state_attributes = self.entity_description.attr_fn(
-                self.vehicle
+                self.vehicle,
             )
 
         super()._handle_coordinator_update()
