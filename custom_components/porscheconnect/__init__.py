@@ -1,5 +1,6 @@
 """The Porsche Connect integration."""
 
+import copy
 import logging
 import operator
 from datetime import timedelta
@@ -132,6 +133,13 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             msg = "Error communicating with API: %s"
             raise UpdateFailed(msg, exc) from exc
         else:
+            accesstoken = copy.deepcopy(self.controller.token)
+
+            _async_save_token(
+                hass=self.hass,
+                config_entry=self.config_entry,
+                access_token=accesstoken,
+            )
             return {}
 
 
