@@ -20,14 +20,13 @@ from homeassistant.helpers.update_coordinator import (
 )
 from pyporscheconnectapi.account import PorscheConnectAccount
 from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
-
 
 def get_from_dict(datadict, keystring):
     """Safely get value from dict."""
@@ -66,7 +65,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     connection = Connection(
         entry.data.get("email"),
         entry.data.get("password"),
-        asyncClient=async_client,
+        async_client=async_client,
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
     )
 
@@ -129,7 +128,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     for vehicle in self.vehicles:
                         await vehicle.get_stored_overview()
 
-        except PorscheException as exc:
+        except PorscheExceptionError as exc:
             msg = "Error communicating with API: %s"
             raise UpdateFailed(msg, exc) from exc
         else:

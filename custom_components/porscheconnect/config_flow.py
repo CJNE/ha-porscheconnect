@@ -9,9 +9,9 @@ from homeassistant.const import CONF_ACCESS_TOKEN, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import (
-    PorscheCaptchaRequired,
-    PorscheException,
-    PorscheWrongCredentials,
+    PorscheCaptchaRequiredError,
+    PorscheExceptionError,
+    PorscheWrongCredentialsError,
 )
 
 from .const import DOMAIN
@@ -35,13 +35,13 @@ async def validate_input(data):
             state=data.get("state"),
             token=token,
         )
-    except PorscheException as exc:
+    except PorscheExceptionError as exc:
         _LOGGER.debug("Exception %s", exc)
 
     _LOGGER.debug("Attempting login")
     try:
         token = await conn.get_token()
-    except PorscheCaptchaRequired as exc:
+    except PorscheCaptchaRequiredError as exc:
         _LOGGER.info("Captcha required to log in: %s", exc.captcha)
         return {
             "email": data[CONF_EMAIL],
@@ -49,10 +49,10 @@ async def validate_input(data):
             "captcha": exc.captcha,
             "state": exc.state,
         }
-    except PorscheWrongCredentials as exc:
+    except PorscheWrongCredentialsError as exc:
         _LOGGER.info("Wrong credentials.")
         raise InvalidAuth from exc
-    except PorscheException as exc:
+    except PorscheExceptionError as exc:
         _LOGGER.info("Authentication flow error: %s", exc)
         raise InvalidAuth from exc
     except Exception as exc:

@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
@@ -97,7 +97,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
         """Turn the switch on."""
         try:
             await self.entity_description.remote_service_on(self.vehicle)
-        except PorscheException as ex:
+        except PorscheExceptionError as ex:
             raise HomeAssistantError(ex) from ex
 
         self.coordinator.async_update_listeners()
@@ -106,7 +106,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
         """Turn the switch off."""
         try:
             await self.entity_description.remote_service_off(self.vehicle)
-        except PorscheException as ex:
+        except PorscheExceptionError as ex:
             raise HomeAssistantError(ex) from ex
 
         self.coordinator.async_update_listeners()

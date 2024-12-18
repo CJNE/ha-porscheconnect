@@ -110,14 +110,14 @@
             "charging_status":  {
                 "name": "Laddstatus",
                 "state": {
-                    "CHARGING": "Laddar",
-                    "CHARGING_COMPLETED": "Laddning klar",
-                    "CHARGING_ERROR": "Laddfel",
-                    "INITIALISING": "Initierar laddning",
-                    "INSTANT_CHARGING": "Direktladdar",
-                    "NOT_CHARGING": "Laddar ej",
-                    "NOT_PLUGGED": "Not connected",
-                    "OFF": "Laddning av"
+                    "charging": "Laddar",
+                    "charging_completed": "Laddning klar",
+                    "charging_error": "Laddfel",
+                    "initialising": "Initierar laddning",
+                    "instant_charging": "Direktladdar",
+                    "not_charging": "Laddar ej",
+                    "not_plugged": "Not connected",
+                    "off": "Laddning av"
                 }
             }
         },

@@ -80,14 +80,14 @@
             "charging_status": {
                 "name": "Charging status",
                 "state": {
-                    "CHARGING": "Charging",
-                    "CHARGING_COMPLETED": "Charging completed",
-                    "CHARGING_ERROR": "Charging error",
-                    "INITIALISING": "Initialising charging",
-                    "INSTANT_CHARGING": "Instant charging",
-                    "NOT_CHARGING": "Not charging",
-                    "NOT_PLUGGED": "Not connected",
-                    "OFF": "Charging off"
+                    "charging": "Charging",
+                    "charging_completed": "Charging completed",
+                    "charging_error": "Charging error",
+                    "initialising": "Initialising charging",
+                    "instant_charging": "Instant charging",
+                    "not_charging": "Not charging",
+                    "not_plugged": "Not connected",
+                    "off": "Charging off"
                 }
             }
         },

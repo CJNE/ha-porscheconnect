@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
@@ -90,7 +90,7 @@ class PorscheButton(PorscheBaseEntity, ButtonEntity):
         """Press the button."""
         try:
             await self.entity_description.remote_function(self.vehicle)
-        except PorscheException as ex:
+        except PorscheExceptionError as ex:
             raise HomeAssistantError(ex) from ex
 
         self.coordinator.async_update_listeners()

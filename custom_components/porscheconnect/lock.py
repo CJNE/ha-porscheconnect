@@ -7,7 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from pyporscheconnectapi.exceptions import PorscheException
+from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import (
@@ -54,7 +54,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         """Lock the vehicle."""
         try:
             await self.vehicle.remote_services.lock_vehicle()
-        except PorscheException as ex:
+        except PorscheExceptionError as ex:
             self._attr_is_locked = None
             self.async_write_ha_state()
             raise HomeAssistantError(ex) from ex
@@ -67,7 +67,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         if pin:
             try:
                 await self.vehicle.remote_services.unlock_vehicle(pin)
-            except PorscheException as ex:
+            except PorscheExceptionError as ex:
                 self._attr_is_locked = None
                 self.async_write_ha_state()
                 raise HomeAssistantError(ex) from ex

@@ -189,6 +189,9 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
             self.entity_description.measurement_leaf,
         )
 
+        if type(state) is str:
+            state = state.lower()
+
         _LOGGER.debug(
             "Updating sensor '%s' of %s with state '%s'",
             self.entity_description.key,
