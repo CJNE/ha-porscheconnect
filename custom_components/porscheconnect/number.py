@@ -50,7 +50,7 @@ NUMBER_TYPES: list[PorscheNumberEntityDescription] = [
         mode=NumberMode.SLIDER,
         value_fn=lambda v: v.charging_target,
         remote_service=lambda v, o: v.remote_services.update_charging_profile(
-            minimumChargeLevel=int(o),
+            minimum_charge_level=int(o),
         ),
     ),
 ]

@@ -45,7 +45,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
         key="charging_target",
         translation_key="charging_target",
-        measurement_node="CHARGING_SUMMARY",
+        measurement_node="CHARGING_SUMMARY.chargingProfile",
         measurement_leaf="minSoC",
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
