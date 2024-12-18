@@ -1,4 +1,6 @@
+[tool.ruff]
+exclude = [ "tests/*.py" ]
+
 [tool.ruff.lint]
 select = [ "ALL" ]
-ignore = [ "ANN001", "ANN201", "ANN202", "ANN204", "ARG001", "TC002", "TC003" ]
-
+ignore = [ "ANN001", "ANN201", "ANN202", "ANN204", "ARG001", "TC002", "TC003", "COM812", "ISC001" ]

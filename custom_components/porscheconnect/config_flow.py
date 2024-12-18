@@ -1,4 +1,5 @@
 """Config flow for Porsche Connect integration."""
+
 from __future__ import annotations
 
 import logging
@@ -77,7 +78,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         if user_input is None:
             return self.async_show_form(
-                step_id="user", data_schema=STEP_USER_DATA_SCHEMA,
+                step_id="user",
+                data_schema=STEP_USER_DATA_SCHEMA,
             )
 
         errors = {}
@@ -104,7 +106,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors["base"] = "invalid_auth"
 
         return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors,
+            step_id="user",
+            data_schema=STEP_USER_DATA_SCHEMA,
+            errors=errors,
         )
 
     async def async_step_reauth(
@@ -117,7 +121,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_user()
 
     async def async_step_captcha(
-        self, user_input: dict[str, str] | None = None,
+        self,
+        user_input: dict[str, str] | None = None,
     ) -> config_entries.ConfigFlowResult:
         """Captcha verification step."""
         if user_input is not None:

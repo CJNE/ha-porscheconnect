@@ -1,4 +1,5 @@
 """Support for the Porsche Connect binary sensors."""
+
 from __future__ import annotations
 
 import logging

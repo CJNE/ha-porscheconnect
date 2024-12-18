@@ -28,6 +28,7 @@ from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
 
+
 def get_from_dict(datadict, keystring):
     """Safely get value from dict."""
     maplist = keystring.split(".")
@@ -74,13 +75,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     coordinator = PorscheConnectDataUpdateCoordinator(
-        hass, config_entry=entry, controller=controller,
+        hass,
+        config_entry=entry,
+        controller=controller,
     )
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(
-        entry, list(PLATFORMS),
+        entry,
+        list(PLATFORMS),
     )
 
     _async_save_token(hass, entry, controller.token)
@@ -102,7 +106,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
             seconds=config_entry.options.get(
                 CONF_SCAN_INTERVAL,
                 config_entry.data.get(
-                    CONF_SCAN_INTERVAL, SCAN_INTERVAL.total_seconds(),
+                    CONF_SCAN_INTERVAL,
+                    SCAN_INTERVAL.total_seconds(),
                 ),
             ),
         )
@@ -145,7 +150,8 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(
-        entry, list(PLATFORMS),
+        entry,
+        list(PLATFORMS),
     )
 
     if unload_ok:

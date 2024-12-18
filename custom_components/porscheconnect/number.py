@@ -1,4 +1,5 @@
 """Support for the Porsche Connect number entities."""
+
 from __future__ import annotations
 
 import logging
