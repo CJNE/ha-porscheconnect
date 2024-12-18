@@ -5,25 +5,23 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
-
-from . import (
-    PorscheConnectDataUpdateCoordinator,
-    PorscheBaseEntity,
-)
-
 from pyporscheconnectapi.exceptions import PorscheException
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
+from . import (
+    PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
+)
 from .const import DOMAIN
 
 
 @dataclass(frozen=True, kw_only=True)
 class PorscheSwitchEntityDescription(SwitchEntityDescription):
-    """Describes Porsche switch entity."""
+    """Class describing Porsche Connect switch entities."""
 
     value_fn: Callable[[PorscheVehicle], bool]
     remote_service_on: Callable[[PorscheVehicle], Coroutine[Any, Any, Any]]
@@ -69,7 +67,7 @@ async def async_setup_entry(
                 PorscheSwitch(coordinator, vehicle, description)
                 for description in NUMBER_TYPES
                 if description.is_available(vehicle)
-            ]
+            ],
         )
     async_add_entities(entities)
 
@@ -95,7 +93,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
         """Return the entity value to represent the entity state."""
         return self.entity_description.value_fn(self.vehicle)
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self) -> None:
         """Turn the switch on."""
         try:
             await self.entity_description.remote_service_on(self.vehicle)
@@ -104,7 +102,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
 
         self.coordinator.async_update_listeners()
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self) -> None:
         """Turn the switch off."""
         try:
             await self.entity_description.remote_service_off(self.vehicle)

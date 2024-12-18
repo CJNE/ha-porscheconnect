@@ -1,40 +1,40 @@
-"""Support for the Porsche Connect sensors"""
+"""Support for the Porsche Connect sensors."""
+from __future__ import annotations
 
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from . import DOMAIN as PORSCHE_DOMAIN
-from . import (
-    PorscheConnectDataUpdateCoordinator,
-    PorscheBaseEntity,
-)
-from pyporscheconnectapi.vehicle import PorscheVehicle
-
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
 )
-
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
     UnitOfLength,
     UnitOfPower,
     UnitOfSpeed,
 )
-
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
+from . import DOMAIN as PORSCHE_DOMAIN
+from . import (
+    PorscheBaseEntity,
+    PorscheConnectDataUpdateCoordinator,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
 class PorscheSensorEntityDescription(SensorEntityDescription):
+    """Class describing Porsche Connect sensor entities."""
+
     measurement_node: str | None = None
     measurement_leaf: str | None = None
     is_available: Callable[[PorscheVehicle], bool] = lambda v: v.has_porsche_connect
@@ -160,11 +160,11 @@ async def async_setup_entry(
         if description.is_available(vehicle)
     ]
 
-    async_add_entities(entities, True)
+    async_add_entities(entities)
 
 
 class PorscheSensor(PorscheBaseEntity, SensorEntity):
-    """Representation of a Porsche sensor"""
+    """Representation of a Porsche sensor."""
 
     entity_description: PorscheSensorEntityDescription
 
@@ -174,7 +174,7 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
         vehicle: PorscheVehicle,
         description: PorscheSensorEntityDescription,
     ) -> None:
-        """Initialize of the sensor"""
+        """Initialize of the sensor."""
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
@@ -183,8 +183,7 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-
-        state = self.coordinator.getVehicleDataLeaf(
+        state = self.coordinator.get_vechicle_data_leaf(
             self.vehicle,
             self.entity_description.measurement_node,
             self.entity_description.measurement_leaf,
