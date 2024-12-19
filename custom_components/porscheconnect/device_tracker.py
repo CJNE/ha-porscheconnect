@@ -53,7 +53,6 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
         super().__init__(coordinator, vehicle)
 
         self._attr_unique_id = vehicle.vin
-        self._attr_name = vehicle.model_name
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
 
