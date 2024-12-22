@@ -2,7 +2,8 @@
 
 import logging
 
-from homeassistant.components.lock import LockEntity
+from homeassistant.components.lock import CONF_DEFAULT_CODE, LockEntity
+from homeassistant.components.lock import DOMAIN as LOCK_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
@@ -64,6 +65,11 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
     async def async_unlock(self, **kwargs: dict) -> None:
         """Unlock the vehicle."""
         pin = kwargs.get("code")
+
+        if pin is None:
+            lock_options = self.registry_entry.options.get(LOCK_DOMAIN)
+            pin = lock_options.get(CONF_DEFAULT_CODE)
+
         if pin:
             try:
                 await self.vehicle.remote_services.unlock_vehicle(pin)
