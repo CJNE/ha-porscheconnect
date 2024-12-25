@@ -1,0 +1,40 @@
+climatisation_start:
+  fields:
+    vehicle:
+      required: true
+      selector:
+        device:
+          integration: porscheconnect
+    temperature:
+      example: "21"
+      required: false
+      selector:
+        number:
+          min: 15
+          max: 25
+          step: 0.5
+          unit_of_measurement: °C
+    front_left:
+      example: true
+      required: false
+      default: false
+      selector:
+        boolean:
+    front_right:
+      example: false
+      required: false
+      default: false
+      selector:
+        boolean:
+    rear_left:
+      example: false
+      required: false
+      default: false
+      selector:
+        boolean:
+    rear_right:
+      example: false
+      required: false
+      default: false
+      selector:
+        boolean:

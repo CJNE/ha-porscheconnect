@@ -103,6 +103,38 @@
             "climatise": {"name": "Remote climatisation"},
             "direct_charging": {"name": "Direct charging"}
         }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Start remote climatisation",
+            "description": "Starts remote climatisation of the passenger compartment with specified parameters",
+            "fields": {
+                "vehicle": {
+                    "name": "Fordon",
+                    "description": "The vehicle to be climatised."
+                },
+                "temperature": {
+                    "name": "Temperatur",
+                    "description": "Target temperature for climatisation (default 20 degrees C)"
+                },
+                "front_left": {
+                    "name": "Seat heating front left",
+                    "description": "If front left seat heater should be activated (default off)"
+                }, 
+                "front_right": {
+                    "name": "SSeat heating front right",
+                    "description": "If front right seat heater should be activated (default off)"
+                },
+                "rear_left": {
+                    "name": "Seat heating rear left",
+                    "description": "If rear left seat heater should be activated (default off)"
+                },
+                "rear_right": {
+                    "name": "Seat heating rear right",
+                    "description": "If rear right seat heater should be activated (default off)"
+                }
+            }
+        }
     }
 }
 
