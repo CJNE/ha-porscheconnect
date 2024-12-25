@@ -88,6 +88,7 @@ def setup_services(
                 rear_left=rear_left or False,
                 rear_right=rear_right or False,
             )
+            coordinator.async_set_updated_data(vehicle.data)
         except PorscheExceptionError as ex:
             raise HomeAssistantError(ex) from ex
 
