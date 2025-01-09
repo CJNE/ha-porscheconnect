@@ -110,7 +110,7 @@
             "description": "Starts remote climatisation of the passenger compartment with specified parameters",
             "fields": {
                 "vehicle": {
-                    "name": "Fordon",
+                    "name": "Vehicle",
                     "description": "The vehicle to be climatised."
                 },
                 "temperature": {
@@ -122,7 +122,7 @@
                     "description": "If front left seat heater should be activated (default off)"
                 }, 
                 "front_right": {
-                    "name": "SSeat heating front right",
+                    "name": "Seat heating front right",
                     "description": "If front right seat heater should be activated (default off)"
                 },
                 "rear_left": {
