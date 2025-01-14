@@ -133,5 +133,37 @@
             "climatise": {"name": "Fjärrklimatisering"},
             "direct_charging": {"name": "Direktladdning"}
         }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Starta klimatisering",
+            "description": "Startar klimatisering av kupén med angivna parametrar.",
+            "fields": {
+                "vehicle": {
+                    "name": "Fordon",
+                    "description": "Det fordon som ska klimatiseras."
+                },
+                "temperature": {
+                    "name": "Temperatur",
+                    "description": "Måltemperatur för klimatisering (standardvärde 20 grader)"
+                },
+                "front_left": {
+                    "name": "Sätesvärme vänster fram",
+                    "description": "Om sätesvärmde vänster fram ska aktiveras (standardvärde av)"
+                },
+                "front_right": {
+                    "name": "Sätesvärme höger fram",
+                    "description": "Om sätesvärmde höger fram ska aktiveras (standardvärde av)"
+                },
+                "rear_left": {
+                    "name": "Sätesvärme vänster bak",
+                    "description": "Om sätesvärmde vänster bak ska aktiveras (standardvärde av)"
+                },
+                "rear_right": {
+                    "name": "Sätesvärme höger bak",
+                    "description": "Om sätesvärmde höger bak ska aktiveras (standardvärde av)"
+                }
+            }
+        }
     }
 }

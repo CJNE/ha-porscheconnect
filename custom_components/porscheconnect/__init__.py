@@ -89,6 +89,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _async_save_token(hass, entry, controller.token)
 
+    from .services import setup_services
+
+    setup_services(hass, entry)
+
     return True
 
 
