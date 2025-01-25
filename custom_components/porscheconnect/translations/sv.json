@@ -92,6 +92,9 @@
             "charging_rate": {
                 "name": "Laddhastighet"
             },
+            "charging_finished": {
+                "name": "Laddning klar"
+            },
             "remaining_range_electric": {
                 "name": "Räckvidd på batteri"
             },

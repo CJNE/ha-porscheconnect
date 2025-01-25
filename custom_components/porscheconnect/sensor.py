@@ -74,6 +74,15 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         is_available=lambda v: v.has_electric_drivetrain,
     ),
     PorscheSensorEntityDescription(
+        key="charging_finished",
+        translation_key="charging_finished",
+        measurement_node="BATTERY_CHARGING_STATE",
+        measurement_leaf="endsAt",
+        icon="mdi:clock-end",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        is_available=lambda v: v.has_electric_drivetrain,
+    ),
+    PorscheSensorEntityDescription(
         key="charging_power",
         translation_key="charging_power",
         measurement_node="BATTERY_CHARGING_STATE",
