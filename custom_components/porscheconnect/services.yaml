@@ -8,6 +8,7 @@ climatisation_start:
     temperature:
       example: "21"
       required: false
+      default: 21
       selector:
         number:
           min: 15

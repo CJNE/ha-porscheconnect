@@ -62,6 +62,9 @@
             "charging_rate": {
                 "name": "Charging rate"
             },
+            "charging_finished": {
+                "name": "Charging ends"
+            },
             "remaining_range_electric": {
                 "name": "Remaining range electric"
             },
