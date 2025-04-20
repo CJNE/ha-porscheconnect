@@ -45,7 +45,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
         key="charging_target",
         translation_key="charging_target",
-        measurement_node="CHARGING_SUMMARY.chargingProfile",
+        measurement_node="CHARGING_SUMMARY",
         measurement_leaf="minSoC",
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
@@ -188,7 +188,7 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
-        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
+        self._attr_unique_id = f"{vehicle.data['name']}-{description.key}"
 
     @callback
     def _handle_coordinator_update(self) -> None:
