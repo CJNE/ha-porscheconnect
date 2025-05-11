@@ -66,8 +66,8 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
         key="charging_rate",
         translation_key="charging_rate",
-        measurement_node="BATTERY_CHARGING_STATE",
-        measurement_leaf="chargingRate",
+        measurement_node="CHARGING_RATE",
+        measurement_leaf="chargingRate-kph",
         icon="mdi:speedometer",
         device_class=SensorDeviceClass.SPEED,
         native_unit_of_measurement=UnitOfSpeed.KILOMETERS_PER_HOUR,
@@ -76,8 +76,8 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
         key="charging_finished",
         translation_key="charging_finished",
-        measurement_node="BATTERY_CHARGING_STATE",
-        measurement_leaf="endsAt",
+        measurement_node="CHARGING_SUMMARY",
+        measurement_leaf="targetDateTime",
         icon="mdi:clock-end",
         device_class=SensorDeviceClass.TIMESTAMP,
         is_available=lambda v: v.has_electric_drivetrain,
@@ -85,7 +85,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
         key="charging_power",
         translation_key="charging_power",
-        measurement_node="BATTERY_CHARGING_STATE",
+        measurement_node="CHARGING_RATE",
         measurement_leaf="chargingPower",
         icon="mdi:lightning-bolt-circle",
         device_class=SensorDeviceClass.POWER,
