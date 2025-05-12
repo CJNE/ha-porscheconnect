@@ -49,8 +49,8 @@ NUMBER_TYPES: list[PorscheNumberEntityDescription] = [
         native_step=5.0,
         mode=NumberMode.SLIDER,
         value_fn=lambda v: v.charging_target,
-        remote_service=lambda v, o: v.remote_services.update_charging_profile(
-            minimum_charge_level=int(o),
+        remote_service=lambda v, o: v.remote_services.set_target_soc(
+            target_soc=int(o),
         ),
     ),
 ]
@@ -94,7 +94,7 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
         super().__init__(coordinator, vehicle)
 
         self.entity_description = description
-        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
+        self._attr_unique_id = f"{vehicle.data['name']}-{description.key}"
 
     @property
     def native_value(self) -> float | None:
