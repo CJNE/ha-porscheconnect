@@ -99,7 +99,7 @@ class PorscheImage(PorscheBaseEntity, ImageEntity):
         self.entity_description = description
 
         self._attr_content_type = CONTENT_TYPE
-        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
+        self._attr_unique_id = f'{vehicle.vin}-{description.key}'
         self._attr_image_url = vehicle.picture_locations[description.view]
 
     async def async_added_to_hass(self):
