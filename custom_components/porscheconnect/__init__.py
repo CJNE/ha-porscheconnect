@@ -24,6 +24,7 @@ from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS
+from .services import setup_services
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
@@ -88,8 +89,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     _async_save_token(hass, entry, controller.token)
-
-    from .services import setup_services
 
     setup_services(hass, entry)
 
