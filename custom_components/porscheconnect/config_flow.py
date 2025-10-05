@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 
 import voluptuous as vol
 from homeassistant import exceptions
 from homeassistant.config_entries import (
     CONN_CLASS_CLOUD_POLL,
-    SOURCE_REAUTH,
-    SOURCE_RECONFIGURE,
     ConfigFlow,
     ConfigFlowResult,
 )
@@ -96,10 +95,6 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
         unique_id = f"{user_input[CONF_EMAIL]}"
         await self.async_set_unique_id(unique_id)
 
-        # Unique ID cannot change for reauth/reconfigure
-        if self.source not in {SOURCE_REAUTH, SOURCE_RECONFIGURE}:
-            self._abort_if_unique_id_configured()
-
         try:
             info = await validate_input(user_input)
             if info.get("captcha") and info.get("state"):
@@ -185,6 +180,17 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
         self,
     ) -> ConfigFlowResult:
         """Captcha verification form."""
+        # We edit the SVG for better visibility
+
+        (header, payload) = self.captcha.split(",")
+        svg = base64.b64decode(payload)
+        svg = svg.replace(
+            b'width="150" height="50"',
+            b'width="300" height="100" style="background-color:white"',
+        )
+        payload = base64.b64encode(svg)
+        self.captcha = header + "," + payload.decode("ascii")
+
         return self.async_show_form(
             step_id="captcha",
             data_schema=vol.Schema(
@@ -193,7 +199,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 },
             ),
             description_placeholders={
-                "captcha_img": '<img src="' + self.captcha + '"/>',
+                "captcha_img": '<img src="' + self.captcha + '" />',
             },
         )
 
