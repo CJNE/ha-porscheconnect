@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 
 import voluptuous as vol
-from homeassistant import config_entries, exceptions
+from homeassistant import exceptions
+from homeassistant.config_entries import (
+    CONN_CLASS_CLOUD_POLL,
+    ConfigFlow,
+    ConfigFlowResult,
+)
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from pyporscheconnectapi.connection import Connection
@@ -20,6 +26,7 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema({CONF_EMAIL: str, CONF_PASSWORD: str})
+CHANGE_PASSWORD_SCHEMA = vol.Schema({CONF_PASSWORD: str})
 
 
 async def validate_input(data):
@@ -63,11 +70,11 @@ async def validate_input(data):
     return {"title": data[CONF_EMAIL], CONF_ACCESS_TOKEN: token}
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Porsche Connect."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+    CONNECTION_CLASS = CONN_CLASS_CLOUD_POLL
 
     email = None
     password = None
@@ -84,6 +91,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         _LOGGER.debug("Validating input.")
+
+        unique_id = f"{user_input[CONF_EMAIL]}"
+        await self.async_set_unique_id(unique_id)
 
         try:
             info = await validate_input(user_input)
@@ -111,19 +121,35 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_reauth(
-        self,
-    ) -> config_entries.ConfigFlowResult:
+    async def async_step_reauth(self, user_input=None) -> ConfigFlowResult:
         """Handle configuration by re-auth."""
         self._reauth_entry = self.hass.config_entries.async_get_entry(
             self.context["entry_id"],
         )
         return await self.async_step_user()
 
+    async def async_step_reconfigure(self, user_input=None) -> ConfigFlowResult:
+        """Handle a reconfiguration flow initialized by the user."""
+        self._existing_entry_data = dict(self._get_reconfigure_entry().data)
+        return await self.async_step_change_password()
+
+    async def async_step_change_password(self, user_input=None) -> ConfigFlowResult:
+        """Show the change password step."""
+        if user_input is not None:
+            return await self.async_step_user(self._existing_entry_data | user_input)
+
+        return self.async_show_form(
+            step_id="change_password",
+            data_schema=CHANGE_PASSWORD_SCHEMA,
+            description_placeholders={
+                CONF_EMAIL: self._existing_entry_data[CONF_EMAIL],
+            },
+        )
+
     async def async_step_captcha(
         self,
         user_input: dict[str, str] | None = None,
-    ) -> config_entries.ConfigFlowResult:
+    ) -> ConfigFlowResult:
         """Captcha verification step."""
         if user_input is not None:
             user_input = {
@@ -152,8 +178,19 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def _async_form_captcha(
         self,
-    ) -> config_entries.ConfigFlowResult:
+    ) -> ConfigFlowResult:
         """Captcha verification form."""
+        # We edit the SVG for better visibility
+
+        (header, payload) = self.captcha.split(",")
+        svg = base64.b64decode(payload)
+        svg = svg.replace(
+            b'width="150" height="50"',
+            b'width="300" height="100" style="background-color:white"',
+        )
+        payload = base64.b64encode(svg)
+        self.captcha = header + "," + payload.decode("ascii")
+
         return self.async_show_form(
             step_id="captcha",
             data_schema=vol.Schema(
@@ -162,7 +199,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 },
             ),
             description_placeholders={
-                "captcha_img": '<img src="' + self.captcha + '"/>',
+                "captcha_img": '<img src="' + self.captcha + '" />',
             },
         )
 

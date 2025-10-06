@@ -75,6 +75,7 @@ async def async_setup_entry(
         PorscheImage(hass, coordinator, vehicle, description)
         for vehicle in coordinator.vehicles
         for description in IMAGE_TYPES
+        if description.view in vehicle.picture_locations
     ]
 
     async_add_entities(entities)
