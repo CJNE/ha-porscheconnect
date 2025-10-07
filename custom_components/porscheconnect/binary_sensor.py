@@ -125,7 +125,7 @@ class PorscheBinarySensor(BinarySensorEntity, PorscheBaseEntity):
 
         self.coordinator = coordinator
         self.entity_description = description
-        self._attr_unique_id = f'{vehicle.data["name"]}-{description.key}'
+        self._attr_unique_id = f'{vehicle.vin}-{description.key}'
 
     @callback
     def _handle_coordinator_update(self) -> None:
