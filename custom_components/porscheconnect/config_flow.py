@@ -9,6 +9,8 @@ import voluptuous as vol
 from homeassistant import exceptions
 from homeassistant.config_entries import (
     CONN_CLASS_CLOUD_POLL,
+    SOURCE_REAUTH,
+    SOURCE_RECONFIGURE,
     ConfigFlow,
     ConfigFlowResult,
 )
@@ -107,6 +109,21 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 **user_input,
                 CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
             }
+
+            if self.source == SOURCE_REAUTH:
+                self._abort_if_unique_id_mismatch()
+                return self.async_update_reload_and_abort(
+                    self._get_reauth_entry(),
+                    data_updates=entry_data,
+                )
+
+            if self.source == SOURCE_RECONFIGURE:
+                self._abort_if_unique_id_mismatch()
+                return self.async_update_reload_and_abort(
+                    self._get_reconfigure_entry(),
+                    data_updates=entry_data,
+                )
+
             return self.async_create_entry(
                 title=info["title"],
                 data=entry_data,
@@ -164,6 +181,21 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     **user_input,
                     CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
                 }
+
+                if self.source == SOURCE_REAUTH:
+                    self._abort_if_unique_id_mismatch()
+                    return self.async_update_reload_and_abort(
+                        self._get_reauth_entry(),
+                        data_updates=entry_data,
+                    )
+
+                if self.source == SOURCE_RECONFIGURE:
+                    self._abort_if_unique_id_mismatch()
+                    return self.async_update_reload_and_abort(
+                        self._get_reconfigure_entry(),
+                        data_updates=entry_data,
+                    )
+
                 return self.async_create_entry(
                     title=info["title"],
                     data=entry_data,
