@@ -177,6 +177,13 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
             }
             try:
                 info = await validate_input(user_input)
+
+                # Handle case where another captcha is required
+                if info.get("captcha") and info.get("state"):
+                    self.captcha = info.get("captcha")
+                    self.state = info.get("state")
+                    return self._async_form_captcha()
+
                 entry_data = {
                     **user_input,
                     CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
