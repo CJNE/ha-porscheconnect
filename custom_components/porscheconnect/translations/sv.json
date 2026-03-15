@@ -2,7 +2,9 @@
      "config": {
         "abort": {
             "already_configured": "Enheten är redan konfigurerad",
-            "reauth_successful": "Återautentiseringen lyckades"
+            "reauth_successful": "Återautentiseringen lyckades",
+            "reconfigure_successful": "Omkonfigureringen lyckades",
+            "unique_id_mismatch": "E-postadressen matchar inte det konfigurerade Porsche Connect-kontot"
         },
         "error": {
             "cannot_connect": "Anslutningsfel",

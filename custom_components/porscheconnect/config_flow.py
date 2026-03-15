@@ -83,6 +83,33 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
     captcha = None
     state = None
 
+    @callback
+    def _get_entry_for_current_flow(self):
+        """Return the existing entry for reauth/reconfigure flows."""
+        if self.source == SOURCE_REAUTH:
+            return self._get_reauth_entry()
+        if self.source == SOURCE_RECONFIGURE:
+            return self._get_reconfigure_entry()
+        return None
+
+    @callback
+    def _get_expected_unique_id(self) -> str | None:
+        """Return the account identifier for the current flow.
+
+        Older entries may not have a unique_id yet, so fall back to the stored email.
+        """
+        if entry := self._get_entry_for_current_flow():
+            return entry.unique_id or entry.data.get(CONF_EMAIL)
+        return self.unique_id
+
+    @callback
+    def _abort_if_account_mismatch(self) -> None:
+        """Abort if reauth/reconfigure targets a different account."""
+        expected_unique_id = self._get_expected_unique_id()
+        if expected_unique_id is None or self.unique_id == expected_unique_id:
+            return
+        self._abort_if_unique_id_mismatch()
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         if user_input is None:
@@ -111,16 +138,18 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
             }
 
             if self.source == SOURCE_REAUTH:
-                self._abort_if_unique_id_mismatch()
+                self._abort_if_account_mismatch()
                 return self.async_update_reload_and_abort(
                     self._get_reauth_entry(),
+                    unique_id=self.unique_id,
                     data_updates=entry_data,
                 )
 
             if self.source == SOURCE_RECONFIGURE:
-                self._abort_if_unique_id_mismatch()
+                self._abort_if_account_mismatch()
                 return self.async_update_reload_and_abort(
                     self._get_reconfigure_entry(),
+                    unique_id=self.unique_id,
                     data_updates=entry_data,
                 )
 
@@ -143,11 +172,19 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
         self._reauth_entry = self.hass.config_entries.async_get_entry(
             self.context["entry_id"],
         )
+        await self.async_set_unique_id(
+            self._get_expected_unique_id(),
+            raise_on_progress=False,
+        )
         return await self.async_step_user()
 
     async def async_step_reconfigure(self, user_input=None) -> ConfigFlowResult:
         """Handle a reconfiguration flow initialized by the user."""
         self._existing_entry_data = dict(self._get_reconfigure_entry().data)
+        await self.async_set_unique_id(
+            self._get_expected_unique_id(),
+            raise_on_progress=False,
+        )
         return await self.async_step_change_password()
 
     async def async_step_change_password(self, user_input=None) -> ConfigFlowResult:
@@ -170,11 +207,12 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
         """Captcha verification step."""
         if user_input is not None:
             user_input = {
-                "email": self.email,
-                "password": self.password,
+                CONF_EMAIL: self.email,
+                CONF_PASSWORD: self.password,
                 "captcha_code": user_input["captcha_code"],
                 "state": self.state,
             }
+            errors = {}
             try:
                 info = await validate_input(user_input)
 
@@ -190,16 +228,18 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 }
 
                 if self.source == SOURCE_REAUTH:
-                    self._abort_if_unique_id_mismatch()
+                    self._abort_if_account_mismatch()
                     return self.async_update_reload_and_abort(
                         self._get_reauth_entry(),
+                        unique_id=self.unique_id,
                         data_updates=entry_data,
                     )
 
                 if self.source == SOURCE_RECONFIGURE:
-                    self._abort_if_unique_id_mismatch()
+                    self._abort_if_account_mismatch()
                     return self.async_update_reload_and_abort(
                         self._get_reconfigure_entry(),
+                        unique_id=self.unique_id,
                         data_updates=entry_data,
                     )
 
@@ -208,9 +248,20 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     data=entry_data,
                 )
 
-            except Exception as exc:
-                _LOGGER.info("Login failed: %s", exc)
-                raise InvalidAuth from exc
+            except InvalidAuth:
+                errors["base"] = "invalid_auth"
+                return self.async_show_form(
+                    step_id="captcha",
+                    data_schema=vol.Schema(
+                        {
+                            vol.Required("captcha_code", default=vol.UNDEFINED): str,
+                        },
+                    ),
+                    errors=errors,
+                    description_placeholders={
+                        "captcha_img": '<img src="' + self.captcha + '" />',
+                    },
+                )
 
         return self._async_form_captcha()
 
