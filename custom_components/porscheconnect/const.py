@@ -5,7 +5,7 @@ DEFAULT_SCAN_INTERVAL = 1920
 
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.1.0"
+VERSION = "0.1.10"
 ISSUE_URL = "https://github.com/cjne/ha-porscheconnect/issues"
 
 PLATFORMS = [
