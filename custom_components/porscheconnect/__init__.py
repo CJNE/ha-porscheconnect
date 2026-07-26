@@ -132,6 +132,21 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     await vehicle.get_stored_overview()
                     await vehicle.get_picture_locations()
 
+                # get_stored_overview() catches PorscheExceptionError internally and returns
+                # normally, so a rate limited or otherwise failing API leaves vehicle.data
+                # without the base data it would have merged in - notably "name", which entity
+                # setup indexes directly. Treat that as a failed refresh: during setup
+                # async_config_entry_first_refresh() turns it into ConfigEntryNotReady and Home
+                # Assistant retries with backoff, instead of raising KeyError in every platform
+                # and leaving the integration with no entities until a manual reload.
+                incomplete = [v.vin for v in self.vehicles if "name" not in v.data]
+                if incomplete:
+                    # Drop them so the next attempt refetches instead of taking the branch
+                    # below, which would never call get_picture_locations() again.
+                    self.vehicles = []
+                    msg = "Incomplete data for vehicle(s) %s, will retry"
+                    raise UpdateFailed(msg % ", ".join(incomplete))
+
             else:
                 async with async_timeout.timeout(30):
                     for vehicle in self.vehicles:
