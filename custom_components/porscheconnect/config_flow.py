@@ -43,6 +43,7 @@ async def validate_input(data):
             password=data[CONF_PASSWORD],
             captcha_code=data.get("captcha_code"),
             state=data.get("state"),
+            code_verifier=data.get("code_verifier"),
             token=token,
         )
     except PorscheExceptionError as exc:
@@ -58,12 +59,13 @@ async def validate_input(data):
             "password": data[CONF_PASSWORD],
             "captcha": exc.captcha,
             "state": exc.state,
+            "code_verifier": exc.code_verifier,
         }
     except PorscheWrongCredentialsError as exc:
         _LOGGER.info("Wrong credentials.")
         raise InvalidAuth from exc
     except PorscheExceptionError as exc:
-        _LOGGER.info("Authentication flow error: %s", exc)
+        _LOGGER.info("Authentication flow error: %s", exc.message)
         raise InvalidAuth from exc
     except Exception as exc:
         _LOGGER.info("Login failed: %s", exc)
@@ -82,6 +84,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
     password = None
     captcha = None
     state = None
+    code_verifier = None
 
     @callback
     def _get_entry_for_current_flow(self):
@@ -131,6 +134,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 self.password = info.get("password")
                 self.captcha = info.get("captcha")
                 self.state = info.get("state")
+                self.code_verifier = info.get("code_verifier")
                 return self._async_form_captcha()
             entry_data = {
                 **user_input,
@@ -211,6 +215,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_PASSWORD: self.password,
                 "captcha_code": user_input["captcha_code"],
                 "state": self.state,
+                "code_verifier": self.code_verifier,
             }
             errors = {}
             try:
@@ -220,6 +225,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 if info.get("captcha") and info.get("state"):
                     self.captcha = info.get("captcha")
                     self.state = info.get("state")
+                    self.code_verifier = info.get("code_verifier")
                     return self._async_form_captcha()
 
                 entry_data = {
