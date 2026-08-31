@@ -54,8 +54,8 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
 
         self._attr_unique_id = vehicle.vin
         if (
-            "customName" in vehicle.data and
-            vehicle.data["customName"] != vehicle.model_name
+            "customName" in vehicle.data
+            and vehicle.data["customName"] != vehicle.model_name
             and vehicle.data["customName"] is not None
         ):
             self._attr_name = vehicle.data["customName"]

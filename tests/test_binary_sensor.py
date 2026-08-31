@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_PARKING_BREAK_ENTITY_ID = "binary_sensor.taycan_turbo_s_parking_break"
+TEST_PARKING_BRAKE_ENTITY_ID = "binary_sensor.taycan_turbo_s_parking_brake"
 
 
 @pytest.mark.asyncio
@@ -14,5 +14,6 @@ async def test_pargking_break_sensor(hass: HomeAssistant, mock_connection) -> No
 
     await setup_mock_porscheconnect_config_entry(hass)
 
-    entity_state = hass.states.get(TEST_PARKING_BREAK_ENTITY_ID)
+    entity_state = hass.states.get(TEST_PARKING_BRAKE_ENTITY_ID)
+    assert entity_state
     assert entity_state.state == STATE_ON
