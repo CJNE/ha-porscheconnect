@@ -1,12 +1,12 @@
 """The Porsche Connect integration."""
 
+import asyncio
 import copy
 import logging
 import operator
 from datetime import timedelta
 from functools import reduce
 
-import async_timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant, callback
@@ -23,7 +23,7 @@ from pyporscheconnectapi.connection import Connection
 from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS, TRANSIENT_AUTH_FIELDS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=DEFAULT_SCAN_INTERVAL)
@@ -54,6 +54,21 @@ def _async_save_token(hass, config_entry, access_token):
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up this integration using YAML is not supported."""
+    return True
+
+
+async def async_migrate_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+) -> bool:
+    """Remove obsolete authentication challenge data from config entries."""
+    if config_entry.version == 1:
+        data = {
+            key: value
+            for key, value in config_entry.data.items()
+            if key not in TRANSIENT_AUTH_FIELDS
+        }
+        hass.config_entries.async_update_entry(config_entry, data=data, version=2)
     return True
 
 
@@ -133,7 +148,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     await vehicle.get_picture_locations()
 
             else:
-                async with async_timeout.timeout(30):
+                async with asyncio.timeout(30):
                     for vehicle in self.vehicles:
                         await vehicle.get_stored_overview()
 

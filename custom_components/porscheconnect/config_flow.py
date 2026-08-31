@@ -23,7 +23,13 @@ from pyporscheconnectapi.exceptions import (
     PorscheWrongCredentialsError,
 )
 
-from .const import DOMAIN
+from .const import (
+    CONF_CAPTCHA_CODE,
+    CONF_CODE_VERIFIER,
+    CONF_OAUTH_STATE,
+    DOMAIN,
+    TRANSIENT_AUTH_FIELDS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,9 +47,9 @@ async def validate_input(data):
         conn = Connection(
             email=data[CONF_EMAIL],
             password=data[CONF_PASSWORD],
-            captcha_code=data.get("captcha_code"),
-            state=data.get("state"),
-            code_verifier=data.get("code_verifier"),
+            captcha_code=data.get(CONF_CAPTCHA_CODE),
+            state=data.get(CONF_OAUTH_STATE),
+            code_verifier=data.get(CONF_CODE_VERIFIER),
             token=token,
         )
     except PorscheExceptionError as exc:
@@ -58,8 +64,8 @@ async def validate_input(data):
             "email": data[CONF_EMAIL],
             "password": data[CONF_PASSWORD],
             "captcha": exc.captcha,
-            "state": exc.state,
-            "code_verifier": exc.code_verifier,
+            CONF_OAUTH_STATE: exc.state,
+            CONF_CODE_VERIFIER: exc.code_verifier,
         }
     except PorscheWrongCredentialsError as exc:
         _LOGGER.info("Wrong credentials.")
@@ -77,7 +83,7 @@ async def validate_input(data):
 class ConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Porsche Connect."""
 
-    VERSION = 1
+    VERSION = 2
     CONNECTION_CLASS = CONN_CLASS_CLOUD_POLL
 
     email = None
@@ -113,6 +119,22 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
             return
         self._abort_if_unique_id_mismatch()
 
+    @callback
+    def _get_entry_data(self, email: str, password: str, access_token) -> dict:
+        """Build persistent config entry data without transient auth fields."""
+        entry = self._get_entry_for_current_flow()
+        entry_data = dict(entry.data) if entry else {}
+        for field in TRANSIENT_AUTH_FIELDS:
+            entry_data.pop(field, None)
+        entry_data.update(
+            {
+                CONF_EMAIL: email,
+                CONF_PASSWORD: password,
+                CONF_ACCESS_TOKEN: access_token,
+            },
+        )
+        return entry_data
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         if user_input is None:
@@ -136,17 +158,18 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 self.state = info.get("state")
                 self.code_verifier = info.get("code_verifier")
                 return self._async_form_captcha()
-            entry_data = {
-                **user_input,
-                CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
-            }
+            entry_data = self._get_entry_data(
+                user_input[CONF_EMAIL],
+                user_input[CONF_PASSWORD],
+                info.get(CONF_ACCESS_TOKEN),
+            )
 
             if self.source == SOURCE_REAUTH:
                 self._abort_if_account_mismatch()
                 return self.async_update_reload_and_abort(
                     self._get_reauth_entry(),
                     unique_id=self.unique_id,
-                    data_updates=entry_data,
+                    data=entry_data,
                 )
 
             if self.source == SOURCE_RECONFIGURE:
@@ -154,7 +177,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_update_reload_and_abort(
                     self._get_reconfigure_entry(),
                     unique_id=self.unique_id,
-                    data_updates=entry_data,
+                    data=entry_data,
                 )
 
             return self.async_create_entry(
@@ -194,7 +217,12 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_change_password(self, user_input=None) -> ConfigFlowResult:
         """Show the change password step."""
         if user_input is not None:
-            return await self.async_step_user(self._existing_entry_data | user_input)
+            return await self.async_step_user(
+                {
+                    CONF_EMAIL: self._existing_entry_data[CONF_EMAIL],
+                    CONF_PASSWORD: user_input[CONF_PASSWORD],
+                },
+            )
 
         return self.async_show_form(
             step_id="change_password",
@@ -213,9 +241,9 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
             user_input = {
                 CONF_EMAIL: self.email,
                 CONF_PASSWORD: self.password,
-                "captcha_code": user_input["captcha_code"],
-                "state": self.state,
-                "code_verifier": self.code_verifier,
+                CONF_CAPTCHA_CODE: user_input[CONF_CAPTCHA_CODE],
+                CONF_OAUTH_STATE: self.state,
+                CONF_CODE_VERIFIER: self.code_verifier,
             }
             errors = {}
             try:
@@ -228,17 +256,18 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     self.code_verifier = info.get("code_verifier")
                     return self._async_form_captcha()
 
-                entry_data = {
-                    **user_input,
-                    CONF_ACCESS_TOKEN: info.get(CONF_ACCESS_TOKEN),
-                }
+                entry_data = self._get_entry_data(
+                    user_input[CONF_EMAIL],
+                    user_input[CONF_PASSWORD],
+                    info.get(CONF_ACCESS_TOKEN),
+                )
 
                 if self.source == SOURCE_REAUTH:
                     self._abort_if_account_mismatch()
                     return self.async_update_reload_and_abort(
                         self._get_reauth_entry(),
                         unique_id=self.unique_id,
-                        data_updates=entry_data,
+                        data=entry_data,
                     )
 
                 if self.source == SOURCE_RECONFIGURE:
@@ -246,7 +275,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     return self.async_update_reload_and_abort(
                         self._get_reconfigure_entry(),
                         unique_id=self.unique_id,
-                        data_updates=entry_data,
+                        data=entry_data,
                     )
 
                 return self.async_create_entry(
@@ -260,7 +289,10 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     step_id="captcha",
                     data_schema=vol.Schema(
                         {
-                            vol.Required("captcha_code", default=vol.UNDEFINED): str,
+                            vol.Required(
+                                CONF_CAPTCHA_CODE,
+                                default=vol.UNDEFINED,
+                            ): str,
                         },
                     ),
                     errors=errors,
@@ -291,7 +323,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="captcha",
             data_schema=vol.Schema(
                 {
-                    vol.Required("captcha_code", default=vol.UNDEFINED): str,
+                    vol.Required(CONF_CAPTCHA_CODE, default=vol.UNDEFINED): str,
                 },
             ),
             description_placeholders={
