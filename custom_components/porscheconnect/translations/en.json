@@ -88,6 +88,7 @@
                     "charging": "Charging",
                     "charging_completed": "Charging completed",
                     "charging_error": "Charging error",
+                    "charging_stopped": "Charging stopped",
                     "initialising": "Initialising charging",
                     "instant_charging": "Instant charging",
                     "not_charging": "Not charging",
