@@ -483,7 +483,7 @@
           "valueInKmPerHour": 0,
           "unitTranslationKey": "EM.COMMON.UNIT.KM_PER_MIN"
         },
-        "chargingPower": 0,
+        "chargingPowerkW": 0,
         "chargingTargetDateTimeOplEnforced": null,
         "chargingInDCMode": false
       },

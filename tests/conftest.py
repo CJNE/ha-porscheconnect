@@ -32,7 +32,7 @@ MOCK_VEHICLE_DATA = {
         "status": "NOT_CHARGING",
         "targetDateTimeWithOffset": None,
     },
-    "CHARGING_RATE": {"chargingRate-kph": 0, "chargingPower": 0},
+    "CHARGING_RATE": {"chargingRate-kph": 0, "chargingPowerkW": 0},
     "CLIMATIZER_STATE": {"isOn": False},
 }
 
