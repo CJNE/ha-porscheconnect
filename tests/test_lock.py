@@ -36,10 +36,8 @@ async def test_door_lock(hass: HomeAssistant, mock_lock_lock, mock_lock_unlock) 
         },
         blocking=False,
     )
-    assert mock_lock_unlock.call_count == 0
     await hass.async_block_till_done()
-    mock_lock_unlock.assert_called_with("WPTAYCAN", "1234", True)
-    assert mock_lock_unlock.call_count == 1
+    mock_lock_unlock.assert_awaited_once_with("1234")
 
     await hass.services.async_call(
         LOCK_DOMAIN,
@@ -49,10 +47,8 @@ async def test_door_lock(hass: HomeAssistant, mock_lock_lock, mock_lock_unlock) 
         },
         blocking=False,
     )
-    assert mock_lock_lock.call_count == 0
     await hass.async_block_till_done()
-    mock_lock_lock.assert_called_with("WPTAYCAN", True)
-    assert mock_lock_lock.call_count == 1
+    mock_lock_lock.assert_awaited_once_with()
 
 
 # @pytest.mark.asyncio

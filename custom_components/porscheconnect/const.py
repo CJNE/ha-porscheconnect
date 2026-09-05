@@ -3,6 +3,14 @@
 DOMAIN = "porscheconnect"
 DEFAULT_SCAN_INTERVAL = 1920
 
+CONF_CAPTCHA_CODE = "captcha_code"
+CONF_CODE_VERIFIER = "code_verifier"
+CONF_OAUTH_STATE = "state"
+
+TRANSIENT_AUTH_FIELDS = frozenset(
+    {CONF_CAPTCHA_CODE, CONF_CODE_VERIFIER, CONF_OAUTH_STATE},
+)
+
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1.10"
