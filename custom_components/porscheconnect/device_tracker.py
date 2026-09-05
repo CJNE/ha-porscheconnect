@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from homeassistant.components.device_tracker.config_entry import TrackerEntity
+from homeassistant.components.device_tracker import TrackerEntity
 from homeassistant.components.device_tracker.const import SourceType
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -54,8 +54,8 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
 
         self._attr_unique_id = vehicle.vin
         if (
-            "customName" in vehicle.data and
-            vehicle.data["customName"] != vehicle.model_name
+            "customName" in vehicle.data
+            and vehicle.data["customName"] != vehicle.model_name
             and vehicle.data["customName"] is not None
         ):
             self._attr_name = vehicle.data["customName"]
@@ -63,14 +63,6 @@ class PorscheDeviceTracker(PorscheBaseEntity, TrackerEntity):
             self._attr_name = None
         self._tracking_enabled = True
         self._attr_icon = "mdi:crosshairs-gps"
-
-    @property
-    def battery_level(self) -> int | None:
-        """Return the battery level of the device.
-
-        Percentage from 0-100.
-        """
-        return self.vehicle.main_battery_level
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
