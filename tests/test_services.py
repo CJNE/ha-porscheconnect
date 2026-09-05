@@ -1,65 +1,43 @@
-"""Test porscheconnect number."""
-from unittest.mock import MagicMock
+"""Test Porsche Connect services."""
 
-import pytest
-from custom_components.porscheconnect.const import DOMAIN as PORSCHE_DOMAIN
+from custom_components.porscheconnect.const import DOMAIN
+from custom_components.porscheconnect.services import SERVICE_CLIMATISATION_START
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
 from . import setup_mock_porscheconnect_config_entry
 
-SERVICE_HONK_AND_FLASH = "honk_and_flash"
-SERVICE_FLASH = "flash"
-ATTR_VEHICLE = "vehicle"
-
 
 def get_device_id(hass: HomeAssistant) -> str:
-    """Get device_id."""
+    """Return the test vehicle device ID."""
     device_registry = dr.async_get(hass)
-    identifiers = {(PORSCHE_DOMAIN, "WPTAYCAN")}
-    device = device_registry.async_get_device(identifiers)
+    device = device_registry.async_get_device({(DOMAIN, "WPTAYCAN")})
+    assert device
     return device.id
 
 
-@pytest.mark.asyncio
-async def test_honk_and_flash(
-    hass: HomeAssistant, mock_honk_and_flash: MagicMock
+async def test_climatisation_start(
+    hass: HomeAssistant,
+    mock_climatisation_start,
 ) -> None:
-    """Verify device information includes expected details."""
-
+    """Test starting climatisation through the integration service."""
     await setup_mock_porscheconnect_config_entry(hass)
-    data = {
-        ATTR_VEHICLE: get_device_id(hass),
-    }
 
     await hass.services.async_call(
-        PORSCHE_DOMAIN,
-        SERVICE_HONK_AND_FLASH,
-        data,
-        blocking=False,
+        DOMAIN,
+        SERVICE_CLIMATISATION_START,
+        {
+            "vehicle": get_device_id(hass),
+            "temperature": 20,
+            "front_left": True,
+        },
+        blocking=True,
     )
-    assert mock_honk_and_flash.call_count == 0
-    await hass.async_block_till_done()
-    assert mock_honk_and_flash.call_count == 1
-    mock_honk_and_flash.assert_called_with("WPTAYCAN", True)
 
-
-@pytest.mark.asyncio
-async def test_flash(hass: HomeAssistant, mock_flash: MagicMock) -> None:
-    """Verify device information includes expected details."""
-
-    await setup_mock_porscheconnect_config_entry(hass)
-    data = {
-        ATTR_VEHICLE: get_device_id(hass),
-    }
-
-    await hass.services.async_call(
-        PORSCHE_DOMAIN,
-        SERVICE_FLASH,
-        data,
-        blocking=False,
+    mock_climatisation_start.assert_awaited_once_with(
+        target_temperature=293.15,
+        front_left=True,
+        front_right=False,
+        rear_left=False,
+        rear_right=False,
     )
-    assert mock_flash.call_count == 0
-    await hass.async_block_till_done()
-    assert mock_flash.call_count == 1
-    mock_flash.assert_called_with("WPTAYCAN", True)

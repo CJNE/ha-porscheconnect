@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 from . import setup_mock_porscheconnect_config_entry
 
 TEST_MILEAGE_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_mileage"
-TEST_CHARGER_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charger"
+TEST_CHARGING_STATUS_SENSOR_ENTITY_ID = "sensor.taycan_turbo_s_charging_status"
 
 
 @pytest.mark.asyncio
@@ -25,6 +25,6 @@ async def test_charger_sensor(hass: HomeAssistant, mock_connection) -> None:
 
     await setup_mock_porscheconnect_config_entry(hass)
 
-    entity_state = hass.states.get(TEST_CHARGER_SENSOR_ENTITY_ID)
+    entity_state = hass.states.get(TEST_CHARGING_STATUS_SENSOR_ENTITY_ID)
     assert entity_state
-    assert entity_state.state == "NOT_CHARGING"
+    assert entity_state.state == "not_charging"
