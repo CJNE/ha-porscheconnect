@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_CHARGING_LEVEL_NUMBER_ENTITY_ID = "number.taycan_turbo_s_charging_level_4"
+TEST_CHARGING_LEVEL_NUMBER_ENTITY_ID = "number.taycan_turbo_s_target_state_of_charge"
 
 
 @pytest.mark.asyncio
@@ -32,9 +32,5 @@ async def test_number(hass: HomeAssistant, mock_set_charging_level: MagicMock) -
         },
         blocking=False,
     )
-    assert mock_set_charging_level.call_count == 0
     await hass.async_block_till_done()
-    assert mock_set_charging_level.call_count == 1
-    mock_set_charging_level.assert_called_with(
-        "WPTAYCAN", None, 4, minimumChargeLevel=58.0
-    )
+    mock_set_charging_level.assert_awaited_once_with(target_soc=58)

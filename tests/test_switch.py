@@ -13,8 +13,8 @@ from homeassistant.core import HomeAssistant
 
 from . import setup_mock_porscheconnect_config_entry
 
-TEST_CLIMATE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_climatisation"
-TEST_CHARGE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_direct_charge"
+TEST_CLIMATE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_remote_climatisation"
+TEST_CHARGE_SWITCH_ENTITY_ID = "switch.taycan_turbo_s_direct_charging"
 
 
 @pytest.mark.asyncio
@@ -36,9 +36,8 @@ async def test_climate(
         },
         blocking=False,
     )
-    assert mock_set_climate_on.call_count == 0
     await hass.async_block_till_done()
-    assert mock_set_climate_on.call_count == 1
+    mock_set_climate_on.assert_awaited_once_with()
     await hass.services.async_call(
         SWITCH_DOMAIN,
         SERVICE_TURN_OFF,
@@ -47,9 +46,8 @@ async def test_climate(
         },
         blocking=False,
     )
-    assert mock_set_climate_off.call_count == 0
     await hass.async_block_till_done()
-    assert mock_set_climate_off.call_count == 1
+    mock_set_climate_off.assert_awaited_once_with()
 
 
 @pytest.mark.asyncio
@@ -71,9 +69,8 @@ async def test_directcharge(
         },
         blocking=False,
     )
-    assert mock_set_charge_on.call_count == 0
     await hass.async_block_till_done()
-    assert mock_set_charge_on.call_count == 1
+    mock_set_charge_on.assert_awaited_once_with()
     await hass.services.async_call(
         SWITCH_DOMAIN,
         SERVICE_TURN_OFF,
@@ -82,6 +79,5 @@ async def test_directcharge(
         },
         blocking=False,
     )
-    assert mock_set_charge_off.call_count == 0
     await hass.async_block_till_done()
-    assert mock_set_charge_off.call_count == 1
+    mock_set_charge_off.assert_awaited_once_with()
