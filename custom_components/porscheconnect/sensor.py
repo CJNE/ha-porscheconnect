@@ -109,7 +109,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         translation_key="state_of_charge",
         measurement_node="BATTERY_LEVEL",
         measurement_leaf="percent",
-        icon="mdi:battery-medium",
         device_class=SensorDeviceClass.BATTERY,
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
