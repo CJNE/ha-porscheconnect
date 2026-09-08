@@ -1,2 +1,2 @@
-pytest-homeassistant-custom-component==0.13.357
+pytest-homeassistant-custom-component==0.13.363
 pyporscheconnectapi==0.2.8
