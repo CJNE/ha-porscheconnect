@@ -11,7 +11,7 @@ from . import setup_mock_porscheconnect_config_entry
 def get_device_id(hass: HomeAssistant) -> str:
     """Return the test vehicle device ID."""
     device_registry = dr.async_get(hass)
-    device = device_registry.async_get_device({(DOMAIN, "WPTAYCAN")})
+    device = device_registry.async_get_device_by_identifier(DOMAIN, "WPTAYCAN")
     assert device
     return device.id
 
