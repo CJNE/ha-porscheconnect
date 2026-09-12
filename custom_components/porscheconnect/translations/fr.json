@@ -1,0 +1,153 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "L'appareil est déjà configuré",
+            "reauth_successful": "La ré-authentification a réussi",
+            "reconfigure_successful": "La reconfiguration a réussi",
+            "unique_id_mismatch": "L'adresse e-mail ne correspond pas au compte Porsche Connect configuré"
+        },
+        "error": {
+            "cannot_connect": "Échec de la connexion",
+            "invalid_auth": "Authentification invalide",
+            "unknown": "Erreur inattendue"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Mot de passe",
+                    "email": "Adresse e-mail"
+                }
+            },
+            "captcha": {
+                "title": "Vérification captcha",
+                "description": "{captcha_img}",
+                "data": {
+                    "captcha_code": "Code du captcha"
+                }
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "flash_indicators": {"name": "Appel de phares"},
+            "honk_and_flash_indicators": {"name": "Klaxon et appel de phares"},
+            "get_current_overview": {"name": "Actualiser les données du véhicule"}
+        },
+        "binary_sensor": {
+            "parking_brake": {"name": "Frein de stationnement"},
+            "parking_light": {"name": "Feux de position"},
+            "privacy_mode": {"name": "Mode privé"},
+            "doors_and_lids": {"name": "Portes et ouvrants"},
+            "tire_pressure_status": {
+                "name": "État de la pression des pneus",
+                "state": {
+                    "on": "Alerte",
+                    "off": "Correct"
+                }
+            },
+            "remote_access": {"name": "Accès à distance"}
+        },
+        "image": {
+            "front_view": {"name": "Vue de face"},
+            "side_view": {"name": "Vue de profil"},
+            "rear_view": {"name": "Vue arrière"},
+            "rear_top_view": {"name": "Vue arrière en plongée"},
+            "top_view": {"name": "Vue de dessus"}
+        },
+        "sensor": {
+            "vin": {"name": "Numéro de châssis (VIN)"},
+            "model_year": {"name": "Année-modèle"},
+            "main_service_range": {"name": "Prochain entretien dans"},
+            "main_service_time": {"name": "Prochain entretien (jours)"},
+            "oil_service_range": {"name": "Prochaine vidange dans"},
+            "oil_service_time": {"name": "Prochaine vidange (jours)"},
+            "intermediate_service_range": {"name": "Entretien intermédiaire dans"},
+            "intermediate_service_time": {"name": "Entretien intermédiaire (jours)"},
+            "oil_level": {"name": "Niveau d'huile"},
+            "charging_power": {
+                "name": "Puissance de charge"
+            },
+            "charging_target": {
+                "name": "Cible de charge"
+            },
+            "charging_rate": {
+                "name": "Vitesse de charge"
+            },
+            "charging_finished": {
+                "name": "Fin de charge"
+            },
+            "remaining_range_electric": {
+                "name": "Autonomie électrique"
+            },
+            "state_of_charge": {
+                "name": "Niveau de charge"
+            },
+            "mileage": {
+                "name": "Kilométrage"
+            },
+            "remaining_range": {
+                "name": "Autonomie totale"
+            },
+            "fuel_level": {
+                "name": "Niveau de carburant"
+            },
+            "charging_status": {
+                "name": "État de la charge",
+                "state": {
+                    "charging": "En charge",
+                    "charging_completed": "Charge terminée",
+                    "charging_error": "Erreur de charge",
+                    "initialising": "Initialisation de la charge",
+                    "instant_charging": "Charge immédiate",
+                    "not_charging": "Pas en charge",
+                    "not_plugged": "Non branché",
+                    "off": "Charge désactivée"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {"name": "Niveau de charge cible"}
+        },
+        "lock": {
+            "lock": {
+                "name": "Verrouillage des portes"
+            }
+        },
+        "switch": {
+            "climatise": {"name": "Préclimatisation à distance"},
+            "direct_charging": {"name": "Charge directe"}
+        }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Démarrer la préclimatisation",
+            "description": "Démarre la climatisation à distance de l'habitacle avec les paramètres indiqués",
+            "fields": {
+                "vehicle": {
+                    "name": "Véhicule",
+                    "description": "Le véhicule à climatiser."
+                },
+                "temperature": {
+                    "name": "Température",
+                    "description": "Température cible de la climatisation (20 °C par défaut)"
+                },
+                "front_left": {
+                    "name": "Chauffage siège avant gauche",
+                    "description": "Active le chauffage du siège avant gauche (désactivé par défaut)"
+                },
+                "front_right": {
+                    "name": "Chauffage siège avant droit",
+                    "description": "Active le chauffage du siège avant droit (désactivé par défaut)"
+                },
+                "rear_left": {
+                    "name": "Chauffage siège arrière gauche",
+                    "description": "Active le chauffage du siège arrière gauche (désactivé par défaut)"
+                },
+                "rear_right": {
+                    "name": "Chauffage siège arrière droit",
+                    "description": "Active le chauffage du siège arrière droit (désactivé par défaut)"
+                }
+            }
+        }
+    }
+}
