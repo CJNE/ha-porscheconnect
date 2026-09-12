@@ -13,7 +13,7 @@ TRANSIENT_AUTH_FIELDS = frozenset(
 
 NAME = "porscheconnect"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.1.10"
+VERSION = "0.1.11"
 ISSUE_URL = "https://github.com/cjne/ha-porscheconnect/issues"
 
 PLATFORMS = [
