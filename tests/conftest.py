@@ -19,10 +19,6 @@ MOCK_VEHICLE_DATA = {
     "LOCK_STATE_VEHICLE": {"isLocked": True},
     "OPEN_STATE_DOOR_FRONT_LEFT": {"isOpen": False},
     "OPEN_STATE_DOOR_FRONT_RIGHT": {"isOpen": False},
-    "TIRE_PRESSURE": {
-        "frontLeftTire": {"differenceBar": 0.1},
-        "frontRightTire": {"differenceBar": 0.1},
-    },
     "BATTERY_LEVEL": {"percent": 96},
     "E_RANGE": {"kilometers": 348},
     "MILEAGE": {"kilometers": 13247},
@@ -33,7 +29,16 @@ MOCK_VEHICLE_DATA = {
         "targetDateTimeWithOffset": None,
     },
     "CHARGING_RATE": {"chargingRate-kph": 0, "chargingPowerkW": 0},
-    "CLIMATIZER_STATE": {"isOn": False},
+    "HVAC_SUMMARY": {
+        "type": "CLIMATIZER",
+        "status": "OFF",
+        "targetTemperature": 293.15,
+        "climateZonesEnabled": {"frontLeft": False, "frontRight": False, "rearLeft": False, "rearRight": False},
+    },
+    "TIRE_PRESSURE_FRONT_LEFT": {"differenceBar": -0.1, "actualPressureBar": 2.6},
+    "TIRE_PRESSURE_FRONT_RIGHT": {"differenceBar": -0.1, "actualPressureBar": 2.6},
+    "TIRE_PRESSURE_REAR_LEFT": {"differenceBar": -0.1, "actualPressureBar": 2.6},
+    "TIRE_PRESSURE_REAR_RIGHT": {"differenceBar": -0.1, "actualPressureBar": 2.6},
 }
 
 

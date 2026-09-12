@@ -5,15 +5,15 @@ from custom_components.porscheconnect.services import SERVICE_CLIMATISATION_STAR
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
-from . import setup_mock_porscheconnect_config_entry
+from . import setup_mock_porscheconnect_config_entry, TEST_CONFIG_ENTRY_ID
 
 
 def get_device_id(hass: HomeAssistant) -> str:
     """Return the test vehicle device ID."""
     device_registry = dr.async_get(hass)
-    device = device_registry.async_get_device_by_identifier(DOMAIN, "WPTAYCAN")
-    assert device
-    return device.id
+    devices = dr.async_entries_for_config_entry(device_registry, TEST_CONFIG_ENTRY_ID)
+    assert devices
+    return devices[0].id
 
 
 async def test_climatisation_start(
