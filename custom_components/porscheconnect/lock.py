@@ -51,6 +51,13 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         self._attr_unique_id = f"{vehicle.data['name']}-lock"
         self.door_lock_state_available = vehicle.has_remote_services
 
+    @property
+    def code_format(self) -> str | None:
+        """Require the PIN for unlocking only, not for locking."""
+        if self.is_locked:
+            return r"^\d{4}$"
+        return None
+
     async def async_lock(self) -> None:
         """Lock the vehicle."""
         try:
@@ -67,7 +74,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
         pin = kwargs.get("code")
 
         if pin is None:
-            lock_options = self.registry_entry.options.get(LOCK_DOMAIN)
+            lock_options = self.registry_entry.options.get(LOCK_DOMAIN) or {}
             pin = lock_options.get(CONF_DEFAULT_CODE)
 
         if pin:
