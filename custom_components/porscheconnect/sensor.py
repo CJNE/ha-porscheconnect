@@ -15,11 +15,11 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
+    EntityCategory,
     UnitOfLength,
     UnitOfPower,
     UnitOfSpeed,
     UnitOfTime,
-    UnitOfVolume,
 )
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
@@ -313,7 +313,7 @@ class PorscheSensor(PorscheBaseEntity, SensorEntity):
                 self.entity_description.measurement_leaf,
             )
 
-        if type(state) is str and self.entity_description.key not in ("vin",):
+        if type(state) is str and self.entity_description.key != "vin":
             state = state.lower()
 
         _LOGGER.debug(
