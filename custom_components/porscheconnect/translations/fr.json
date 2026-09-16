@@ -97,7 +97,7 @@
                     "charging": "En charge",
                     "charging_completed": "Charge terminée",
                     "charging_error": "Erreur de charge",
-                    "charging_stopped": "Charge interrompue"
+                    "charging_stopped": "Charge interrompue",
                     "initialising": "Initialisation de la charge",
                     "instant_charging": "Charge immédiate",
                     "not_charging": "Pas en charge",
