@@ -82,7 +82,11 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         key="tire_pressure_status",
         translation_key="tire_pressure_status",
         value_fn=lambda v: not v.tire_pressure_status,
-        attr_fn=lambda v: v.tire_pressures,
+        attr_fn=lambda v: {
+            f"{pos}_{field}": val
+            for pos, reading in (v.tire_pressures or {}).items()
+            for field, val in reading.items()
+        },
         is_available=lambda v: v.has_tire_pressure_monitoring,
         device_class=BinarySensorDeviceClass.PROBLEM,
     ),
