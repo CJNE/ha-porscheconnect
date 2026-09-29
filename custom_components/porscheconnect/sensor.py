@@ -46,6 +46,14 @@ class PorscheSensorEntityDescription(SensorEntityDescription):
 
 SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
+        key="last_updated",
+        translation_key="last_updated",
+        value_fn=lambda v: v.last_global_update,
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:clock-outline",
+    ),
+    PorscheSensorEntityDescription(
         key="charging_target",
         translation_key="charging_target",
         measurement_node="CHARGING_SUMMARY",
