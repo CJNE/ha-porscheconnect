@@ -17,6 +17,7 @@ MOCK_VEHICLE_DATA = {
     "PARKING_BRAKE": {"isOn": True},
     "PARKING_LIGHT": {"isOn": False},
     "LOCK_STATE_VEHICLE": {"isLocked": True},
+    "GLOBAL_TIMESTAMP": {"timestamp": "2026-10-04T16:17:58Z"},
     "OPEN_STATE_DOOR_FRONT_LEFT": {"isOpen": False},
     "OPEN_STATE_DOOR_FRONT_RIGHT": {"isOpen": False},
     "BATTERY_LEVEL": {"percent": 96},

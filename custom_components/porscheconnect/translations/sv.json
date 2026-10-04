@@ -103,6 +103,9 @@
             "state_of_charge": {
                 "name": "Laddnivå"
             },
+            "vehicle_data_timestamp": {
+                "name": "Fordonsdata från"
+            },
             "mileage": {
                 "name": "Mätarställning"
             },

@@ -82,6 +82,9 @@
             "state_of_charge": {
                 "name": "State of charge"
             },
+            "vehicle_data_timestamp": {
+                "name": "Vehicle data from"
+            },
             "mileage": {
                 "name": "Mileage"
             },

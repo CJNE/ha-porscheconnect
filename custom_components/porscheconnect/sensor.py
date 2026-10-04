@@ -153,6 +153,17 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
         is_available=lambda v: v.has_ice_drivetrain,
     ),
+    # When the vehicle last reported its data to Porsche (the My Porsche app's
+    # "Vehicle data from"). The stored overview can be much older than the last
+    # poll, so this shows how current the other entities are.
+    PorscheSensorEntityDescription(
+        key="vehicle_data_timestamp",
+        translation_key="vehicle_data_timestamp",
+        value_fn=lambda v: v.last_global_update,
+        icon="mdi:car-clock",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        is_available=lambda v: "GLOBAL_TIMESTAMP" in v.data,
+    ),
         # --- Identification ---
     PorscheSensorEntityDescription(
         key="vin",

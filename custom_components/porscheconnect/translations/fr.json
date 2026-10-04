@@ -82,6 +82,9 @@
             "state_of_charge": {
                 "name": "Niveau de charge"
             },
+            "vehicle_data_timestamp": {
+                "name": "Données du véhicule du"
+            },
             "mileage": {
                 "name": "Kilométrage"
             },
