@@ -45,7 +45,22 @@
                     "off": "Correct"
                 }
             },
-            "remote_access": {"name": "Accès à distance"}
+            "remote_access": {"name": "Accès à distance"},
+            "door_front_left": {"name": "Porte (avant gauche)"},
+            "door_front_right": {"name": "Porte (avant droite)"},
+            "door_rear_left": {"name": "Porte (arrière gauche)"},
+            "door_rear_right": {"name": "Porte (arrière droite)"},
+            "lid_front": {"name": "Capot avant"},
+            "lid_rear": {"name": "Capot arrière"},
+            "window_front_left": {"name": "Vitre (avant gauche)"},
+            "window_front_right": {"name": "Vitre (avant droite)"},
+            "window_rear_left": {"name": "Vitre (arrière gauche)"},
+            "window_rear_right": {"name": "Vitre (arrière droite)"},
+            "sunroof": {"name": "Toit ouvrant"},
+            "sunroof_rear": {"name": "Toit ouvrant arrière"},
+            "top": {"name": "Capote"},
+            "spoiler": {"name": "Aileron"},
+            "service_flap": {"name": "Trappe de service"}
         },
         "image": {
             "front_view": {"name": "Vue de face"},
@@ -64,6 +79,10 @@
             "intermediate_service_range": {"name": "Entretien intermédiaire dans"},
             "intermediate_service_time": {"name": "Entretien intermédiaire (jours)"},
             "oil_level": {"name": "Niveau d'huile"},
+            "tire_pressure_deviation_front_left": {"name": "Écart de pression pneu (avant gauche)"},
+            "tire_pressure_deviation_front_right": {"name": "Écart de pression pneu (avant droit)"},
+            "tire_pressure_deviation_rear_left": {"name": "Écart de pression pneu (arrière gauche)"},
+            "tire_pressure_deviation_rear_right": {"name": "Écart de pression pneu (arrière droit)"},
             "charging_power": {
                 "name": "Puissance de charge"
             },

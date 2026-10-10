@@ -70,7 +70,22 @@
                     "on": "På",
                     "off": "Av"
                 }
-            }
+            },
+            "door_front_left": {"name": "Dörr (fram vänster)"},
+            "door_front_right": {"name": "Dörr (fram höger)"},
+            "door_rear_left": {"name": "Dörr (bak vänster)"},
+            "door_rear_right": {"name": "Dörr (bak höger)"},
+            "lid_front": {"name": "Främre lucka"},
+            "lid_rear": {"name": "Bakre lucka"},
+            "window_front_left": {"name": "Fönster (fram vänster)"},
+            "window_front_right": {"name": "Fönster (fram höger)"},
+            "window_rear_left": {"name": "Fönster (bak vänster)"},
+            "window_rear_right": {"name": "Fönster (bak höger)"},
+            "sunroof": {"name": "Taklucka"},
+            "sunroof_rear": {"name": "Bakre taklucka"},
+            "top": {"name": "Sufflett"},
+            "spoiler": {"name": "Spoiler"},
+            "service_flap": {"name": "Servicelucka"}
         },
         "button": {
             "flash_indicators": {"name": "Blinka"},
@@ -85,6 +100,10 @@
             "top_view": {"name": "Vy ovanifrån"}
         },
         "sensor": {
+            "tire_pressure_deviation_front_left": {"name": "Däcktrycksavvikelse (fram vänster)"},
+            "tire_pressure_deviation_front_right": {"name": "Däcktrycksavvikelse (fram höger)"},
+            "tire_pressure_deviation_rear_left": {"name": "Däcktrycksavvikelse (bak vänster)"},
+            "tire_pressure_deviation_rear_right": {"name": "Däcktrycksavvikelse (bak höger)"},
             "charging_power": {
                 "name": "Laddeffekt"
             },
