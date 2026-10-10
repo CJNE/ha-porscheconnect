@@ -1,0 +1,204 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Apparaat is al geconfigureerd",
+            "reauth_successful": "Herauthenticatie is geslaagd",
+            "reconfigure_successful": "Herconfiguratie is geslaagd",
+            "unique_id_mismatch": "Het e-mailadres komt niet overeen met het geconfigureerde Porsche Connect-account"
+        },
+        "error": {
+            "cannot_connect": "Verbinding mislukt",
+            "invalid_auth": "Ongeldige authenticatie",
+            "unknown": "Onverwachte fout"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Wachtwoord",
+                    "email": "E-mail"
+                }
+            },
+            "captcha": {
+                "title": "Captcha-verificatie",
+                "description": "{captcha_img}",
+                "data": {
+                    "captcha_code": "Captcha-code"
+                }
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "flash_indicators": {
+                "name": "Knipperlichten laten knipperen"
+            },
+            "honk_and_flash_indicators": {
+                "name": "Claxonneren en knipperlichten laten knipperen"
+            },
+            "get_current_overview": {
+                "name": "Huidige voertuiginformatie ophalen"
+            }
+        },
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Parkeerrem"
+            },
+            "parking_light": {
+                "name": "Parkeerlicht"
+            },
+            "privacy_mode": {
+                "name": "Privacymodus"
+            },
+            "doors_and_lids": {
+                "name": "Deuren en kleppen"
+            },
+            "tire_pressure_status": {
+                "name": "Bandenspanningsstatus",
+                "state": {
+                    "on": "Waarschuwing",
+                    "off": "Ok"
+                }
+            },
+            "remote_access": {
+                "name": "Toegang op afstand"
+            }
+        },
+        "image": {
+            "front_view": {
+                "name": "Vooraanzicht"
+            },
+            "side_view": {
+                "name": "Zijaanzicht"
+            },
+            "rear_view": {
+                "name": "Achteraanzicht"
+            },
+            "rear_top_view": {
+                "name": "Schuin van bovenaf"
+            },
+            "top_view": {
+                "name": "Bovenaanzicht"
+            }
+        },
+        "sensor": {
+            "vin": {
+                "name": "Chassisnummer (VIN)"
+            },
+            "model_year": {
+                "name": "Modeljaar"
+            },
+            "main_service_range": {
+                "name": "Volgende onderhoudsbeurt over"
+            },
+            "main_service_time": {
+                "name": "Volgende onderhoudsbeurt over (dagen)"
+            },
+            "oil_service_range": {
+                "name": "Volgende olieverversing over"
+            },
+            "oil_service_time": {
+                "name": "Volgende olieverversing over (dagen)"
+            },
+            "intermediate_service_range": {
+                "name": "Tussentijdse onderhoudsbeurt over"
+            },
+            "intermediate_service_time": {
+                "name": "Tussentijdse onderhoudsbeurt over (dagen)"
+            },
+            "oil_level": {
+                "name": "Oliepeil"
+            },
+            "charging_power": {
+                "name": "Laadvermogen"
+            },
+            "charging_target": {
+                "name": "Laaddoel"
+            },
+            "charging_rate": {
+                "name": "Laadsnelheid"
+            },
+            "charging_finished": {
+                "name": "Laden eindigt"
+            },
+            "remaining_range_electric": {
+                "name": "Resterende actieradius elektrisch"
+            },
+            "state_of_charge": {
+                "name": "Laadtoestand"
+            },
+            "mileage": {
+                "name": "Kilometerstand"
+            },
+            "remaining_range": {
+                "name": "Resterende actieradius"
+            },
+            "fuel_level": {
+                "name": "Brandstofniveau"
+            },
+            "charging_status": {
+                "name": "Laadstatus",
+                "state": {
+                    "charging": "Aan het laden",
+                    "charging_completed": "Laden voltooid",
+                    "charging_error": "Laadfout",
+                    "charging_stopped": "Laden gestopt",
+                    "initialising": "Laden initialiseren",
+                    "instant_charging": "Direct laden",
+                    "not_charging": "Niet aan het laden",
+                    "not_plugged": "Niet aangesloten",
+                    "off": "Laden uit"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {
+                "name": "Gewenste laadtoestand"
+            }
+        },
+        "lock": {
+            "lock": {
+                "name": "Deurslot"
+            }
+        },
+        "switch": {
+            "climatise": {
+                "name": "Klimatisering op afstand"
+            },
+            "direct_charging": {
+                "name": "Direct laden"
+            }
+        }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Klimatisering op afstand starten",
+            "description": "Start de klimatisering op afstand van de passagiersruimte met opgegeven parameters",
+            "fields": {
+                "vehicle": {
+                    "name": "Voertuig",
+                    "description": "Het voertuig dat geklimatiseerd moet worden."
+                },
+                "temperature": {
+                    "name": "Temperatuur",
+                    "description": "Gewenste temperatuur voor klimatisering (standaard 20 graden C)"
+                },
+                "front_left": {
+                    "name": "Stoelverwarming linksvoor",
+                    "description": "Of de stoelverwarming linksvoor geactiveerd moet worden (standaard uit)"
+                },
+                "front_right": {
+                    "name": "Stoelverwarming rechtsvoor",
+                    "description": "Of de stoelverwarming rechtsvoor geactiveerd moet worden (standaard uit)"
+                },
+                "rear_left": {
+                    "name": "Stoelverwarming linksachter",
+                    "description": "Of de stoelverwarming linksachter geactiveerd moet worden (standaard uit)"
+                },
+                "rear_right": {
+                    "name": "Stoelverwarming rechtsachter",
+                    "description": "Of de stoelverwarming rechtsachter geactiveerd moet worden (standaard uit)"
+                }
+            }
+        }
+    }
+}

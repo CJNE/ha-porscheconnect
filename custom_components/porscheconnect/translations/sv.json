@@ -85,6 +85,15 @@
             "top_view": {"name": "Vy ovanifrån"}
         },
         "sensor": {
+            "vin": {"name": "Chassinummer (VIN)"},
+            "model_year": {"name": "Årsmodell"},
+            "main_service_range": {"name": "Nästa service om"},
+            "main_service_time": {"name": "Nästa service om (dagar)"},
+            "oil_service_range": {"name": "Nästa oljebyte om"},
+            "oil_service_time": {"name": "Nästa oljebyte om (dagar)"},
+            "intermediate_service_range": {"name": "Mellanservice om"},
+            "intermediate_service_time": {"name": "Mellanservice om (dagar)"},
+            "oil_level": {"name": "Oljenivå"},
             "charging_power": {
                 "name": "Laddeffekt"
             },

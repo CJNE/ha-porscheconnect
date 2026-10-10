@@ -1,0 +1,204 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "El dispositivo ya está configurado",
+            "reauth_successful": "La reautenticación se realizó correctamente",
+            "reconfigure_successful": "La reconfiguración se realizó correctamente",
+            "unique_id_mismatch": "La dirección de correo electrónico no coincide con la cuenta de Porsche Connect configurada"
+        },
+        "error": {
+            "cannot_connect": "Error al conectar",
+            "invalid_auth": "Autenticación no válida",
+            "unknown": "Error inesperado"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Contraseña",
+                    "email": "Correo electrónico"
+                }
+            },
+            "captcha": {
+                "title": "Verificación de captcha",
+                "description": "{captcha_img}",
+                "data": {
+                    "captcha_code": "Código captcha"
+                }
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "flash_indicators": {
+                "name": "Destellar los intermitentes"
+            },
+            "honk_and_flash_indicators": {
+                "name": "Tocar el claxon y destellar los intermitentes"
+            },
+            "get_current_overview": {
+                "name": "Obtener información actual del vehículo"
+            }
+        },
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Freno de estacionamiento"
+            },
+            "parking_light": {
+                "name": "Luz de estacionamiento"
+            },
+            "privacy_mode": {
+                "name": "Modo de privacidad"
+            },
+            "doors_and_lids": {
+                "name": "Puertas y portones"
+            },
+            "tire_pressure_status": {
+                "name": "Estado de la presión de los neumáticos",
+                "state": {
+                    "on": "Advertencia",
+                    "off": "Correcto"
+                }
+            },
+            "remote_access": {
+                "name": "Acceso remoto"
+            }
+        },
+        "image": {
+            "front_view": {
+                "name": "Vista desde el frente"
+            },
+            "side_view": {
+                "name": "Vista lateral"
+            },
+            "rear_view": {
+                "name": "Vista desde atrás"
+            },
+            "rear_top_view": {
+                "name": "Vista en diagonal desde arriba"
+            },
+            "top_view": {
+                "name": "Vista desde arriba"
+            }
+        },
+        "sensor": {
+            "vin": {
+                "name": "Número de bastidor (VIN)"
+            },
+            "model_year": {
+                "name": "Año del modelo"
+            },
+            "main_service_range": {
+                "name": "Próximo mantenimiento en"
+            },
+            "main_service_time": {
+                "name": "Próximo mantenimiento en (días)"
+            },
+            "oil_service_range": {
+                "name": "Próximo cambio de aceite en"
+            },
+            "oil_service_time": {
+                "name": "Próximo cambio de aceite en (días)"
+            },
+            "intermediate_service_range": {
+                "name": "Mantenimiento intermedio en"
+            },
+            "intermediate_service_time": {
+                "name": "Mantenimiento intermedio en (días)"
+            },
+            "oil_level": {
+                "name": "Nivel de aceite"
+            },
+            "charging_power": {
+                "name": "Potencia de carga"
+            },
+            "charging_target": {
+                "name": "Objetivo de carga"
+            },
+            "charging_rate": {
+                "name": "Velocidad de carga"
+            },
+            "charging_finished": {
+                "name": "Fin de la carga"
+            },
+            "remaining_range_electric": {
+                "name": "Autonomía eléctrica restante"
+            },
+            "state_of_charge": {
+                "name": "Estado de carga"
+            },
+            "mileage": {
+                "name": "Kilometraje"
+            },
+            "remaining_range": {
+                "name": "Autonomía restante"
+            },
+            "fuel_level": {
+                "name": "Nivel de combustible"
+            },
+            "charging_status": {
+                "name": "Estado de la carga",
+                "state": {
+                    "charging": "Cargando",
+                    "charging_completed": "Carga completada",
+                    "charging_error": "Error de carga",
+                    "charging_stopped": "Carga detenida",
+                    "initialising": "Iniciando la carga",
+                    "instant_charging": "Carga instantánea",
+                    "not_charging": "Sin cargar",
+                    "not_plugged": "Sin conectar",
+                    "off": "Carga apagada"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {
+                "name": "Estado de carga objetivo"
+            }
+        },
+        "lock": {
+            "lock": {
+                "name": "Bloqueo de puertas"
+            }
+        },
+        "switch": {
+            "climatise": {
+                "name": "Climatización remota"
+            },
+            "direct_charging": {
+                "name": "Carga directa"
+            }
+        }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Iniciar la climatización remota",
+            "description": "Inicia la climatización remota del habitáculo con los parámetros especificados",
+            "fields": {
+                "vehicle": {
+                    "name": "Vehículo",
+                    "description": "El vehículo que se va a climatizar."
+                },
+                "temperature": {
+                    "name": "Temperatura",
+                    "description": "Temperatura objetivo para la climatización (predeterminada 20 grados C)"
+                },
+                "front_left": {
+                    "name": "Calefacción del asiento delantero izquierdo",
+                    "description": "Si se debe activar la calefacción del asiento delantero izquierdo (predeterminado desactivado)"
+                },
+                "front_right": {
+                    "name": "Calefacción del asiento delantero derecho",
+                    "description": "Si se debe activar la calefacción del asiento delantero derecho (predeterminado desactivado)"
+                },
+                "rear_left": {
+                    "name": "Calefacción del asiento trasero izquierdo",
+                    "description": "Si se debe activar la calefacción del asiento trasero izquierdo (predeterminado desactivado)"
+                },
+                "rear_right": {
+                    "name": "Calefacción del asiento trasero derecho",
+                    "description": "Si se debe activar la calefacción del asiento trasero derecho (predeterminado desactivado)"
+                }
+            }
+        }
+    }
+}
