@@ -12,6 +12,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyporscheconnectapi.vehicle import PorscheVehicle
@@ -91,6 +92,55 @@ SENSOR_TYPES: list[PorscheBinarySensorEntityDescription] = [
         device_class=BinarySensorDeviceClass.PROBLEM,
     ),
 ]
+
+
+def _open_state_description(
+    part: str,
+    device_class: BinarySensorDeviceClass,
+    *,
+    enabled_default: bool = True,
+) -> PorscheBinarySensorEntityDescription:
+    """Describe the binary sensor of a single door, lid, window or roof part."""
+    node = f"OPEN_STATE_{part.upper()}"
+    return PorscheBinarySensorEntityDescription(
+        key=part,
+        translation_key=part,
+        measurement_node=node,
+        measurement_leaf="isOpen",
+        device_class=device_class,
+        entity_category=None if enabled_default else EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=enabled_default,
+        # The API only returns (enabled) OPEN_STATE_* measurements for parts the
+        # vehicle actually has: no rear doors on a Cayman, no top on a Taycan...
+        is_available=lambda v: node in v.data,
+    )
+
+
+# One entity per part, next to the aggregated "Doors and lids" sensor, so that
+# automations and dashboards can target e.g. the trunk or a single window.
+SENSOR_TYPES.extend(
+    [
+        _open_state_description("door_front_left", BinarySensorDeviceClass.DOOR),
+        _open_state_description("door_front_right", BinarySensorDeviceClass.DOOR),
+        _open_state_description("door_rear_left", BinarySensorDeviceClass.DOOR),
+        _open_state_description("door_rear_right", BinarySensorDeviceClass.DOOR),
+        _open_state_description("lid_front", BinarySensorDeviceClass.OPENING),
+        _open_state_description("lid_rear", BinarySensorDeviceClass.OPENING),
+        _open_state_description("window_front_left", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("window_front_right", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("window_rear_left", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("window_rear_right", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("sunroof", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("sunroof_rear", BinarySensorDeviceClass.WINDOW),
+        _open_state_description("top", BinarySensorDeviceClass.OPENING),
+        _open_state_description(
+            "spoiler", BinarySensorDeviceClass.OPENING, enabled_default=False
+        ),
+        _open_state_description(
+            "service_flap", BinarySensorDeviceClass.OPENING, enabled_default=False
+        ),
+    ]
+)
 
 
 async def async_setup_entry(

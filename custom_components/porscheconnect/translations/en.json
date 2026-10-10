@@ -45,7 +45,22 @@
                     "off": "Ok"
                 }
 			},
-            "remote_access": {"name": "Remote access"}
+            "remote_access": {"name": "Remote access"},
+            "door_front_left": {"name": "Door (front left)"},
+            "door_front_right": {"name": "Door (front right)"},
+            "door_rear_left": {"name": "Door (rear left)"},
+            "door_rear_right": {"name": "Door (rear right)"},
+            "lid_front": {"name": "Front lid"},
+            "lid_rear": {"name": "Rear lid"},
+            "window_front_left": {"name": "Window (front left)"},
+            "window_front_right": {"name": "Window (front right)"},
+            "window_rear_left": {"name": "Window (rear left)"},
+            "window_rear_right": {"name": "Window (rear right)"},
+            "sunroof": {"name": "Sunroof"},
+            "sunroof_rear": {"name": "Rear sunroof"},
+            "top": {"name": "Convertible top"},
+            "spoiler": {"name": "Spoiler"},
+            "service_flap": {"name": "Service flap"}
         },
         "image": {
             "front_view": {"name": "View from the front"},
@@ -64,6 +79,10 @@
             "intermediate_service_range": { "name": "Intermediate service in" },
             "intermediate_service_time": { "name": "Intermediate service in (days)" },
             "oil_level": { "name": "Oil level" },
+            "tire_pressure_deviation_front_left": {"name": "Tire pressure deviation (front left)"},
+            "tire_pressure_deviation_front_right": {"name": "Tire pressure deviation (front right)"},
+            "tire_pressure_deviation_rear_left": {"name": "Tire pressure deviation (rear left)"},
+            "tire_pressure_deviation_rear_right": {"name": "Tire pressure deviation (rear right)"},
             "charging_power": {
                 "name": "Charging power"
             },

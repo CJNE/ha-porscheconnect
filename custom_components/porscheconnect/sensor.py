@@ -18,6 +18,7 @@ from homeassistant.const import (
     EntityCategory,
     UnitOfLength,
     UnitOfPower,
+    UnitOfPressure,
     UnitOfSpeed,
     UnitOfTime,
 )
@@ -261,6 +262,35 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         is_available=lambda v: "OIL_LEVEL_CURRENT" in v.data,
     ),
 ]
+
+
+def _tire_pressure_deviation_description(
+    position: str,
+) -> PorscheSensorEntityDescription:
+    """Describe the pressure deviation sensor of a single tire."""
+    node = f"TIRE_PRESSURE_{position.upper()}"
+    return PorscheSensorEntityDescription(
+        key=f"tire_pressure_deviation_{position}",
+        translation_key=f"tire_pressure_deviation_{position}",
+        measurement_node=node,
+        # Signed difference to the target pressure: negative = under-inflated.
+        measurement_leaf="differenceBar",
+        icon="mdi:car-tire-alert",
+        device_class=SensorDeviceClass.PRESSURE,
+        native_unit_of_measurement=UnitOfPressure.BAR,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        # The "Tire pressure status" binary sensor stays the primary signal.
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        is_available=lambda v: node in v.data,
+    )
+
+
+SENSOR_TYPES.extend(
+    _tire_pressure_deviation_description(position)
+    for position in ("front_left", "front_right", "rear_left", "rear_right")
+)
 
 
 async def async_setup_entry(
