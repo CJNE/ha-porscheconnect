@@ -129,7 +129,7 @@
                     "description": "The vehicle to be climatised."
                 },
                 "temperature": {
-                    "name": "Temperatur",
+                    "name": "Temperature",
                     "description": "Target temperature for climatisation (default 20 degrees C)"
                 },
                 "front_left": {

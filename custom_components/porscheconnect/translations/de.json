@@ -1,0 +1,204 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Gerät ist bereits konfiguriert",
+            "reauth_successful": "Erneute Authentifizierung war erfolgreich",
+            "reconfigure_successful": "Neukonfiguration war erfolgreich",
+            "unique_id_mismatch": "Die E-Mail-Adresse stimmt nicht mit dem konfigurierten Porsche-Connect-Konto überein"
+        },
+        "error": {
+            "cannot_connect": "Verbindung fehlgeschlagen",
+            "invalid_auth": "Ungültige Authentifizierung",
+            "unknown": "Unerwarteter Fehler"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Passwort",
+                    "email": "E-Mail"
+                }
+            },
+            "captcha": {
+                "title": "Captcha-Verifizierung",
+                "description": "{captcha_img}",
+                "data": {
+                    "captcha_code": "Captcha-Code"
+                }
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "flash_indicators": {
+                "name": "Blinker aufleuchten lassen"
+            },
+            "honk_and_flash_indicators": {
+                "name": "Hupen und Blinker aufleuchten lassen"
+            },
+            "get_current_overview": {
+                "name": "Aktuelle Fahrzeuginformationen abrufen"
+            }
+        },
+        "binary_sensor": {
+            "parking_brake": {
+                "name": "Feststellbremse"
+            },
+            "parking_light": {
+                "name": "Standlicht"
+            },
+            "privacy_mode": {
+                "name": "Privatsphäre-Modus"
+            },
+            "doors_and_lids": {
+                "name": "Türen und Klappen"
+            },
+            "tire_pressure_status": {
+                "name": "Reifendruckstatus",
+                "state": {
+                    "on": "Warnung",
+                    "off": "Ok"
+                }
+            },
+            "remote_access": {
+                "name": "Fernzugriff"
+            }
+        },
+        "image": {
+            "front_view": {
+                "name": "Ansicht von vorne"
+            },
+            "side_view": {
+                "name": "Ansicht von der Seite"
+            },
+            "rear_view": {
+                "name": "Ansicht von hinten"
+            },
+            "rear_top_view": {
+                "name": "Ansicht diagonal von oben"
+            },
+            "top_view": {
+                "name": "Ansicht von oben"
+            }
+        },
+        "sensor": {
+            "vin": {
+                "name": "Fahrgestellnummer (VIN)"
+            },
+            "model_year": {
+                "name": "Modelljahr"
+            },
+            "main_service_range": {
+                "name": "Nächster Service in"
+            },
+            "main_service_time": {
+                "name": "Nächster Service in (Tagen)"
+            },
+            "oil_service_range": {
+                "name": "Nächster Ölwechsel in"
+            },
+            "oil_service_time": {
+                "name": "Nächster Ölwechsel in (Tagen)"
+            },
+            "intermediate_service_range": {
+                "name": "Zwischenservice in"
+            },
+            "intermediate_service_time": {
+                "name": "Zwischenservice in (Tagen)"
+            },
+            "oil_level": {
+                "name": "Ölstand"
+            },
+            "charging_power": {
+                "name": "Ladeleistung"
+            },
+            "charging_target": {
+                "name": "Ladeziel"
+            },
+            "charging_rate": {
+                "name": "Laderate"
+            },
+            "charging_finished": {
+                "name": "Ladevorgang endet"
+            },
+            "remaining_range_electric": {
+                "name": "Elektrische Restreichweite"
+            },
+            "state_of_charge": {
+                "name": "Ladezustand"
+            },
+            "mileage": {
+                "name": "Kilometerstand"
+            },
+            "remaining_range": {
+                "name": "Restreichweite"
+            },
+            "fuel_level": {
+                "name": "Tankfüllstand"
+            },
+            "charging_status": {
+                "name": "Ladestatus",
+                "state": {
+                    "charging": "Lädt",
+                    "charging_completed": "Ladevorgang abgeschlossen",
+                    "charging_error": "Ladefehler",
+                    "charging_stopped": "Ladevorgang gestoppt",
+                    "initialising": "Ladevorgang wird initialisiert",
+                    "instant_charging": "Sofortladen",
+                    "not_charging": "Lädt nicht",
+                    "not_plugged": "Nicht angeschlossen",
+                    "off": "Laden aus"
+                }
+            }
+        },
+        "number": {
+            "target_soc": {
+                "name": "Ziel-Ladezustand"
+            }
+        },
+        "lock": {
+            "lock": {
+                "name": "Türverriegelung"
+            }
+        },
+        "switch": {
+            "climatise": {
+                "name": "Ferngesteuerte Klimatisierung"
+            },
+            "direct_charging": {
+                "name": "Direktladen"
+            }
+        }
+    },
+    "services": {
+        "climatisation_start": {
+            "name": "Ferngesteuerte Klimatisierung starten",
+            "description": "Startet die ferngesteuerte Klimatisierung des Innenraums mit den angegebenen Parametern",
+            "fields": {
+                "vehicle": {
+                    "name": "Fahrzeug",
+                    "description": "Das zu klimatisierende Fahrzeug."
+                },
+                "temperature": {
+                    "name": "Temperatur",
+                    "description": "Zieltemperatur für die Klimatisierung (Standard 20 Grad C)"
+                },
+                "front_left": {
+                    "name": "Sitzheizung vorne links",
+                    "description": "Ob die Sitzheizung vorne links aktiviert werden soll (Standard aus)"
+                },
+                "front_right": {
+                    "name": "Sitzheizung vorne rechts",
+                    "description": "Ob die Sitzheizung vorne rechts aktiviert werden soll (Standard aus)"
+                },
+                "rear_left": {
+                    "name": "Sitzheizung hinten links",
+                    "description": "Ob die Sitzheizung hinten links aktiviert werden soll (Standard aus)"
+                },
+                "rear_right": {
+                    "name": "Sitzheizung hinten rechts",
+                    "description": "Ob die Sitzheizung hinten rechts aktiviert werden soll (Standard aus)"
+                }
+            }
+        }
+    }
+}
