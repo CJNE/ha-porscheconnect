@@ -28,6 +28,9 @@
 		}
 	},
     "entity": {
+        "climate": {
+            "climatisation": {"name": "Klimatisering"}
+        },
         "binary_sensor": {
             "parking_brake": {
                 "name": "Parkeringsbroms",

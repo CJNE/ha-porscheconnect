@@ -28,6 +28,9 @@
         }
     },
     "entity": {
+        "climate": {
+            "climatisation": {"name": "Climatisation"}
+        },
         "button": {
             "flash_indicators": {"name": "Appel de phares"},
             "honk_and_flash_indicators": {"name": "Klaxon et appel de phares"},
