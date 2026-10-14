@@ -9,7 +9,9 @@ from homeassistant.const import (
 from homeassistant.const import SERVICE_TURN_OFF
 from homeassistant.const import SERVICE_TURN_ON
 from homeassistant.const import STATE_OFF
+from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
+from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from . import setup_mock_porscheconnect_config_entry
 
@@ -48,6 +50,31 @@ async def test_climate(
     )
     await hass.async_block_till_done()
     mock_set_climate_off.assert_awaited_once_with()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("status", "expected_state"),
+    [
+        ("OFF", STATE_OFF),
+        ("ON", STATE_ON),
+        ("ERROR", STATE_OFF),
+    ],
+)
+async def test_climate_state_from_hvac_status(
+    hass: HomeAssistant,
+    mock_connection: PorscheVehicle,
+    status: str,
+    expected_state: str,
+) -> None:
+    """Verify the switch state follows HVAC_SUMMARY status, with ERROR as off."""
+    mock_connection.data["HVAC_SUMMARY"]["status"] = status
+
+    await setup_mock_porscheconnect_config_entry(hass)
+
+    entity_state = hass.states.get(TEST_CLIMATE_SWITCH_ENTITY_ID)
+    assert entity_state
+    assert entity_state.state == expected_state
 
 
 @pytest.mark.asyncio

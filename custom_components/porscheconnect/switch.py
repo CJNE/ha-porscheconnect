@@ -34,7 +34,13 @@ NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
         key="climatise",
         translation_key="climatise",
         is_available=lambda v: v.has_remote_climatisation and v.has_remote_services,
-        value_fn=lambda v: v.remote_climatise_on,
+        # The API reports status "ERROR" when climatisation is unavailable (e.g.
+        # auxiliary ventilation blocked because the ambient temperature is too
+        # low); the library treats any status other than "OFF" as on.
+        value_fn=lambda v: (
+            v.remote_climatise_on
+            and v.data.get("HVAC_SUMMARY", {}).get("status") != "ERROR"
+        ),
         remote_service_on=lambda v: v.remote_services.climatise_on(),
         remote_service_off=lambda v: v.remote_services.climatise_off(),
     ),
