@@ -55,6 +55,28 @@ SWITCH_TYPES: list[PorscheSwitchEntityDescription] = [
 ]
 
 
+def _available_seat_heating_zones(vehicle):
+    """Return seat-heating zones explicitly supported by the vehicle."""
+    supported_zones = set()
+    capabilities = vehicle.capabilities or {}
+
+    for command in capabilities.get("commands", []):
+        metadata = command.get("metadata", {})
+        zones = metadata.get("climateZonesAvailable", {})
+
+        if isinstance(zones, dict):
+            for api_name, zone_name in (
+                ("frontLeft", "front_left"),
+                ("frontRight", "front_right"),
+                ("rearLeft", "rear_left"),
+                ("rearRight", "rear_right"),
+            ):
+                if zones.get(api_name) is True:
+                    supported_zones.add(zone_name)
+
+    return supported_zones
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -74,15 +96,13 @@ async def async_setup_entry(
             if description.is_available(vehicle)
         )
         if vehicle.has_remote_climatisation and vehicle.has_remote_services:
-            # Rear-zone controls are experimental on vehicles without rear seat heaters.
-            entities.extend(
-                [
-                    PorscheSeatHeatingSwitch(coordinator, vehicle, "front_left"),
-                    PorscheSeatHeatingSwitch(coordinator, vehicle, "front_right"),
-                    PorscheSeatHeatingSwitch(coordinator, vehicle, "rear_left"),
-                    PorscheSeatHeatingSwitch(coordinator, vehicle, "rear_right"),
-                ],
-            )
+            available_zones = _available_seat_heating_zones(vehicle)
+
+            for seat in ("front_left", "front_right", "rear_left", "rear_right"):
+                if seat in available_zones:
+                    entities.append(
+                        PorscheSeatHeatingSwitch(coordinator, vehicle, seat)
+                    )
 
     async_add_entities(entities)
 
