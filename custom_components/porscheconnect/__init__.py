@@ -119,6 +119,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         self.controller = controller
         self.vehicles = []
         self.climate_target_temperatures: dict[str, float] = {}
+        self.seat_heating_selections: dict[str, dict[str, bool]] = {}
         self.hass = hass
         self.config_entry = config_entry
 
