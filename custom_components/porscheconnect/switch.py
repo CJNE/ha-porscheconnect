@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.switch import (
-    RestoreSwitch,
     SwitchEntity,
     SwitchEntityDescription,
 )
@@ -14,6 +13,7 @@ from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
@@ -74,6 +74,7 @@ async def async_setup_entry(
             if description.is_available(vehicle)
         )
         if vehicle.has_remote_climatisation and vehicle.has_remote_services:
+            # This vehicle has no rear heated seats; expose front controls only.
             entities.extend(
                 [
                     PorscheSeatHeatingSwitch(coordinator, vehicle, "front_left"),
@@ -138,7 +139,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
         self.coordinator.async_update_listeners()
 
 
-class PorscheSeatHeatingSwitch(PorscheBaseEntity, RestoreSwitch):
+class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
     """Locally remembered front seat-heating selection for remote climate."""
 
     def __init__(
@@ -183,6 +184,7 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, RestoreSwitch):
             self.vehicle.vin,
             {"front_left": False, "front_right": False},
         )
+        previous_selection = selections.get(self.seat, False)
         selections[self.seat] = selected
         temperature = self.coordinator.climate_target_temperatures.get(
             self.vehicle.vin,
@@ -196,7 +198,7 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, RestoreSwitch):
                 front_right=selections.get("front_right", False),
             )
         except PorscheExceptionError as ex:
-            selections[self.seat] = not selected
+            selections[self.seat] = previous_selection
             raise HomeAssistantError(ex) from ex
 
         self.coordinator.async_update_listeners()
