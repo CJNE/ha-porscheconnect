@@ -146,6 +146,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                 self.vehicles = await self.controller.get_vehicles()
 
                 for vehicle in self.vehicles:
+                    await vehicle.get_capabilities()
                     await vehicle.get_stored_overview()
                     await vehicle.get_picture_locations()
 
