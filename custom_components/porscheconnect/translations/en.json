@@ -117,7 +117,9 @@
         },
         "switch": {
             "climatise": {"name": "Remote climatisation"},
-            "direct_charging": {"name": "Direct charging"}
+            "direct_charging": {"name": "Direct charging"},
+            "front_left": {"name": "Front left seat heating"},
+            "front_right": {"name": "Front right seat heating"}
         }
     },
     "services": {
