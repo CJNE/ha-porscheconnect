@@ -12,6 +12,7 @@ from homeassistant.components.number import (
     NumberEntity,
     NumberEntityDescription,
     NumberMode,
+    RestoreNumber,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -26,6 +27,8 @@ from . import (
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+DEFAULT_CLIMATE_TARGET_TEMPERATURE = 20.0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -66,16 +69,17 @@ async def async_setup_entry(
         config_entry.entry_id
     ]
 
-    entities: list[PorscheNumber] = []
+    entities: list[NumberEntity] = []
 
     for vehicle in coordinator.vehicles:
         entities.extend(
-            [
-                PorscheNumber(coordinator, vehicle, description)
-                for description in NUMBER_TYPES
-                if description.is_available(vehicle)
-            ],
+            PorscheNumber(coordinator, vehicle, description)
+            for description in NUMBER_TYPES
+            if description.is_available(vehicle)
         )
+        if vehicle.has_remote_climatisation and vehicle.has_remote_services:
+            entities.append(PorscheClimateTargetNumber(coordinator, vehicle))
+
     async_add_entities(entities)
 
 
@@ -115,3 +119,41 @@ class PorscheNumber(PorscheBaseEntity, NumberEntity):
             raise HomeAssistantError(ex) from ex
 
         self.coordinator.async_update_listeners()
+
+
+class PorscheClimateTargetNumber(PorscheBaseEntity, RestoreNumber):
+    """Locally stored target temperature used when remote climate starts."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "climate_target_temperature"
+    _attr_native_min_value = 16.0
+    _attr_native_max_value = 28.0
+    _attr_native_step = 0.5
+    _attr_native_unit_of_measurement = "°C"
+    _attr_mode = NumberMode.SLIDER
+
+    def __init__(
+        self,
+        coordinator: PorscheConnectDataUpdateCoordinator,
+        vehicle: PorscheVehicle,
+    ) -> None:
+        """Initialize the climate target temperature control."""
+        super().__init__(coordinator, vehicle)
+        self._attr_unique_id = f"{vehicle.vin}-climate-target-temperature"
+        self._attr_native_value = DEFAULT_CLIMATE_TARGET_TEMPERATURE
+
+    async def async_added_to_hass(self) -> None:
+        """Restore the previously selected target temperature."""
+        await super().async_added_to_hass()
+        if (last_number_data := await self.async_get_last_number_data()) is not None:
+            self._attr_native_value = last_number_data.native_value
+        self.coordinator.climate_target_temperatures[self.vehicle.vin] = (
+            self._attr_native_value
+        )
+        self.async_write_ha_state()
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Store the selected temperature locally; do not contact the vehicle."""
+        self._attr_native_value = value
+        self.coordinator.climate_target_temperatures[self.vehicle.vin] = value
+        self.async_write_ha_state()

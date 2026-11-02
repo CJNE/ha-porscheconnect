@@ -107,7 +107,8 @@
             }
         },
         "number": {
-            "target_soc": {"name": "Target state of charge"}
+            "target_soc": {"name": "Target state of charge"},
+            "climate_target_temperature": {"name": "Remote climate target temperature"}
         },
         "lock": {
             "lock": {

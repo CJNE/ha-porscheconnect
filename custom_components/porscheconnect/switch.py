@@ -17,6 +17,7 @@ from . import (
     PorscheConnectDataUpdateCoordinator,
 )
 from .const import DOMAIN
+from .number import DEFAULT_CLIMATE_TARGET_TEMPERATURE
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -96,7 +97,16 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
     async def async_turn_on(self) -> None:
         """Turn the switch on."""
         try:
-            await self.entity_description.remote_service_on(self.vehicle)
+            if self.entity_description.key == "climatise":
+                temperature = self.coordinator.climate_target_temperatures.get(
+                    self.vehicle.vin,
+                    DEFAULT_CLIMATE_TARGET_TEMPERATURE,
+                )
+                await self.vehicle.remote_services.climatise_on(
+                    target_temperature=temperature + 273.15,
+                )
+            else:
+                await self.entity_description.remote_service_on(self.vehicle)
         except PorscheExceptionError as ex:
             raise HomeAssistantError(ex) from ex
 

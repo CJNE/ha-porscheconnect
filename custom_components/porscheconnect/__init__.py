@@ -118,6 +118,7 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
         """Initialise the controller."""
         self.controller = controller
         self.vehicles = []
+        self.climate_target_temperatures: dict[str, float] = {}
         self.hass = hass
         self.config_entry = config_entry
 
