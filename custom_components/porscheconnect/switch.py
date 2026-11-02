@@ -74,11 +74,13 @@ async def async_setup_entry(
             if description.is_available(vehicle)
         )
         if vehicle.has_remote_climatisation and vehicle.has_remote_services:
-            # This vehicle has no rear heated seats; expose front controls only.
+            # Rear-zone controls are experimental on vehicles without rear seat heaters.
             entities.extend(
                 [
                     PorscheSeatHeatingSwitch(coordinator, vehicle, "front_left"),
                     PorscheSeatHeatingSwitch(coordinator, vehicle, "front_right"),
+                    PorscheSeatHeatingSwitch(coordinator, vehicle, "rear_left"),
+                    PorscheSeatHeatingSwitch(coordinator, vehicle, "rear_right"),
                 ],
             )
 
@@ -121,6 +123,8 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
                     target_temperature=temperature + 273.15,
                     front_left=seats.get("front_left", False),
                     front_right=seats.get("front_right", False),
+                    rear_left=seats.get("rear_left", False),
+                    rear_right=seats.get("rear_right", False),
                 )
             else:
                 await self.entity_description.remote_service_on(self.vehicle)
@@ -140,7 +144,7 @@ class PorscheSwitch(PorscheBaseEntity, SwitchEntity):
 
 
 class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
-    """Locally remembered front seat-heating selection for remote climate."""
+    """Locally remembered seat-heating zone selection for remote climate."""
 
     def __init__(
         self,
@@ -148,7 +152,7 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
         vehicle: PorscheVehicle,
         seat: str,
     ) -> None:
-        """Initialize a front seat-heating switch."""
+        """Initialize a seat-heating zone switch."""
         super().__init__(coordinator, vehicle)
         self.seat = seat
         self._attr_translation_key = seat
@@ -168,12 +172,22 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
             selected = last_state.state == STATE_ON
         else:
             reported = self.vehicle.seat_heating or {}
-            api_key = "frontLeft" if self.seat == "front_left" else "frontRight"
-            selected = bool(reported.get(api_key, False))
+            api_keys = {
+                "front_left": "frontLeft",
+                "front_right": "frontRight",
+                "rear_left": "rearLeft",
+                "rear_right": "rearRight",
+            }
+            selected = bool(reported.get(api_keys[self.seat], False))
 
         selections = self.coordinator.seat_heating_selections.setdefault(
             self.vehicle.vin,
-            {"front_left": False, "front_right": False},
+            {
+                "front_left": False,
+                "front_right": False,
+                "rear_left": False,
+                "rear_right": False,
+            },
         )
         selections[self.seat] = selected
         self.async_write_ha_state()
@@ -196,6 +210,8 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
                 target_temperature=temperature + 273.15,
                 front_left=selections.get("front_left", False),
                 front_right=selections.get("front_right", False),
+                rear_left=selections.get("rear_left", False),
+                rear_right=selections.get("rear_right", False),
             )
         except PorscheExceptionError as ex:
             selections[self.seat] = previous_selection
@@ -205,9 +221,9 @@ class PorscheSeatHeatingSwitch(PorscheBaseEntity, SwitchEntity, RestoreEntity):
         self.async_write_ha_state()
 
     async def async_turn_on(self) -> None:
-        """Enable this front seat heater with remote climatisation."""
+        """Enable this seat-heating zone with remote climatisation."""
         await self._async_set_selection(True)
 
     async def async_turn_off(self) -> None:
-        """Disable this front seat heater in the remote climate request."""
+        """Disable this seat-heating zone in the remote climate request."""
         await self._async_set_selection(False)
