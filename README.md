@@ -48,14 +48,13 @@ Feature requests and ideas are welcome, use the Discussions board for that, than
 
 ## Vehicle-specific notes
 
-This fork adds remote front seat-heating selections for the owner's 2024 Cayenne E-Hybrid.
+This fork adds remote seat-heating zone selections for the owner's 2024 Cayenne E-Hybrid.
 
-- The vehicle has heated front seats only; it is **not equipped with rear heated seats**.
-- Only the front-left and front-right seat-heating switches are created.
-- No rear-left or rear-right seat-heating controls are exposed.
-- Rear seat zones are left disabled in remote climate requests.
-
-The front seat selections are sent as part of Porsche's remote-climatisation command. They are not independent seat-only commands.
+- The vehicle is not equipped with rear heated seats.
+- Front-left and front-right controls are tested and confirmed working.
+- Rear-left and rear-right controls are exposed experimentally, but cannot be verified on this vehicle and may be ignored by the car.
+- All four selections are sent as part of Porsche's remote-climatisation command; they are not independent seat-only commands.
+- Rear zone selections default to off and are included in subsequent remote-climate requests only when selected.
 
 ## HACS Installation
 
