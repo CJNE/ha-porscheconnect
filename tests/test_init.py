@@ -73,6 +73,10 @@ async def test_setup_entry_client_does_not_accept_zstd(
     assert client is not get_async_client(hass)
     assert client.headers["Accept-Encoding"] == "gzip, deflate"
 
+    assert await hass.config_entries.async_reload(entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.data[DOMAIN][entry.entry_id].controller.connection.asyncClient is client
+
 
 async def test_coordinator_update_error(hass: HomeAssistant) -> None:
     """Test API errors are exposed as coordinator update failures."""
