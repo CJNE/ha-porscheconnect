@@ -119,6 +119,51 @@ async def test_captcha_auth_data_is_not_persisted(hass: HomeAssistant) -> None:
     ]
 
 
+async def test_reauth_with_captcha_updates_entry(hass: HomeAssistant) -> None:
+    """Test reauth through a captcha challenge stores the new token."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id=MOCK_CONFIG[CONF_EMAIL],
+        data=MOCK_CONFIG,
+    )
+    entry.add_to_hass(hass)
+    validate = AsyncMock(
+        side_effect=[
+            {
+                **MOCK_CONFIG,
+                "captcha": MOCK_CAPTCHA,
+                "state": "test-state",
+                "code_verifier": "test-verifier",
+            },
+            {
+                "title": MOCK_CONFIG[CONF_EMAIL],
+                CONF_ACCESS_TOKEN: MOCK_TOKEN,
+            },
+        ],
+    )
+    with patch(
+        "custom_components.porscheconnect.config_flow.validate_input",
+        validate,
+    ):
+        result = await entry.start_reauth_flow(hass)
+        assert result["step_id"] == "user"
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            user_input=MOCK_CONFIG,
+        )
+        assert result["step_id"] == "captcha"
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            user_input={"captcha_code": "test-code"},
+        )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reauth_successful"
+    assert entry.data == MOCK_CONFIG | {CONF_ACCESS_TOKEN: MOCK_TOKEN}
+
+
 async def test_reconfigure_ignores_and_removes_stale_auth_data(
     hass: HomeAssistant,
 ) -> None:

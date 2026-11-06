@@ -1,14 +1,18 @@
 """Test Porsche Connect setup."""
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from custom_components.porscheconnect import PorscheConnectDataUpdateCoordinator
 from custom_components.porscheconnect.const import DOMAIN
-from homeassistant.config_entries import ConfigEntryState
+from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pyporscheconnectapi.exceptions import PorscheExceptionError
+from pyporscheconnectapi.exceptions import (
+    PorscheCaptchaRequiredError,
+    PorscheExceptionError,
+    PorscheWrongCredentialsError,
+)
 
 from . import (
     create_mock_porscheconnect_config_entry,
@@ -74,3 +78,29 @@ async def test_coordinator_update_error(hass: HomeAssistant) -> None:
 
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        PorscheCaptchaRequiredError(captcha="captcha", state="state"),
+        PorscheWrongCredentialsError("Wrong credentials"),
+    ],
+)
+async def test_setup_entry_login_error_starts_reauth(
+    hass: HomeAssistant,
+    error: PorscheExceptionError,
+) -> None:
+    """Test a login that needs the user starts reauth instead of retrying."""
+    entry = create_mock_porscheconnect_config_entry(hass)
+
+    with patch(
+        "pyporscheconnectapi.account.PorscheConnectAccount.get_vehicles",
+        AsyncMock(side_effect=error),
+    ):
+        assert not await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.SETUP_ERROR
+    flows = hass.config_entries.flow.async_progress_by_handler(DOMAIN)
+    assert [flow["context"]["source"] for flow in flows] == [SOURCE_REAUTH]

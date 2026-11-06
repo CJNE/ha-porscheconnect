@@ -10,6 +10,7 @@ from functools import reduce
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.httpx_client import get_async_client
 from homeassistant.helpers.typing import ConfigType
@@ -20,7 +21,11 @@ from homeassistant.helpers.update_coordinator import (
 )
 from pyporscheconnectapi.account import PorscheConnectAccount
 from pyporscheconnectapi.connection import Connection
-from pyporscheconnectapi.exceptions import PorscheExceptionError
+from pyporscheconnectapi.exceptions import (
+    PorscheCaptchaRequiredError,
+    PorscheExceptionError,
+    PorscheWrongCredentialsError,
+)
 from pyporscheconnectapi.vehicle import PorscheVehicle
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, PLATFORMS, TRANSIENT_AUTH_FIELDS
@@ -152,6 +157,10 @@ class PorscheConnectDataUpdateCoordinator(DataUpdateCoordinator):
                     for vehicle in self.vehicles:
                         await vehicle.get_stored_overview()
 
+        except (PorscheCaptchaRequiredError, PorscheWrongCredentialsError) as exc:
+            # Retrying cannot succeed without the user: start a reauth flow instead.
+            msg = "Porsche Connect login requires reauthentication"
+            raise ConfigEntryAuthFailed(msg) from exc
         except PorscheExceptionError as exc:
             msg = "Error communicating with API: %s"
             raise UpdateFailed(msg, exc) from exc
