@@ -7,6 +7,7 @@ from custom_components.porscheconnect import PorscheConnectDataUpdateCoordinator
 from custom_components.porscheconnect.const import DOMAIN
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.httpx_client import get_async_client
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from pyporscheconnectapi.exceptions import PorscheExceptionError
 
@@ -59,6 +60,18 @@ async def test_setup_entry_initial_load(
     vehicle = hass.data[DOMAIN][entry.entry_id].vehicles[0]
     vehicle.get_stored_overview.assert_awaited_once_with()
     vehicle.get_picture_locations.assert_awaited_once_with()
+
+
+async def test_setup_entry_client_does_not_accept_zstd(
+    hass: HomeAssistant,
+    mock_connection,
+) -> None:
+    """Test the API client does not request zstd bodies httpx2 cannot decode."""
+    entry = await setup_mock_porscheconnect_config_entry(hass)
+
+    client = hass.data[DOMAIN][entry.entry_id].controller.connection.asyncClient
+    assert client is not get_async_client(hass)
+    assert client.headers["Accept-Encoding"] == "gzip, deflate"
 
 
 async def test_coordinator_update_error(hass: HomeAssistant) -> None:
