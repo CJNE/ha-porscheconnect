@@ -84,8 +84,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         async_client=async_client,
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
     )
-    # HA 2026.11 ships httpx2, which advertises zstd; Porsche's API then answers with data httpx2
-    # cannot decode (home-assistant/core#189539). Ask for gzip/deflate only on every API call.
+
     connection.headers["Accept-Encoding"] = "gzip, deflate"
 
     controller = PorscheConnectAccount(
