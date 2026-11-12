@@ -85,6 +85,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         token=entry.data.get(CONF_ACCESS_TOKEN, None),
     )
 
+    connection.headers["Accept-Encoding"] = "gzip, deflate"
+
     controller = PorscheConnectAccount(
         connection=connection,
     )
