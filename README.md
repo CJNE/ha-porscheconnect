@@ -46,6 +46,19 @@ Feature requests and ideas are welcome, use the Discussions board for that, than
 | `sensor`         | Show info from Porsche Connect API.   |
 | `switch`         | Switch something `On` or `Off`.       |
 
+### Vehicle data freshness
+
+The **Last updated** diagnostic sensor exposes the vehicle-reported status time
+(`GLOBAL_TIMESTAMP.timestamp` from Porsche Connect). Use this timestamp to check
+how old the vehicle data is, even when values such as state of charge stay the
+same. It is separate from Home Assistant's entity `last_updated` time, the time
+of an integration poll, and the vehicle's last location update.
+
+The sensor is enabled by default and shows `unknown` when Porsche does not supply
+the timestamp. It uses the existing polling cycle and does not wake the car or
+make additional API requests. An old timestamp alone does not imply a fault: a
+parked, sleeping vehicle may legitimately stop reporting.
+
 ## HACS Installation
 
 1. Search for porscheconnect in HACS

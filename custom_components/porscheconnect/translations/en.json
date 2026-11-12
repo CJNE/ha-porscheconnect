@@ -55,6 +55,7 @@
             "top_view": {"name": "View from above"}
         },
         "sensor": {
+            "last_updated": {"name": "Last updated"},
             "vin": { "name": "VIN" },
             "model_year": { "name": "Model year" },
             "main_service_range": { "name": "Next service in" },

@@ -46,6 +46,14 @@ class PorscheSensorEntityDescription(SensorEntityDescription):
 
 SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
     PorscheSensorEntityDescription(
+        key="last_updated",
+        translation_key="last_updated",
+        value_fn=lambda v: v.last_global_update,
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:clock-outline",
+    ),
+    PorscheSensorEntityDescription(
         key="charging_target",
         translation_key="charging_target",
         measurement_node="CHARGING_SUMMARY",
@@ -153,7 +161,7 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
         is_available=lambda v: v.has_ice_drivetrain,
     ),
-        # --- Identification ---
+    # --- Identification ---
     PorscheSensorEntityDescription(
         key="vin",
         translation_key="vin",
@@ -170,7 +178,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
     ),
-
     # --- Entretien principal ---
     PorscheSensorEntityDescription(
         key="main_service_range",
@@ -196,7 +203,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
         is_available=lambda v: "MAIN_SERVICE_TIME" in v.data,
     ),
-
     # --- Vidange ---
     PorscheSensorEntityDescription(
         key="oil_service_range",
@@ -222,7 +228,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
         is_available=lambda v: "OIL_SERVICE_TIME" in v.data,
     ),
-
     # --- Entretien intermediaire ---
     PorscheSensorEntityDescription(
         key="intermediate_service_range",
@@ -248,7 +253,6 @@ SENSOR_TYPES: list[PorscheSensorEntityDescription] = [
         suggested_display_precision=0,
         is_available=lambda v: "INTERMEDIATE_SERVICE_TIME" in v.data,
     ),
-
     PorscheSensorEntityDescription(
         key="oil_level",
         translation_key="oil_level",
