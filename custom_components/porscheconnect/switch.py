@@ -8,6 +8,7 @@ from homeassistant.components.switch import SwitchEntity, SwitchEntityDescriptio
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyporscheconnectapi.exceptions import PorscheExceptionError
 from pyporscheconnectapi.vehicle import PorscheVehicle
@@ -31,14 +32,6 @@ class PorscheSwitchEntityDescription(SwitchEntityDescription):
 
 NUMBER_TYPES: list[PorscheSwitchEntityDescription] = [
     PorscheSwitchEntityDescription(
-        key="climatise",
-        translation_key="climatise",
-        is_available=lambda v: v.has_remote_climatisation and v.has_remote_services,
-        value_fn=lambda v: v.remote_climatise_on,
-        remote_service_on=lambda v: v.remote_services.climatise_on(),
-        remote_service_off=lambda v: v.remote_services.climatise_off(),
-    ),
-    PorscheSwitchEntityDescription(
         key="direct_charging",
         translation_key="direct_charging",
         is_available=lambda v: v.has_direct_charge and v.has_remote_services,
@@ -60,8 +53,14 @@ async def async_setup_entry(
     ]
 
     entities: list[PorscheSwitch] = []
+    entity_registry = er.async_get(hass)
 
     for vehicle in coordinator.vehicles:
+        # The climatisation switch was replaced by the climate entity.
+        if entity_id := entity_registry.async_get_entity_id(
+            "switch", DOMAIN, f"{vehicle.vin}-climatise"
+        ):
+            entity_registry.async_remove(entity_id)
         entities.extend(
             [
                 PorscheSwitch(coordinator, vehicle, description)

@@ -139,7 +139,6 @@
             }
         },
         "switch": {
-            "climatise": {"name": "Fjärrklimatisering"},
             "direct_charging": {"name": "Direktladdning"}
         }
     },

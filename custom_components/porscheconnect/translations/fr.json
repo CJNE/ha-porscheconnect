@@ -118,7 +118,6 @@
             }
         },
         "switch": {
-            "climatise": {"name": "Préclimatisation à distance"},
             "direct_charging": {"name": "Charge directe"}
         }
     },
