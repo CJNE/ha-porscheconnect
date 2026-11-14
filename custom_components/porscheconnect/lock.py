@@ -58,7 +58,7 @@ class PorscheLock(PorscheBaseEntity, LockEntity):
             return r"^\d{4}$"
         return None
 
-    async def async_lock(self) -> None:
+    async def async_lock(self, **kwargs: object) -> None:
         """Lock the vehicle."""
         try:
             await self.vehicle.remote_services.lock_vehicle()
