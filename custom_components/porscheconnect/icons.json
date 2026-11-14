@@ -25,9 +25,6 @@
       }
     },
     "switch": {
-      "climatise": {
-        "default": "mdi:fan"
-      },
       "direct_charging": {
         "default": "mdi:ev-station",
         "state": {

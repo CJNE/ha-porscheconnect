@@ -28,6 +28,9 @@
 		}
 	},
     "entity": {
+        "climate": {
+            "climatisation": {"name": "Klimatisering"}
+        },
         "binary_sensor": {
             "parking_brake": {
                 "name": "Parkeringsbroms",
@@ -136,7 +139,6 @@
             }
         },
         "switch": {
-            "climatise": {"name": "Fjärrklimatisering"},
             "direct_charging": {"name": "Direktladdning"}
         }
     },
