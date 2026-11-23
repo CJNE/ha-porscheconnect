@@ -1,4 +1,4 @@
 -r requirements_test.txt
-ruff>=0.17.4
+ruff>=0.17.6
 pre-commit==4.7.0
-ruff>=0.17.4
+ruff>=0.17.6
